@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
+import java.util.Locale
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
@@ -122,7 +122,7 @@ fun GameCard(data: GameCardData, onClick: () -> Unit, modifier: Modifier = Modif
                     horizontalAlignment = Alignment.End,
                 ) {
                     if (data.league.isNotEmpty()) Text(data.league, style = UzzuType.Mono, color = UzzuColors.TextSecondary, maxLines = 1)
-                    if (data.detail.isNotEmpty()) Text(data.detail, style = UzzuType.MonoLarge, color = UzzuColors.TextPrimary, maxLines = 1, softWrap = false)
+                    if (data.detail.isNotEmpty()) Text(data.detail, style = UzzuType.MonoLarge, color = UzzuColors.TextPrimary, maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis)
                 }
             }
             if (data.state == GameCardState.Live) LiveChip(Modifier.align(Alignment.TopEnd), inCard = true)
@@ -178,10 +178,11 @@ fun ChannelRow(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Text(
-                "%02d".format(index),
-                style = UzzuType.Mono,
+                String.format(Locale.ROOT, "%02d", index),
+                style = UzzuType.MonoPlain,
                 color = UzzuColors.TextSecondary,
-                modifier = Modifier.widthIn(min = 20.dp),
+                // Fixed width for up to 3 digits so names stay aligned past 99 (All tab).
+                modifier = Modifier.width(22.dp),
                 maxLines = 1,
                 softWrap = false,
             )

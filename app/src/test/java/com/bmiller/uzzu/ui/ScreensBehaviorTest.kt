@@ -19,6 +19,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.assertIsFocused
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.test.espresso.Espresso
 import androidx.compose.ui.test.performTextReplacement
@@ -225,6 +226,32 @@ class ScreensBehaviorTest {
         val groups = playlist.channels.map { it.subGroup }.toSet()
         assertEquals(listOf("tab:All") + com.bmiller.uzzu.playlist.ChannelGroup.entries.filter { it in groups }.map { "tab:${it.label}" }, tags("tab:"))
         assertFalse("tab:Other" in tags("tab:"))
+    }
+
+    // ---- layout (frame values ÷ 2) ----
+
+    @Test fun `tabs are 28 dp tall and the grid starts 14 dp under the tab row`() {
+        val playlist = UiFixtures.playlist(liveIn = setOf(League.MLB))
+        launch(Route.Games, playlist)
+        val tab = compose.onNodeWithTag("tab:All").getUnclippedBoundsInRoot()
+        assertEquals(28f, (tab.bottom - tab.top).value, 0.5f)
+        // The initially focused card is scrolled to the top of the grid.
+        val card = compose.onNodeWithTag(compose.focusedTag()!!).getUnclippedBoundsInRoot()
+        assertEquals(14f, (card.top - tab.bottom).value, 0.5f)
+    }
+
+    @Test fun `all eight S3 tabs fit inside the safe area`() {
+        val base = UiFixtures.playlist()
+        val playlist = base.copy(channels = base.channels.mapIndexed { i, c -> if (i == base.channels.lastIndex) c.copy(subGroup = com.bmiller.uzzu.playlist.ChannelGroup.OTHER) else c })
+        launch(Route.Channels, playlist)
+        val tabs = tags("tab:")
+        assertEquals(8, tabs.size)
+        for (t in tabs) {
+            val b = compose.onNodeWithTag(t).getUnclippedBoundsInRoot()
+            assertTrue("$t starts at ${b.left}", b.left.value >= 48f - 0.5f)
+            assertTrue("$t ends at ${b.right}", b.right.value <= 912f + 0.5f)
+            assertEquals(28f, (b.bottom - b.top).value, 0.5f)
+        }
     }
 
     // ---- D-pad reachability (no traps) ----

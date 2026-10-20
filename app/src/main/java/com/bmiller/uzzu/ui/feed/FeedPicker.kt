@@ -91,7 +91,7 @@ fun FeedPickerContent(game: Game, onPick: (FeedSide) -> Unit) {
 private fun FeedChoice(letter: String, title: String, subtitle: String, onClick: () -> Unit, modifier: Modifier) {
     UzzuCard(onClick, UzzuShapes.Button, modifier.fillMaxWidth().height(52.dp), container = UzzuColors.Background) {
         Row(Modifier.fillMaxSize().padding(horizontal = 14.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text(letter, style = UzzuType.Mono, color = UzzuColors.TextSecondary)
+            Text(letter, style = UzzuType.MonoPlain, color = UzzuColors.TextSecondary)
             Column {
                 Text(title.uppercase(), style = UzzuType.Label.copy(fontSize = UzzuType.BodyLarge.fontSize, lineHeight = UzzuType.BodyLarge.lineHeight), color = UzzuColors.TextPrimary)
                 Text(subtitle, style = UzzuType.Body, color = UzzuColors.TextSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis)

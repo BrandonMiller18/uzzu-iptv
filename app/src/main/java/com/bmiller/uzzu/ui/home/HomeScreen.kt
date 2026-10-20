@@ -21,6 +21,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Icon
@@ -178,12 +179,12 @@ private fun UpdateBar(update: UpdateState.Available, onInstall: () -> Unit, onLa
         horizontalArrangement = Arrangement.spacedBy(Dimens.S5),
     ) {
         Box(Modifier.background(UzzuColors.TextPrimary).padding(horizontal = 5.dp, vertical = 1.dp)) {
-            Text("UPD", style = UzzuType.Mono, color = UzzuColors.Background)
+            Text("UPD", style = UzzuType.MonoPlain.copy(fontWeight = FontWeight.Bold), color = UzzuColors.Background)
         }
         Column(Modifier.weight(1f)) {
             Text("Update available: version ${update.version}".uppercase(), style = UzzuType.BodyLarge, color = UzzuColors.TextPrimary)
             when {
-                update.progress != null -> Text(update.progress, style = UzzuType.Mono, color = UzzuColors.TextSecondary, modifier = Modifier.testTag("update:progress"))
+                update.progress != null -> Text(update.progress, style = UzzuType.MonoPlain, color = UzzuColors.TextSecondary, modifier = Modifier.testTag("update:progress"))
                 update.error != null -> Text(update.error, style = UzzuType.Body, color = UzzuColors.Error, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 update.note != null -> Text(update.note, style = UzzuType.Body, color = UzzuColors.TextSecondary)
                 else -> Text("You're on ${update.currentVersion}. Playback stops while it installs.", style = UzzuType.Body, color = UzzuColors.TextSecondary)

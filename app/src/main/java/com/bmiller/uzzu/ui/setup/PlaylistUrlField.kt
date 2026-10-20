@@ -102,6 +102,7 @@ fun PlaylistUrlField(
     enabled: Boolean,
     isError: Boolean,
     modifier: Modifier = Modifier,
+    label: String? = "PLAYLIST URL",
 ) {
     val wrapperInteraction = remember { MutableInteractionSource() }
     val editorInteraction = remember { MutableInteractionSource() }
@@ -125,7 +126,7 @@ fun PlaylistUrlField(
     }
 
     Column(verticalArrangement = Arrangement.spacedBy(Dimens.S2)) {
-        Text("PLAYLIST URL", style = UzzuType.Label, color = if (focused) UzzuColors.TextPrimary else UzzuColors.TextSecondary)
+        if (label != null) Text(label, style = UzzuType.Label, color = if (focused) UzzuColors.TextPrimary else UzzuColors.TextSecondary)
         Box(
             modifier
                 .graphicsLayer {

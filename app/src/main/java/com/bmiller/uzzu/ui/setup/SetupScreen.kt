@@ -41,8 +41,8 @@ val FormWidth = 600.dp
  * success or a (masked) error message.
  *
  * The field always starts empty and is never pre-filled with the saved URL, which carries account
- * credentials in clear text: S7 passes the [currentMasked] display form as the placeholder and
- * supporting line instead, and saving an empty field there cancels. The text is held in plain
+ * credentials in clear text: S7 passes the [currentMasked] display form, shown as a CURRENT:
+ * supporting line, and saving an empty field there cancels. The text is held in plain
  * `remember` (not `rememberSaveable`) so it never lands in the saved-state Bundle.
  */
 @Composable
@@ -81,7 +81,9 @@ fun PlaylistUrlForm(
         )
         PlaylistUrlField(
             value = url,
-            placeholder = currentMasked ?: "https://",
+            placeholder = "https://",
+            // In the S7 dialog the title already says PLAYLIST URL.
+            label = if (currentMasked == null) "PLAYLIST URL" else null,
             onValueChange = { url = it; error = null },
             onDone = ::submit,
             enabled = !busy,

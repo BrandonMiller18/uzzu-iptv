@@ -196,7 +196,7 @@ private fun OverlayItem(row: OverlayRow.Item, onClick: () -> Unit, modifier: Mod
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Dimens.S3)) {
                 if (row.live) LiveChip()
                 if (row.detail.isNotEmpty()) {
-                    Text(row.detail, style = UzzuType.Mono, color = if (row.final) UzzuColors.TextPrimary else UzzuColors.TextSecondary, maxLines = 1, softWrap = false, modifier = fade)
+                    Text(row.detail, style = UzzuType.MonoPlain, color = if (row.final) UzzuColors.TextPrimary else UzzuColors.TextSecondary, maxLines = 1, softWrap = false, modifier = fade)
                 }
                 if (row.playing) PlayingChip()
             }
@@ -216,7 +216,7 @@ private fun FeedToggleRow(side: FeedSide, onFlip: () -> Unit, modifier: Modifier
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text("└ FEED", style = UzzuType.Mono, color = UzzuColors.TextSecondary)
+            Text("└ FEED", style = UzzuType.MonoPlain, color = UzzuColors.TextSecondary)
             Row(
                 Modifier.background(UzzuColors.Outline, UzzuShapes.Toggle).padding(Dimens.RestBorder),
                 horizontalArrangement = Arrangement.spacedBy(Dimens.S1),

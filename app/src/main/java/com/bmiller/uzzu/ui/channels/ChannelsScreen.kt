@@ -74,7 +74,7 @@ fun ChannelsScreen(
             tabs.isEmpty() -> MonoTag("// NO CHANNELS IN THE PLAYLIST", Modifier.padding(horizontal = Dimens.SafeH))
             else -> {
                 val items = remember(ordered, tab) { channelsInTab(ordered, tab) }
-                UzzuTabRow(tabs, tabs.indexOf(tab), onSelect = { memory.tab = tabs[it] }, Modifier.padding(horizontal = Dimens.SafeH), gap = Dimens.S1, horizontalPadding = 7.dp)
+                UzzuTabRow(tabs, tabs.indexOf(tab), onSelect = { memory.tab = tabs[it] }, Modifier.padding(horizontal = Dimens.SafeH), gap = Dimens.S1, horizontalPadding = 9.dp)
                 FocusGrid(
                     items = items,
                     key = { it.gridKey() },

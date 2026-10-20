@@ -2,6 +2,7 @@ package com.bmiller.uzzu.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -36,6 +37,9 @@ class ListMemory {
 
 /** Room for the 1.05 focus scale of a 420 dp item (10.5 dp per side) inside the grid's clip. */
 private val ScaleRoom = 12.dp
+
+/** Room above/below for the 1.05 scale of a 94 dp card (2.4 dp), so the tab-row gap stays 14 dp. */
+private val FocusRoomV = 3.dp
 
 /**
  * Two-column grid of fixed-size focusable items with stable keys (HANDOFF: 24 dp column gap). On
@@ -75,8 +79,9 @@ fun <T> FocusGrid(
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         state = state,
-        modifier = modifier.padding(horizontal = Dimens.SafeH - ScaleRoom),
-        contentPadding = PaddingValues(horizontal = ScaleRoom, vertical = Dimens.S4),
+        // Pulled up by the focus room so the first row sits 14 dp under the tab row (Games/Channels frames).
+        modifier = modifier.offset(y = -FocusRoomV).padding(horizontal = Dimens.SafeH - ScaleRoom),
+        contentPadding = PaddingValues(horizontal = ScaleRoom, vertical = FocusRoomV),
         horizontalArrangement = Arrangement.spacedBy(Dimens.GridColumnGap),
         verticalArrangement = Arrangement.spacedBy(rowGap),
     ) {

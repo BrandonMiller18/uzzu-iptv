@@ -79,10 +79,13 @@ fun UzzuButton(
     }
 }
 
-/** Mono section tag such as `// LIVE GAMES`. */
+/**
+ * Mono tag such as `// LIVE GAMES` or `LAST SYNC 7:10 PM`. Per the frames only `//` section tags
+ * are letter-spaced; plain mono lines (sync, counts) are not.
+ */
 @Composable
 fun MonoTag(text: String, modifier: Modifier = Modifier, color: Color = UzzuColors.TextSecondary) {
-    Text(text.uppercase(), style = UzzuType.Mono, color = color, modifier = modifier, maxLines = 1)
+    Text(text.uppercase(), style = if ("//" in text) UzzuType.Mono else UzzuType.MonoPlain, color = color, modifier = modifier, maxLines = 1)
 }
 
 /** HANDOFF "Not designed": loading is a static TextSecondary mono tag, no spinner. */
@@ -93,10 +96,11 @@ fun LoadingTag(modifier: Modifier = Modifier) = MonoTag("LOADING", modifier)
 @Composable
 fun KeyHint(key: String, action: String) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Dimens.S3)) {
-        Box(Modifier.border(Dimens.RestBorder, UzzuColors.Outline).padding(horizontal = 5.dp)) {
-            Text(key, style = UzzuType.Mono, color = UzzuColors.TextPrimary)
+        // 1 dp padding: the frame's 2 px border sits outside the 32 px line box (18 dp chip).
+        Box(Modifier.border(Dimens.RestBorder, UzzuColors.Outline).padding(horizontal = 5.dp, vertical = 1.dp)) {
+            Text(key, style = UzzuType.MonoPlain, color = UzzuColors.TextPrimary)
         }
-        Text(action.uppercase(), style = UzzuType.Mono, color = UzzuColors.TextSecondary)
+        Text(action.uppercase(), style = UzzuType.MonoPlain, color = UzzuColors.TextSecondary)
     }
 }
 

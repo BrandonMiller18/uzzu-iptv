@@ -124,16 +124,16 @@ private fun SettingsRow(title: String, subtitle: String, onClick: () -> Unit, mo
         Row(Modifier.fillMaxSize().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Dimens.S5)) {
             Column(Modifier.weight(1f)) {
                 Text(title.uppercase(), style = RowTitle, color = UzzuColors.TextPrimary)
-                Text(subtitle, style = UzzuType.Mono, color = UzzuColors.TextSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(subtitle, style = UzzuType.MonoPlain, color = UzzuColors.TextSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
-            if (trailing != null) Text(trailing, style = UzzuType.Mono.copy(fontWeight = FontWeight.Bold), color = UzzuColors.TextPrimary)
+            if (trailing != null) Text(trailing, style = UzzuType.MonoPlain.copy(fontWeight = FontWeight.Bold), color = UzzuColors.TextPrimary)
         }
     }
 }
 
 @Composable
 private fun InfoLine(label: String, value: String) {
-    val style = UzzuType.Mono.copy(lineHeight = UzzuType.MonoLarge.lineHeight)
+    val style = UzzuType.MonoPlain.copy(lineHeight = UzzuType.MonoLarge.lineHeight)
     Row(horizontalArrangement = Arrangement.spacedBy(Dimens.S6)) {
         Text(label, style = style, color = UzzuColors.TextSecondary, modifier = Modifier.width(120.dp))
         Text(value, style = style, color = UzzuColors.TextPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
