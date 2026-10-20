@@ -58,7 +58,17 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             if (hasReleaseSigning) signingConfig = signingConfigs.getByName("release")
         }
+        // Release code (R8, not debuggable) signed with the debug key: for on-device performance
+        // checks (`assembleBench`), installable over a debug build without losing its data.
+        create("bench") {
+            initWith(getByName("release"))
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += "release"
+        }
     }
+
+    // Debug only: the scrubbed playlist + ESPN recordings as assets for fixture mode (FixtureInterceptor).
+    sourceSets.getByName("debug").assets.srcDir("src/test/resources/fixtures")
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

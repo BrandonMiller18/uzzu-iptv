@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.datastore.preferences.preferencesDataStore
 import com.bmiller.uzzu.data.PlaylistRepository
+import com.bmiller.uzzu.debug.FixtureInterceptor
 import com.bmiller.uzzu.data.Settings
 import com.bmiller.uzzu.log.AppLogger
 import com.bmiller.uzzu.player.PlayerController
@@ -45,7 +46,12 @@ class AppContainer(context: Context) {
     val okHttp: OkHttpClient = OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(15, TimeUnit.SECONDS)
+        .apply { if (BuildConfig.DEBUG) addInterceptor(FixtureInterceptor(app.assets) { fixtureMode }) }
         .build()
+
+    /** Debug builds only: serve the bundled test playlist + ESPN recordings (see [FixtureInterceptor]). */
+    @Volatile
+    var fixtureMode = false
 
     val settings = Settings(app.dataStore)
 

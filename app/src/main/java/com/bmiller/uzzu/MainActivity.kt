@@ -32,6 +32,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (BuildConfig.DEBUG && intent.getBooleanExtra("uzzu.fixture", false)) {
+            container.fixtureMode = true
+            container.logger.i("Setup", "fixture mode: test playlist + recorded ESPN data")
+        }
         setContent { UzzuTheme { App() } }
     }
 

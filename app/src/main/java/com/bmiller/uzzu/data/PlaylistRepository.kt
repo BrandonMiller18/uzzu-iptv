@@ -1,5 +1,6 @@
 package com.bmiller.uzzu.data
 
+import com.bmiller.uzzu.debug.PlaylistRequestTag
 import com.bmiller.uzzu.log.AppLogger
 import com.bmiller.uzzu.log.SecretMasker
 import com.bmiller.uzzu.playlist.M3uParser
@@ -75,7 +76,7 @@ class PlaylistRepository(
         val started = clock()
         logger.i(TAG, "fetching playlist $httpUrl")
         val text = try {
-            client.newCall(Request.Builder().url(httpUrl).build()).execute().use { resp ->
+            client.newCall(Request.Builder().url(httpUrl).tag(PlaylistRequestTag::class.java, PlaylistRequestTag).build()).execute().use { resp ->
                 if (!resp.isSuccessful) throw PlaylistException("Playlist request returned HTTP ${resp.code}")
                 resp.body.string()
             }
