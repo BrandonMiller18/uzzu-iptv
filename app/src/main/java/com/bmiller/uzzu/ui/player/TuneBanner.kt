@@ -58,11 +58,8 @@ fun TuneBanner(item: Resolved, modifier: Modifier = Modifier) {
 @Composable
 fun PausedTag(modifier: Modifier = Modifier) {
     Row(
-        modifier.testTag("paused").background(UzzuColors.Scrim, UzzuShapes.Banner).padding(end = 14.dp).height(IntrinsicSize.Min),
-        horizontalArrangement = Arrangement.spacedBy(Dimens.S5),
-        verticalAlignment = Alignment.CenterVertically,
+        modifier.testTag("paused").background(UzzuColors.Scrim, UzzuShapes.Banner).padding(horizontal = 14.dp, vertical = 8.dp),
     ) {
-        Spacer(Modifier.width(3.dp).fillMaxHeight().background(UzzuColors.Active))
-        MonoTag("// PAUSED · PLAY RESUMES LIVE", Modifier.padding(vertical = 8.dp))
+        MonoTag("// PAUSED · PLAY RESUMES LIVE")
     }
 }

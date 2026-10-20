@@ -13,6 +13,9 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.HttpDataSource
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.analytics.AnalyticsListener
+import androidx.media3.exoplayer.source.LoadEventInfo
+import androidx.media3.exoplayer.source.MediaLoadData
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy
 import androidx.media3.exoplayer.upstream.LoadErrorHandlingPolicy
@@ -83,6 +86,20 @@ class PlayerController(
         }
     }
 
+    /** Startup breakdown for switch-time analysis: the first few loads after each tune. */
+    private var loadsSinceTune = 0
+    private val loadTimings = object : AnalyticsListener {
+        override fun onLoadCompleted(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData) {
+            if (++loadsSinceTune > 4) return
+            val kind = when (mediaLoadData.dataType) {
+                C.DATA_TYPE_MANIFEST -> "playlist"
+                C.DATA_TYPE_MEDIA -> "segment"
+                else -> "data${mediaLoadData.dataType}"
+            }
+            logger.i(TAG, "loaded $kind in ${loadEventInfo.loadDurationMs} ms, ${loadEventInfo.bytesLoaded / 1024} KiB, +${elapsed()} ms")
+        }
+    }
+
     fun start() {
         if (_player.value != null) return
         val dataSource = OkHttpDataSource.Factory(okHttp)
@@ -90,6 +107,7 @@ class PlayerController(
             .setMediaSourceFactory(HlsMediaSource.Factory(dataSource).setLoadErrorHandlingPolicy(NoRetryOn4xx))
             .build()
         exo.addListener(exoListener)
+        exo.addAnalyticsListener(loadTimings)
         exo.playWhenReady = true
         _player.value = exo
         logger.i(TAG, "player created")
@@ -100,6 +118,7 @@ class PlayerController(
     fun release() {
         val exo = _player.value ?: return
         exo.removeListener(exoListener)
+        exo.removeAnalyticsListener(loadTimings)
         exo.release()
         _player.value = null
         logger.i(TAG, "player released")
@@ -133,6 +152,7 @@ class PlayerController(
 
     private fun prepare(exo: ExoPlayer, url: String) {
         loadedAt = System.currentTimeMillis()
+        loadsSinceTune = 0
         exo.setMediaItem(MediaItem.Builder().setUri(url).setMimeType(MimeTypes.APPLICATION_M3U8).build())
         exo.prepare()
         exo.playWhenReady = true
