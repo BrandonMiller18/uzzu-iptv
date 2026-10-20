@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Selection home</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wdth,wght@75..100,400..700&amp;family=Roboto+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1920px; height: 1080px; box-sizing: border-box; padding: 54px 96px; background: #000000; color: #E6F0F2; font-family: Roboto, sans-serif; display: flex; flex-direction: column; gap: 28px">
+
+  <div style="display: flex; align-items: flex-end; justify-content: space-between; padding-bottom: 20px; border-bottom: 2px solid #3A1E4F">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE; letter-spacing: 2px">// IPTV TERMINAL</span>
+      <h1 style="margin: 0; font-size: 40px; line-height: 48px; font-weight: 800; font-stretch: 75%; letter-spacing: 10px; text-transform: uppercase">Uzzu</h1>
+    </div>
+    <div style="display: flex; align-items: center; gap: 24px">
+      <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">LAST SYNC 6:42 PM</span>
+      <button style="padding: 2px; border: 0; background: #3A1E4F; clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px); font-family: Roboto, sans-serif">
+        <span style="height: 52px; padding: 0 28px; box-sizing: border-box; background: #0E0E11; clip-path: polygon(11px 0, 100% 0, 100% calc(100% - 11px), calc(100% - 11px) 100%, 0 100%, 0 11px); color: #E6F0F2; font-size: 24px; line-height: 32px; font-weight: 600; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase; display: flex; align-items: center; gap: 12px">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E6F0F2" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"></path><path d="M20 4v7h-7"></path></svg>
+          Refresh
+        </span>
+      </button>
+      <button style="padding: 2px; border: 0; background: #3A1E4F; clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px); font-family: Roboto, sans-serif">
+        <span style="height: 52px; padding: 0 28px; box-sizing: border-box; background: #0E0E11; clip-path: polygon(11px 0, 100% 0, 100% calc(100% - 11px), calc(100% - 11px) 100%, 0 100%, 0 11px); color: #E6F0F2; font-size: 24px; line-height: 32px; font-weight: 600; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase; display: flex; align-items: center; gap: 12px">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E6F0F2" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><rect x="14" y="4" width="4" height="4"></rect><rect x="8" y="10" width="4" height="4"></rect><rect x="16" y="16" width="4" height="4"></rect></svg>
+          Settings
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <sc-if value="{{showUpdate}}" hint-placeholder-val="{{ true }}">
+    <div style="padding: 2px; background: #3A1E4F; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))">
+      <div style="display: flex; align-items: center; gap: 24px; padding: 14px 16px 14px 24px; background: #0E0E11; clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px))">
+        <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; font-weight: 700; color: #000000; background: #E6F0F2; padding: 2px 10px">UPD</span>
+        <div style="flex: 1; display: flex; flex-direction: column">
+          <span style="font-size: 28px; line-height: 36px; font-weight: 600; font-stretch: 85%; letter-spacing: 1px; text-transform: uppercase">Update available: version 1.1.0</span>
+          <span style="font-size: 24px; line-height: 32px; color: #A99BBE">You're on 1.0.0. Playback stops while it installs.</span>
+        </div>
+        <button style="padding: 2px; border: 0; background: #3A1E4F; clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px); font-family: Roboto, sans-serif">
+          <span style="height: 52px; padding: 0 28px; box-sizing: border-box; background: #000000; clip-path: polygon(11px 0, 100% 0, 100% calc(100% - 11px), calc(100% - 11px) 100%, 0 100%, 0 11px); color: #E6F0F2; font-size: 24px; line-height: 32px; font-weight: 600; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase; display: flex; align-items: center">Install update</span>
+        </button>
+        <button style="padding: 2px; border: 0; background: #3A1E4F; clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px); font-family: Roboto, sans-serif">
+          <span style="height: 52px; padding: 0 28px; box-sizing: border-box; background: #000000; clip-path: polygon(11px 0, 100% 0, 100% calc(100% - 11px), calc(100% - 11px) 100%, 0 100%, 0 11px); color: #E6F0F2; font-size: 24px; line-height: 32px; font-weight: 600; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase; display: flex; align-items: center">Later</span>
+        </button>
+      </div>
+    </div>
+  </sc-if>
+
+  <div style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 64px">
+    <button style="width: 780px; height: 440px; padding: 6px; border: 0; background: {{accent}}; clip-path: polygon(0 0, calc(100% - 40px) 0, 100% 40px, 100% 100%, 40px 100%, 0 calc(100% - 40px)); transform: scale(1.05); font-family: Roboto, sans-serif">
+      <span style="width: 100%; height: 100%; box-sizing: border-box; padding: 40px 48px; background: #0E0E11; clip-path: polygon(0 0, calc(100% - 37px) 0, 100% 37px, 100% 100%, 37px 100%, 0 calc(100% - 37px)); color: #E6F0F2; text-align: left; display: flex; flex-direction: column; justify-content: space-between">
+        <span style="display: flex; align-items: flex-start; justify-content: space-between">
+          <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE; letter-spacing: 2px">01 // GAMES</span>
+          <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#E6F0F2" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2 5h20v14H2z"></path><path d="M12 5v14"></path><path d="M9 9h6v6H9z"></path></svg>
+        </span>
+        <span style="display: flex; flex-direction: column; gap: 16px">
+          <span style="font-size: 40px; line-height: 48px; font-weight: 800; font-stretch: 75%; letter-spacing: 4px; text-transform: uppercase">Live Games</span>
+          <span style="display: flex; align-items: center; gap: 16px">
+            <span style="font-size: 24px; line-height: 32px; font-weight: 800; font-stretch: 80%; letter-spacing: 2px; padding: 2px 14px 2px 12px; background: {{accent}}; color: #000000; clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%); display: flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; background: #000000"></span>LIVE</span>
+            <span style="font-size: 28px; line-height: 36px; font-weight: 600; font-stretch: 85%; letter-spacing: 1px; text-transform: uppercase">2 live now</span>
+          </span>
+          <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">5 GAMES TODAY</span>
+        </span>
+      </span>
+    </button>
+    <button style="width: 780px; height: 440px; padding: 2px; border: 0; background: #3A1E4F; clip-path: polygon(0 0, calc(100% - 40px) 0, 100% 40px, 100% 100%, 40px 100%, 0 calc(100% - 40px)); font-family: Roboto, sans-serif">
+      <span style="width: 100%; height: 100%; box-sizing: border-box; padding: 44px 52px; background: #0E0E11; clip-path: polygon(0 0, calc(100% - 39px) 0, 100% 39px, 100% 100%, 39px 100%, 0 calc(100% - 39px)); color: #E6F0F2; text-align: left; display: flex; flex-direction: column; justify-content: space-between">
+        <span style="display: flex; align-items: flex-start; justify-content: space-between">
+          <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE; letter-spacing: 2px">02 // CHANNELS</span>
+          <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#E6F0F2" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M3 6h18v12H3z"></path><path d="M8 21h8M9 2l3 4 3-4"></path></svg>
+        </span>
+        <span style="display: flex; flex-direction: column; gap: 16px">
+          <span style="font-size: 40px; line-height: 48px; font-weight: 800; font-stretch: 75%; letter-spacing: 4px; text-transform: uppercase">Live Channels</span>
+          <span style="font-size: 28px; line-height: 36px; font-weight: 600; font-stretch: 85%; letter-spacing: 1px; text-transform: uppercase">10 channels</span>
+          <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">8 GROUPS</span>
+        </span>
+      </span>
+    </button>
+  </div>
+
+  <div style="display: flex; gap: 40px; font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">
+    <span style="display: flex; align-items: center; gap: 12px"><span style="border: 2px solid #3A1E4F; padding: 0 10px; color: #E6F0F2">OK</span>OPEN</span>
+    <span style="display: flex; align-items: center; gap: 12px"><span style="border: 2px solid #3A1E4F; padding: 0 10px; color: #E6F0F2">BACK</span>EXIT APP</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#F5E50A","options":["#F5E50A","#00E5FF","#FF2E88"]},"showUpdate":{"editor":"boolean","default":true},"$preview":{"width":1920,"height":1080}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      accent: this.props.accent ?? '#F5E50A',
+      showUpdate: this.props.showUpdate ?? true
+    };
+  }
+}
+</script>
+</body>
+</html>

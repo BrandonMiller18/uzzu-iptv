@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wdth,wght@75..100,400..700&amp;family=Roboto+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1920px; height: 1080px; box-sizing: border-box; padding: 54px 96px; background: #000000; color: #E6F0F2; font-family: Roboto, sans-serif; display: flex; flex-direction: column; gap: 36px">
+
+  <div style="display: flex; align-items: flex-end; justify-content: space-between; padding-bottom: 20px; border-bottom: 2px solid #3A1E4F">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE; letter-spacing: 2px">03 // SYSTEM</span>
+      <h1 style="margin: 0; font-size: 40px; line-height: 48px; font-weight: 800; font-stretch: 75%; letter-spacing: 4px; text-transform: uppercase">Settings</h1>
+    </div>
+  </div>
+
+  <div style="width: 1200px; display: flex; flex-direction: column; gap: 14px">
+    <button style="height: 112px; padding: 6px; border: 0; background: {{accent}}; clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px)); transform: scale(1.05); font-family: Roboto, sans-serif">
+      <span style="width: 100%; height: 100%; box-sizing: border-box; padding: 0 28px; background: #0E0E11; clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px)); color: #E6F0F2; text-align: left; display: flex; align-items: center; gap: 24px">
+        <span style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+          <span style="font-size: 28px; line-height: 36px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase">Playlist URL</span>
+          <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">uzzu.tv/get.php?username=••••&amp;password=••••&amp;type=m3u_plus</span>
+        </span>
+        <span style="flex: none; font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; font-weight: 700">[ EDIT ]</span>
+      </span>
+    </button>
+    <button style="height: 112px; padding: 2px; border: 0; background: #3A1E4F; clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px)); font-family: Roboto, sans-serif">
+      <span style="width: 100%; height: 100%; box-sizing: border-box; padding: 0 32px; background: #0E0E11; clip-path: polygon(0 0, calc(100% - 17px) 0, 100% 17px, 100% 100%, 17px 100%, 0 calc(100% - 17px)); color: #E6F0F2; text-align: left; display: flex; flex-direction: column; justify-content: center">
+        <span style="font-size: 28px; line-height: 36px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase">Refresh now</span>
+        <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">LAST SYNC 6:42 PM · OK</span>
+      </span>
+    </button>
+    <button style="height: 112px; padding: 2px; border: 0; background: #3A1E4F; clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px)); font-family: Roboto, sans-serif">
+      <span style="width: 100%; height: 100%; box-sizing: border-box; padding: 0 32px; background: #0E0E11; clip-path: polygon(0 0, calc(100% - 17px) 0, 100% 17px, 100% 100%, 17px 100%, 0 calc(100% - 17px)); color: #E6F0F2; text-align: left; display: flex; flex-direction: column; justify-content: center">
+        <span style="font-size: 28px; line-height: 36px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase">Check for updates</span>
+        <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">VERSION 1.1.0 AVAILABLE</span>
+      </span>
+    </button>
+
+    <div style="margin-top: 12px; border-top: 2px solid #3A1E4F; padding-top: 12px; display: grid; grid-template-columns: 240px minmax(0, 1fr); column-gap: 32px; row-gap: 16px; padding-left: 34px; font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 36px">
+      <span style="color: #A99BBE">APP_VERSION</span>
+      <span>1.0.0</span>
+      <span style="color: #A99BBE">LOG_FILE</span>
+      <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">/storage/emulated/0/Android/data/[app id]/files/logs/uzzu.log</span>
+    </div>
+  </div>
+
+  <div style="flex: 1"></div>
+  <div style="display: flex; gap: 40px; font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">
+    <span style="display: flex; align-items: center; gap: 12px"><span style="border: 2px solid #3A1E4F; padding: 0 10px; color: #E6F0F2">OK</span>EDIT OR RUN</span>
+    <span style="display: flex; align-items: center; gap: 12px"><span style="border: 2px solid #3A1E4F; padding: 0 10px; color: #E6F0F2">BACK</span>HOME</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#F5E50A","options":["#F5E50A","#00E5FF","#FF2E88"]},"$preview":{"width":1920,"height":1080}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#F5E50A' };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Games list</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wdth,wght@75..100,400..700&amp;family=Roboto+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1920px; height: 1080px; box-sizing: border-box; padding: 54px 96px; background: #000000; color: #E6F0F2; font-family: Roboto, sans-serif; display: flex; flex-direction: column; gap: 28px">
+
+  <div style="display: flex; align-items: flex-end; justify-content: space-between; padding-bottom: 20px; border-bottom: 2px solid #3A1E4F">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE; letter-spacing: 2px">01 // GAMES</span>
+      <h1 style="margin: 0; font-size: 40px; line-height: 48px; font-weight: 800; font-stretch: 75%; letter-spacing: 4px; text-transform: uppercase">Live Games</h1>
+    </div>
+    <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">LAST SYNC 6:42 PM</span>
+  </div>
+
+  <div role="tablist" aria-label="League" style="display: flex; align-items: center; gap: 8px">
+    <sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
+      <button role="tab" aria-selected="{{t.selected}}" style="height: 56px; padding: 0 22px; box-sizing: border-box; border: 0; background: {{t.bg}}; color: {{t.color}}; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); font-family: Roboto, sans-serif; font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase; white-space: nowrap">{{t.label}}</button>
+    </sc-for>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 48px; row-gap: 32px">
+    <sc-for list="{{games}}" as="g" hint-placeholder-count="5">
+      <dc-import name="GameCard" away="{{g.away}}" home="{{g.home}}" league="{{g.league}}" status="{{g.status}}" detail="{{g.detail}}" focused="{{g.focused}}" accent="{{accent}}" hint-size="840px,188px"></dc-import>
+    </sc-for>
+  </div>
+
+  <div style="flex: 1"></div>
+  <div style="display: flex; gap: 40px; font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">
+    <span style="display: flex; align-items: center; gap: 12px"><span style="border: 2px solid #3A1E4F; padding: 0 10px; color: #E6F0F2">OK</span>CHOOSE FEED</span>
+    <span style="display: flex; align-items: center; gap: 12px"><span style="border: 2px solid #3A1E4F; padding: 0 10px; color: #E6F0F2">BACK</span>HOME</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#F5E50A","options":["#F5E50A","#00E5FF","#FF2E88"]},"focusIndex":{"editor":"int","default":1,"min":0,"max":4},"$preview":{"width":1920,"height":1080}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const fi = Number(this.props.focusIndex ?? 1);
+    const games = [
+      { away: 'Pittsburgh Penguins', home: 'Utah Mammoth', league: 'NHL', status: 'final', detail: 'Final' },
+      { away: 'Cleveland Guardians', home: 'Tampa Bay Rays', league: 'MLB', status: 'live', detail: 'Top 5th' },
+      { away: 'Anaheim Ducks', home: 'New York Rangers', league: 'NHL', status: 'live', detail: '2nd 8:14' },
+      { away: 'Washington Commanders', home: 'San Francisco 49ers', league: 'NFL', status: 'scheduled', detail: '7:15 PM' },
+      { away: 'Special Event Feed', home: '', league: '', status: 'ungrouped', detail: '' }
+    ];
+    const labels = ['All', 'MLB', 'NHL', 'NFL', 'Ungrouped'];
+    return {
+      accent: this.props.accent ?? '#F5E50A',
+      tabs: labels.map((label, i) => ({
+        label: label,
+        selected: i === 0 ? 'true' : 'false',
+        bg: i === 0 ? '#B0186E' : 'transparent',
+        color: i === 0 ? '#E6F0F2' : '#A99BBE'
+      })),
+      games: games.map((g, i) => ({ ...g, focused: i === fi }))
+    };
+  }
+}
+</script>
+</body>
+</html>

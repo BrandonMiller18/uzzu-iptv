@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Playback error</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wdth,wght@75..100,400..700&amp;family=Roboto+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1920px; height: 1080px; box-sizing: border-box; padding: 54px 96px; background: #000000; color: #E6F0F2; font-family: Roboto, sans-serif; display: flex; flex-direction: column; justify-content: center; gap: 40px">
+
+  <div style="display: flex; flex-direction: column; gap: 12px">
+    <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; font-weight: 700; color: #FF5A36; letter-spacing: 2px">ERR // SIGNAL LOST</span>
+    <div style="display: flex; align-items: center; gap: 20px">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FF5A36" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M12 3l10 18H2z"></path><path d="M12 10v5M12 18v.5"></path></svg>
+      <h1 style="margin: 0; font-size: 40px; line-height: 48px; font-weight: 800; font-stretch: 75%; letter-spacing: 4px; text-transform: uppercase">Can't play this stream</h1>
+    </div>
+    <p style="margin: 0; font-size: 32px; line-height: 40px; font-weight: 500">Stream returned 403 after playlist refresh</p>
+  </div>
+
+  <div style="padding: 2px; background: #3A1E4F; clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px))">
+    <div style="background: #0E0E11; clip-path: polygon(0 0, calc(100% - 23px) 0, 100% 23px, 100% 100%, 23px 100%, 0 calc(100% - 23px)); display: flex; flex-direction: column">
+      <div style="padding: 12px 40px; border-bottom: 2px solid #3A1E4F; display: flex; justify-content: space-between; font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE; letter-spacing: 2px">
+        <span>DIAGNOSTICS</span>
+        <span>7 FIELDS</span>
+      </div>
+      <div style="box-sizing: border-box; padding: 24px 40px 28px; font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 40px; display: grid; grid-template-columns: 260px minmax(0, 1fr); column-gap: 32px">
+        <sc-for list="{{diag}}" as="d" hint-placeholder-count="7">
+          <span style="color: #A99BBE">{{d.label}}</span>
+          <span style="color: {{d.color}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{d.value}}</span>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 24px">
+    <button style="padding: 6px; border: 0; background: {{accent}}; clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px); transform: scale(1.05); font-family: Roboto, sans-serif">
+      <span style="height: 56px; padding: 0 44px; box-sizing: border-box; background: #0E0E11; clip-path: polygon(11px 0, 100% 0, 100% calc(100% - 11px), calc(100% - 11px) 100%, 0 100%, 0 11px); color: #E6F0F2; font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase; display: flex; align-items: center">Retry</span>
+    </button>
+    <button style="padding: 2px; border: 0; background: #3A1E4F; clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px); font-family: Roboto, sans-serif">
+      <span style="height: 60px; padding: 0 48px; box-sizing: border-box; background: #0E0E11; clip-path: polygon(13px 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%, 0 13px); color: #E6F0F2; font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase; display: flex; align-items: center">Back</span>
+    </button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#F5E50A","options":["#F5E50A","#00E5FF","#FF2E88"]},"$preview":{"width":1920,"height":1080}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const ok = '#E6F0F2';
+    const bad = '#FF5A36';
+    return {
+      accent: this.props.accent ?? '#F5E50A',
+      diag: [
+        { label: 'ITEM', value: 'Washington Commanders @ San Francisco 49ers · Home feed', color: ok },
+        { label: 'STREAM', value: 'uzzu.tv /hls/******7220/g4678.m3u8', color: ok },
+        { label: 'HTTP_STATUS', value: '403', color: bad },
+        { label: 'PLAYER_ERR', value: 'ERROR_CODE_IO_BAD_HTTP_STATUS', color: bad },
+        { label: 'ATTEMPTS', value: '3 · 7:15:02 PM, 7:15:06 PM, 7:15:14 PM', color: ok },
+        { label: 'PLAYLIST', value: 'Age 1 min · Last refresh 7:14 PM, OK', color: ok },
+        { label: 'NETWORK', value: 'Wi-Fi · Connected', color: ok }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

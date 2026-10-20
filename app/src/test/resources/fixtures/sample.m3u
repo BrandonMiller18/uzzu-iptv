@@ -1,0 +1,237 @@
+#EXTM3U
+#EXTINF:0 tvg-id="Anaheim Ducks @ New York Rangers-H" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t81" group-title="Live-Games",Anaheim Ducks @ New York Rangers-H
+https://uzzu.tv/hls/10000007220/g4678.m3u8
+#EXTINF:0 tvg-id="Anaheim Ducks @ New York Rangers-A" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t63" group-title="Live-Games",Anaheim Ducks @ New York Rangers-A
+https://tran03.global.ssl.fastly.net/1792476833~30dbd327540cffa518ffa27bf3ae58eb/perdias/444734-away/chunks.m3u8
+#EXTINF:0 tvg-id="Colorado Avalanche @ Philadelphia Flyers-H" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t83" group-title="Live-Games",Colorado Avalanche @ Philadelphia Flyers-H
+https://uzzu.tv/hls/10000007220/g4679.m3u8
+#EXTINF:0 tvg-id="Colorado Avalanche @ Philadelphia Flyers-A" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t69" group-title="Live-Games",Colorado Avalanche @ Philadelphia Flyers-A
+https://tran03.global.ssl.fastly.net/1792476833~10a79c9ad9004a28a13d2023c1fe336f/perdias/444735-away/chunks.m3u8
+#EXTINF:0 tvg-id="San Jose Sharks @ Toronto Maple Leafs-H" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t89" group-title="Live-Games",San Jose Sharks @ Toronto Maple Leafs-H
+https://uzzu.tv/hls/10000007220/g4680.m3u8
+#EXTINF:0 tvg-id="San Jose Sharks @ Toronto Maple Leafs-A" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t85" group-title="Live-Games",San Jose Sharks @ Toronto Maple Leafs-A
+https://tran03.global.ssl.fastly.net/1792476833~e4808c846fd860292f1d3c6f411a9f76/perdias/444736-away/chunks.m3u8
+#EXTINF:0 tvg-id="Cleveland Guardians @ Tampa Bay Rays-H" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t59" group-title="Live-Games",Cleveland Guardians @ Tampa Bay Rays-H
+https://uzzu.tv/hls/10000007220/g8365.m3u8
+#EXTINF:0 tvg-id="Cleveland Guardians @ Tampa Bay Rays-A" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t40" group-title="Live-Games",Cleveland Guardians @ Tampa Bay Rays-A
+https://tran03.global.ssl.fastly.net/1792476833~599903699ecdf7fcf85893b6442da24f/perdias/190200-away/chunks.m3u8
+#EXTINF:0 tvg-id="Washington Commanders @ San Francisco 49ers-H" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t28" group-title="Live-Games",Washington Commanders @ San Francisco 49ers-H
+https://uzzu.tv/hls/10000007220/g2372.m3u8
+#EXTINF:0 tvg-id="Washington Commanders @ San Francisco 49ers-A" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t32" group-title="Live-Games",Washington Commanders @ San Francisco 49ers-A
+https://tran03.global.ssl.fastly.net/1792476833~2ca0ce6739b36f3053af3ec270269432/perdias/21605-away/chunks.m3u8
+#EXTINF:0 tvg-id="Pittsburgh Penguins @ Utah Mammoth-H" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t519" group-title="Live-Games",Pittsburgh Penguins @ Utah Mammoth-H
+https://uzzu.tv/hls/10000007220/g4681.m3u8
+#EXTINF:0 tvg-id="Pittsburgh Penguins @ Utah Mammoth-A" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t84" group-title="Live-Games",Pittsburgh Penguins @ Utah Mammoth-A
+https://tran03.global.ssl.fastly.net/1792476833~5c4362d4625d41835db81c152c78dc9a/perdias/444737-away/chunks.m3u8
+#EXTINF:0 tvg-id="NFL Network" tvg-logo="https://uzzu.tv/hls/10000007220/logo/1" group-title="Live-Channels",NFL Network
+https://uzzu.tv/hls/10000007220/1.m3u8
+#EXTINF:0 tvg-id="Red Zone" tvg-logo="https://uzzu.tv/hls/10000007220/logo/2" group-title="Live-Channels",Red Zone
+https://uzzu.tv/hls/10000007220/2.m3u8
+#EXTINF:0 tvg-id="Red Zone2" tvg-logo="https://uzzu.tv/hls/10000007220/logo/3" group-title="Live-Channels",Red Zone2
+https://uzzu.tv/hls/10000007220/3.m3u8
+#EXTINF:0 tvg-id="PAC 12 Network" tvg-logo="https://uzzu.tv/hls/10000007220/logo/4" group-title="Live-Channels",PAC 12 Network
+https://uzzu.tv/hls/10000007220/4.m3u8
+#EXTINF:0 tvg-id="Marquee Network" tvg-logo="https://uzzu.tv/hls/10000007220/logo/5" group-title="Live-Channels",Marquee Network
+https://uzzu.tv/hls/10000007220/5.m3u8
+#EXTINF:0 tvg-id="NBA TV" tvg-logo="https://uzzu.tv/hls/10000007220/logo/6" group-title="Live-Channels",NBA TV
+https://uzzu.tv/hls/10000007220/6.m3u8
+#EXTINF:0 tvg-id="NHL Network" tvg-logo="https://uzzu.tv/hls/10000007220/logo/7" group-title="Live-Channels",NHL Network
+https://uzzu.tv/hls/10000007220/7.m3u8
+#EXTINF:0 tvg-id="MLB Network" tvg-logo="https://uzzu.tv/hls/10000007220/logo/8" group-title="Live-Channels",MLB Network
+https://uzzu.tv/hls/10000007220/8.m3u8
+#EXTINF:0 tvg-id="Root Sports NW" tvg-logo="https://uzzu.tv/hls/10000007220/logo/9" group-title="Live-Channels",Root Sports NW
+https://uzzu.tv/hls/10000007220/9.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network Detroit" tvg-logo="https://uzzu.tv/hls/10000007220/logo/10" group-title="Live-Channels",FanDuel Sports Network Detroit
+https://uzzu.tv/hls/10000007220/10.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network Florida" tvg-logo="https://uzzu.tv/hls/10000007220/logo/11" group-title="Live-Channels",FanDuel Sports Network Florida
+https://uzzu.tv/hls/10000007220/11.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network Great Lakes" tvg-logo="https://uzzu.tv/hls/10000007220/logo/12" group-title="Live-Channels",FanDuel Sports Network Great Lakes
+https://uzzu.tv/hls/10000007220/12.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network Indiana" tvg-logo="https://uzzu.tv/hls/10000007220/logo/13" group-title="Live-Channels",FanDuel Sports Network Indiana
+https://uzzu.tv/hls/10000007220/13.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network Kansas City" tvg-logo="https://uzzu.tv/hls/10000007220/logo/14" group-title="Live-Channels",FanDuel Sports Network Kansas City
+https://uzzu.tv/hls/10000007220/14.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network Midwest" tvg-logo="https://uzzu.tv/hls/10000007220/logo/15" group-title="Live-Channels",FanDuel Sports Network Midwest
+https://uzzu.tv/hls/10000007220/15.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network New Orleans" tvg-logo="https://uzzu.tv/hls/10000007220/logo/16" group-title="Live-Channels",FanDuel Sports Network New Orleans
+https://uzzu.tv/hls/10000007220/16.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network North" tvg-logo="https://uzzu.tv/hls/10000007220/logo/17" group-title="Live-Channels",FanDuel Sports Network North
+https://uzzu.tv/hls/10000007220/17.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network North +" tvg-logo="https://uzzu.tv/hls/10000007220/logo/18" group-title="Live-Channels",FanDuel Sports Network North +
+https://uzzu.tv/hls/10000007220/18.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network Ohio" tvg-logo="https://uzzu.tv/hls/10000007220/logo/19" group-title="Live-Channels",FanDuel Sports Network Ohio
+https://uzzu.tv/hls/10000007220/19.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network Oklahoma" tvg-logo="https://uzzu.tv/hls/10000007220/logo/20" group-title="Live-Channels",FanDuel Sports Network Oklahoma
+https://uzzu.tv/hls/10000007220/20.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network San Diego" tvg-logo="https://uzzu.tv/hls/10000007220/logo/21" group-title="Live-Channels",FanDuel Sports Network San Diego
+https://uzzu.tv/hls/10000007220/21.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network SoCal" tvg-logo="https://uzzu.tv/hls/10000007220/logo/22" group-title="Live-Channels",FanDuel Sports Network SoCal
+https://uzzu.tv/hls/10000007220/22.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network South" tvg-logo="https://uzzu.tv/hls/10000007220/logo/23" group-title="Live-Channels",FanDuel Sports Network South
+https://uzzu.tv/hls/10000007220/23.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network Southeast" tvg-logo="https://uzzu.tv/hls/10000007220/logo/24" group-title="Live-Channels",FanDuel Sports Network Southeast
+https://uzzu.tv/hls/10000007220/24.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network Sun" tvg-logo="https://uzzu.tv/hls/10000007220/logo/25" group-title="Live-Channels",FanDuel Sports Network Sun
+https://uzzu.tv/hls/10000007220/25.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network West" tvg-logo="https://uzzu.tv/hls/10000007220/logo/26" group-title="Live-Channels",FanDuel Sports Network West
+https://uzzu.tv/hls/10000007220/26.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network Wisconsin" tvg-logo="https://uzzu.tv/hls/10000007220/logo/27" group-title="Live-Channels",FanDuel Sports Network Wisconsin
+https://uzzu.tv/hls/10000007220/27.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network Wisconsin +" tvg-logo="https://uzzu.tv/hls/10000007220/logo/28" group-title="Live-Channels",FanDuel Sports Network Wisconsin +
+https://uzzu.tv/hls/10000007220/28.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network Wisconsin Extra" tvg-logo="https://uzzu.tv/hls/10000007220/logo/29" group-title="Live-Channels",FanDuel Sports Network Wisconsin Extra
+https://uzzu.tv/hls/10000007220/29.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network South +" tvg-logo="https://uzzu.tv/hls/10000007220/logo/30" group-title="Live-Channels",FanDuel Sports Network South +
+https://uzzu.tv/hls/10000007220/30.m3u8
+#EXTINF:0 tvg-id="FanDuel Sports Network Southwest" tvg-logo="https://uzzu.tv/hls/10000007220/logo/31" group-title="Live-Channels",FanDuel Sports Network Southwest
+https://uzzu.tv/hls/10000007220/31.m3u8
+#EXTINF:0 tvg-id="Yes Network" tvg-logo="https://uzzu.tv/hls/10000007220/logo/32" group-title="Live-Channels",Yes Network
+https://uzzu.tv/hls/10000007220/32.m3u8
+#EXTINF:0 tvg-id="MASN" tvg-logo="https://uzzu.tv/hls/10000007220/logo/33" group-title="Live-Channels",MASN
+https://uzzu.tv/hls/10000007220/33.m3u8
+#EXTINF:0 tvg-id="NESN" tvg-logo="https://uzzu.tv/hls/10000007220/logo/35" group-title="Live-Channels",NESN
+https://uzzu.tv/hls/10000007220/35.m3u8
+#EXTINF:0 tvg-id="NESN2" tvg-logo="https://uzzu.tv/hls/10000007220/logo/36" group-title="Live-Channels",NESN2
+https://uzzu.tv/hls/10000007220/36.m3u8
+#EXTINF:0 tvg-id="SportsNet Lakers" tvg-logo="https://uzzu.tv/hls/10000007220/logo/37" group-title="Live-Channels",SportsNet Lakers
+https://uzzu.tv/hls/10000007220/37.m3u8
+#EXTINF:0 tvg-id="SportsNet LA Dodgers" tvg-logo="https://uzzu.tv/hls/10000007220/logo/38" group-title="Live-Channels",SportsNet LA Dodgers
+https://uzzu.tv/hls/10000007220/38.m3u8
+#EXTINF:0 tvg-id="Space City Home" tvg-logo="https://uzzu.tv/hls/10000007220/logo/39" group-title="Live-Channels",Space City Home
+https://uzzu.tv/hls/10000007220/39.m3u8
+#EXTINF:0 tvg-id="AT&T Pittsburgh" tvg-logo="https://uzzu.tv/hls/10000007220/logo/40" group-title="Live-Channels",AT&T Pittsburgh
+https://uzzu.tv/hls/10000007220/40.m3u8
+#EXTINF:0 tvg-id="Altitude Sports" tvg-logo="https://uzzu.tv/hls/10000007220/logo/41" group-title="Live-Channels",Altitude Sports
+https://uzzu.tv/hls/10000007220/41.m3u8
+#EXTINF:0 tvg-id="MSG" tvg-logo="https://uzzu.tv/hls/10000007220/logo/42" group-title="Live-Channels",MSG
+https://uzzu.tv/hls/10000007220/42.m3u8
+#EXTINF:0 tvg-id="MSG+" tvg-logo="https://uzzu.tv/hls/10000007220/logo/43" group-title="Live-Channels",MSG+
+https://uzzu.tv/hls/10000007220/43.m3u8
+#EXTINF:0 tvg-id="TVG Network" tvg-logo="https://uzzu.tv/hls/10000007220/logo/44" group-title="Live-Channels",TVG Network
+https://uzzu.tv/hls/10000007220/44.m3u8
+#EXTINF:0 tvg-id="NBC Sports Bay Area" tvg-logo="https://uzzu.tv/hls/10000007220/logo/45" group-title="Live-Channels",NBC Sports Bay Area
+https://uzzu.tv/hls/10000007220/45.m3u8
+#EXTINF:0 tvg-id="NBC Sports Bay Area+" tvg-logo="https://uzzu.tv/hls/10000007220/logo/46" group-title="Live-Channels",NBC Sports Bay Area+
+https://uzzu.tv/hls/10000007220/46.m3u8
+#EXTINF:0 tvg-id="NBC Sports Boston" tvg-logo="https://uzzu.tv/hls/10000007220/logo/47" group-title="Live-Channels",NBC Sports Boston
+https://uzzu.tv/hls/10000007220/47.m3u8
+#EXTINF:0 tvg-id="NBC Sports California" tvg-logo="https://uzzu.tv/hls/10000007220/logo/48" group-title="Live-Channels",NBC Sports California
+https://uzzu.tv/hls/10000007220/48.m3u8
+#EXTINF:0 tvg-id="NBC Sports California+" tvg-logo="https://uzzu.tv/hls/10000007220/logo/49" group-title="Live-Channels",NBC Sports California+
+https://uzzu.tv/hls/10000007220/49.m3u8
+#EXTINF:0 tvg-id="NBC Sports Chicago" tvg-logo="https://uzzu.tv/hls/10000007220/logo/50" group-title="Live-Channels",NBC Sports Chicago
+https://uzzu.tv/hls/10000007220/50.m3u8
+#EXTINF:0 tvg-id="NBC Sports Philadelphia" tvg-logo="https://uzzu.tv/hls/10000007220/logo/51" group-title="Live-Channels",NBC Sports Philadelphia
+https://uzzu.tv/hls/10000007220/51.m3u8
+#EXTINF:0 tvg-id="NBC Sports Philadelphia+" tvg-logo="https://uzzu.tv/hls/10000007220/logo/52" group-title="Live-Channels",NBC Sports Philadelphia+
+https://uzzu.tv/hls/10000007220/52.m3u8
+#EXTINF:0 tvg-id="Monumental Sports" tvg-logo="https://uzzu.tv/hls/10000007220/logo/53" group-title="Live-Channels",Monumental Sports
+https://uzzu.tv/hls/10000007220/53.m3u8
+#EXTINF:0 tvg-id="USA Network" tvg-logo="https://uzzu.tv/hls/10000007220/logo/54" group-title="Live-Channels",USA Network
+https://uzzu.tv/hls/10000007220/54.m3u8
+#EXTINF:0 tvg-id="ESPN" tvg-logo="https://uzzu.tv/hls/10000007220/logo/55" group-title="Live-Channels",ESPN
+https://uzzu.tv/hls/10000007220/55.m3u8
+#EXTINF:0 tvg-id="ESPN 2" tvg-logo="https://uzzu.tv/hls/10000007220/logo/56" group-title="Live-Channels",ESPN 2
+https://uzzu.tv/hls/10000007220/56.m3u8
+#EXTINF:0 tvg-id="ESPNU" tvg-logo="https://uzzu.tv/hls/10000007220/logo/57" group-title="Live-Channels",ESPNU
+https://uzzu.tv/hls/10000007220/57.m3u8
+#EXTINF:0 tvg-id="Fox Sports 1" tvg-logo="https://uzzu.tv/hls/10000007220/logo/58" group-title="Live-Channels",Fox Sports 1
+https://uzzu.tv/hls/10000007220/58.m3u8
+#EXTINF:0 tvg-id="Fox Sports 2" tvg-logo="https://uzzu.tv/hls/10000007220/logo/59" group-title="Live-Channels",Fox Sports 2
+https://uzzu.tv/hls/10000007220/59.m3u8
+#EXTINF:0 tvg-id="BTN Network" tvg-logo="https://uzzu.tv/hls/10000007220/logo/60" group-title="Live-Channels",BTN Network
+https://uzzu.tv/hls/10000007220/60.m3u8
+#EXTINF:0 tvg-id="NBC SNY" tvg-logo="https://uzzu.tv/hls/10000007220/logo/61" group-title="Live-Channels",NBC SNY
+https://uzzu.tv/hls/10000007220/61.m3u8
+#EXTINF:0 tvg-id="ACCN" tvg-logo="https://uzzu.tv/hls/10000007220/logo/62" group-title="Live-Channels",ACCN
+https://uzzu.tv/hls/10000007220/62.m3u8
+#EXTINF:0 tvg-id="SEC Network" tvg-logo="https://uzzu.tv/hls/10000007220/logo/63" group-title="Live-Channels",SEC Network
+https://uzzu.tv/hls/10000007220/63.m3u8
+#EXTINF:0 tvg-id="Weather Channel" tvg-logo="https://uzzu.tv/hls/10000007220/logo/64" group-title="Live-Channels",Weather Channel
+https://uzzu.tv/hls/10000007220/64.m3u8
+#EXTINF:0 tvg-id="Tennis Channel" tvg-logo="https://uzzu.tv/hls/10000007220/logo/65" group-title="Live-Channels",Tennis Channel
+https://uzzu.tv/hls/10000007220/65.m3u8
+#EXTINF:0 tvg-id="Fox News" tvg-logo="https://uzzu.tv/hls/10000007220/logo/66" group-title="Live-Channels",Fox News
+https://uzzu.tv/hls/10000007220/66.m3u8
+#EXTINF:0 tvg-id="Fox Business" tvg-logo="https://uzzu.tv/hls/10000007220/logo/67" group-title="Live-Channels",Fox Business
+https://uzzu.tv/hls/10000007220/67.m3u8
+#EXTINF:0 tvg-id="CNN News" tvg-logo="https://uzzu.tv/hls/10000007220/logo/68" group-title="Live-Channels",CNN News
+https://uzzu.tv/hls/10000007220/68.m3u8
+#EXTINF:0 tvg-id="CNBC" tvg-logo="https://uzzu.tv/hls/10000007220/logo/69" group-title="Live-Channels",CNBC
+https://uzzu.tv/hls/10000007220/69.m3u8
+#EXTINF:0 tvg-id="MSNBC" tvg-logo="https://uzzu.tv/hls/10000007220/logo/70" group-title="Live-Channels",MSNBC
+https://uzzu.tv/hls/10000007220/70.m3u8
+#EXTINF:0 tvg-id="CBS" tvg-logo="https://uzzu.tv/hls/10000007220/logo/71" group-title="Live-Channels",CBS
+https://uzzu.tv/hls/10000007220/71.m3u8
+#EXTINF:0 tvg-id="TruTV East" tvg-logo="https://uzzu.tv/hls/10000007220/logo/72" group-title="Live-Channels",TruTV East
+https://uzzu.tv/hls/10000007220/72.m3u8
+#EXTINF:0 tvg-id="Animal Planet East" tvg-logo="https://uzzu.tv/hls/10000007220/logo/73" group-title="Live-Channels",Animal Planet East
+https://uzzu.tv/hls/10000007220/73.m3u8
+#EXTINF:0 tvg-id="Discovery Science" tvg-logo="https://uzzu.tv/hls/10000007220/logo/74" group-title="Live-Channels",Discovery Science
+https://uzzu.tv/hls/10000007220/74.m3u8
+#EXTINF:0 tvg-id="History Channel" tvg-logo="https://uzzu.tv/hls/10000007220/logo/75" group-title="Live-Channels",History Channel
+https://uzzu.tv/hls/10000007220/75.m3u8
+#EXTINF:0 tvg-id="Discovery Channel" tvg-logo="https://uzzu.tv/hls/10000007220/logo/76" group-title="Live-Channels",Discovery Channel
+https://uzzu.tv/hls/10000007220/76.m3u8
+#EXTINF:0 tvg-id="Nickelodeon" tvg-logo="https://uzzu.tv/hls/10000007220/logo/77" group-title="Live-Channels",Nickelodeon
+https://uzzu.tv/hls/10000007220/77.m3u8
+#EXTINF:0 tvg-id="Cartoon Network" tvg-logo="https://uzzu.tv/hls/10000007220/logo/78" group-title="Live-Channels",Cartoon Network
+https://uzzu.tv/hls/10000007220/78.m3u8
+#EXTINF:0 tvg-id="A&E NETWORK" tvg-logo="https://uzzu.tv/hls/10000007220/logo/79" group-title="Live-Channels",A&E NETWORK
+https://uzzu.tv/hls/10000007220/79.m3u8
+#EXTINF:0 tvg-id="TSN 1" tvg-logo="https://uzzu.tv/hls/10000007220/logo/80" group-title="Live-Channels",TSN 1
+https://uzzu.tv/hls/10000007220/80.m3u8
+#EXTINF:0 tvg-id="TSN 2" tvg-logo="https://uzzu.tv/hls/10000007220/logo/81" group-title="Live-Channels",TSN 2
+https://uzzu.tv/hls/10000007220/81.m3u8
+#EXTINF:0 tvg-id="TSN 3" tvg-logo="https://uzzu.tv/hls/10000007220/logo/82" group-title="Live-Channels",TSN 3
+https://uzzu.tv/hls/10000007220/82.m3u8
+#EXTINF:0 tvg-id="TSN 4" tvg-logo="https://uzzu.tv/hls/10000007220/logo/83" group-title="Live-Channels",TSN 4
+https://uzzu.tv/hls/10000007220/83.m3u8
+#EXTINF:0 tvg-id="TSN 5" tvg-logo="https://uzzu.tv/hls/10000007220/logo/84" group-title="Live-Channels",TSN 5
+https://uzzu.tv/hls/10000007220/84.m3u8
+#EXTINF:0 tvg-id="Star Sports Hindi" tvg-logo="https://uzzu.tv/hls/10000007220/logo/85" group-title="Live-Channels",Star Sports Hindi
+https://uzzu.tv/hls/10000007220/85.m3u8
+#EXTINF:0 tvg-id="Star Sports 2" tvg-logo="https://uzzu.tv/hls/10000007220/logo/86" group-title="Live-Channels",Star Sports 2
+https://uzzu.tv/hls/10000007220/86.m3u8
+#EXTINF:0 tvg-id="Star Sports 1" tvg-logo="https://uzzu.tv/hls/10000007220/logo/87" group-title="Live-Channels",Star Sports 1
+https://uzzu.tv/hls/10000007220/87.m3u8
+#EXTINF:0 tvg-id="Willow Cricket" tvg-logo="https://uzzu.tv/hls/10000007220/logo/88" group-title="Live-Channels",Willow Cricket
+https://uzzu.tv/hls/10000007220/88.m3u8
+#EXTINF:0 tvg-id="Sky Sports Cricket" tvg-logo="https://uzzu.tv/hls/10000007220/logo/89" group-title="Live-Channels",Sky Sports Cricket
+https://uzzu.tv/hls/10000007220/89.m3u8
+#EXTINF:0 tvg-id="SuperSport" tvg-logo="https://uzzu.tv/hls/10000007220/logo/90" group-title="Live-Channels",SuperSport
+https://uzzu.tv/hls/10000007220/90.m3u8
+#EXTINF:0 tvg-id="Astro Cricket" tvg-logo="https://uzzu.tv/hls/10000007220/logo/91" group-title="Live-Channels",Astro Cricket
+https://uzzu.tv/hls/10000007220/91.m3u8
+#EXTINF:0 tvg-id="Golf Channel" tvg-logo="https://uzzu.tv/hls/10000007220/logo/92" group-title="Live-Channels",Golf Channel
+https://uzzu.tv/hls/10000007220/92.m3u8
+#EXTINF:0 tvg-id="Sky Sports Golf" tvg-logo="https://uzzu.tv/hls/10000007220/logo/93" group-title="Live-Channels",Sky Sports Golf
+https://uzzu.tv/hls/10000007220/93.m3u8
+#EXTINF:0 tvg-id="Premier Sports" tvg-logo="https://uzzu.tv/hls/10000007220/logo/94" group-title="Live-Channels",Premier Sports
+https://uzzu.tv/hls/10000007220/94.m3u8
+#EXTINF:0 tvg-id="HGTV" tvg-logo="https://uzzu.tv/hls/10000007220/logo/95" group-title="Live-Channels",HGTV
+https://uzzu.tv/hls/10000007220/95.m3u8
+#EXTINF:0 tvg-id="beIN USA" tvg-logo="https://uzzu.tv/hls/10000007220/logo/96" group-title="Live-Channels",beIN USA
+https://uzzu.tv/hls/10000007220/96.m3u8
+#EXTINF:0 tvg-id="TBS" tvg-logo="https://uzzu.tv/hls/10000007220/logo/97" group-title="Live-Channels",TBS
+https://uzzu.tv/hls/10000007220/97.m3u8
+#EXTINF:0 tvg-id="Tampa Bay Rays @ Cleveland Guardians" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t40" group-title="MLB-Replays",Tampa Bay Rays @ Cleveland Guardians
+https://uzzu.tv/hls/10000007220/r8329.m3u8
+#EXTINF:0 tvg-id="Dallas Cowboys @ Green Bay Packers" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t12" group-title="NFL-Replays",Dallas Cowboys @ Green Bay Packers
+https://uzzu.tv/hls/10000007220/r2371.m3u8
+#EXTINF:0 tvg-id="Buffalo Bills @ Las Vegas Raiders" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t17" group-title="NFL-Replays",Buffalo Bills @ Las Vegas Raiders
+https://uzzu.tv/hls/10000007220/r2370.m3u8
+#EXTINF:0 tvg-id="Los Angeles Chargers @ Kansas City Chiefs" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t16" group-title="NFL-Replays",Los Angeles Chargers @ Kansas City Chiefs
+https://uzzu.tv/hls/10000007220/r2369.m3u8
+#EXTINF:0 tvg-id="Arizona Cardinals @ Los Angeles Rams" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t19" group-title="NFL-Replays",Arizona Cardinals @ Los Angeles Rams
+https://uzzu.tv/hls/10000007220/r2368.m3u8
+#EXTINF:0 tvg-id="Pittsburgh Steelers @ Tampa Bay Buccaneers" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t30" group-title="NFL-Replays",Pittsburgh Steelers @ Tampa Bay Buccaneers
+https://uzzu.tv/hls/10000007220/r2367.m3u8
+#EXTINF:0 tvg-id="Tampa Bay Rays @ Cleveland Guardians" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t40" group-title="MLB-Replays",Tampa Bay Rays @ Cleveland Guardians
+https://uzzu.tv/hls/10000007220/r8311.m3u8
+#EXTINF:0 tvg-id="Milwaukee Brewers @ Los Angeles Dodgers" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t46" group-title="MLB-Replays",Milwaukee Brewers @ Los Angeles Dodgers
+https://uzzu.tv/hls/10000007220/r8237.m3u8
+#EXTINF:0 tvg-id="Tampa Bay Rays @ Cleveland Guardians" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t40" group-title="MLB-Replays",Tampa Bay Rays @ Cleveland Guardians
+https://uzzu.tv/hls/10000007220/r8310.m3u8
+#EXTINF:0 tvg-id="Milwaukee Brewers @ Los Angeles Dodgers" tvg-logo="https://uzzu.tv/hls/10000007220/logo/t46" group-title="MLB-Replays",Milwaukee Brewers @ Los Angeles Dodgers
+https://uzzu.tv/hls/10000007220/r8236.m3u8

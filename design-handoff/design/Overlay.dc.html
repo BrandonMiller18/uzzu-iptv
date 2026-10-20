@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Player overlay</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wdth,wght@75..100,400..700&amp;family=Roboto+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1920px; height: 1080px; position: relative; overflow: hidden; background: #000000; color: #E6F0F2; font-family: Roboto, sans-serif">
+  <img src="/_blob/ebc05e7a81b192aeb89d5699ec7d1158" alt="" aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; display: block">
+
+  <div role="dialog" aria-label="Switch stream" style="position: absolute; left: 0; top: 0; width: 768px; height: 1080px; box-sizing: border-box; padding: 54px 40px 54px 96px; background: rgba(0, 0, 0, 0.75); border-right: 2px solid #3A1E4F; display: flex; flex-direction: column; gap: 20px">
+
+    <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE; letter-spacing: 2px">// SWITCH SIGNAL</span>
+
+    <div role="tablist" aria-label="League" style="display: flex; align-items: center; gap: 4px">
+      <sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
+        <button role="tab" aria-selected="{{t.selected}}" style="height: 56px; padding: 0 16px; box-sizing: border-box; border: 0; background: {{t.bg}}; color: {{t.color}}; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); font-family: Roboto, sans-serif; font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase; white-space: nowrap">{{t.label}}</button>
+      </sc-for>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+        <sc-if value="{{r.isItem}}" hint-placeholder-val="{{ true }}">
+          <button style="width: 100%; height: 96px; padding: {{r.bw}}; border: 0; background: {{r.border}}; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px)); transform: {{r.transform}}; font-family: Roboto, sans-serif">
+            <span style="width: 100%; height: 100%; box-sizing: border-box; padding: 0 20px; background: {{r.bg}}; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); color: #E6F0F2; text-align: left; display: flex; flex-direction: column; justify-content: center">
+              <span style="display: flex; flex-direction: column; opacity: {{r.opacity}}; min-width: 0; width: 100%">
+                <span style="font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.title}}</span>
+                <span style="display: flex; align-items: center; gap: 12px">
+                  <sc-if value="{{r.live}}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size: 24px; line-height: 28px; font-weight: 800; font-stretch: 80%; letter-spacing: 2px; padding: 0 12px 0 10px; background: {{accent}}; color: #000000; clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 0 100%); display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; background: #000000"></span>LIVE</span>
+                  </sc-if>
+                  <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: {{r.detailColor}}">{{r.detail}}</span>
+                  <sc-if value="{{r.playing}}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size: 24px; line-height: 28px; font-weight: 800; font-stretch: 80%; letter-spacing: 2px; padding: 0 10px; background: #B0186E; color: #E6F0F2; clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 0 100%)">PLAYING</span>
+                  </sc-if>
+                </span>
+              </span>
+            </span>
+          </button>
+        </sc-if>
+        <sc-if value="{{r.isToggle}}" hint-placeholder-val="{{ false }}">
+          <button aria-label="Feed: Home. Select to switch to Away" style="width: 100%; height: 72px; box-sizing: border-box; padding: 0 12px 0 44px; border: 0; background: transparent; color: #E6F0F2; font-family: Roboto, sans-serif; display: flex; align-items: center; justify-content: space-between">
+            <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">└ FEED</span>
+            <span style="display: flex; gap: 4px; padding: 2px; background: #3A1E4F; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px)">
+              <span style="padding: 4px 20px; background: #B0186E; color: #E6F0F2; font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase">Home</span>
+              <span style="padding: 4px 20px; background: #000000; color: #A99BBE; font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase">Away</span>
+            </span>
+          </button>
+        </sc-if>
+      </sc-for>
+    </div>
+
+    <div style="flex: 1"></div>
+    <button style="width: 100%; height: 72px; box-sizing: border-box; padding: 0 20px; border: 0; border-top: 2px solid #3A1E4F; background: transparent; color: #E6F0F2; font-family: Roboto, sans-serif; font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase; text-align: left; display: flex; align-items: center; gap: 16px">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E6F0F2" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+      Exit to menu
+    </button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#F5E50A","options":["#F5E50A","#00E5FF","#FF2E88"]},"$preview":{"width":1920,"height":1080}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#F5E50A';
+    const labels = ['All', 'MLB', 'NHL', 'NFL', 'Ungrouped'];
+    const items = [
+      { title: 'Pittsburgh Penguins @ Utah Mammoth', detail: 'FINAL', final: true },
+      { title: 'Cleveland Guardians @ Tampa Bay Rays', detail: 'TOP 5TH', live: true },
+      { title: 'Anaheim Ducks @ New York Rangers', detail: '2ND 8:14', live: true },
+      { title: 'Washington Commanders @ San Francisco 49ers', detail: '7:15 PM', playing: true, focused: true },
+      { toggle: true },
+      { title: 'Special Event Feed', detail: '' }
+    ];
+    return {
+      accent: accent,
+      tabs: labels.map((label, i) => ({
+        label: label,
+        selected: i === 0 ? 'true' : 'false',
+        bg: i === 0 ? '#B0186E' : 'transparent',
+        color: i === 0 ? '#E6F0F2' : '#A99BBE'
+      })),
+      rows: items.map((it) => ({
+        isItem: !it.toggle,
+        isToggle: !!it.toggle,
+        title: it.title || '',
+        detail: it.detail || '',
+        live: !!it.live,
+        playing: !!it.playing,
+        detailColor: it.final ? '#E6F0F2' : '#A99BBE',
+        opacity: it.final ? 0.4 : 1,
+        border: it.focused ? accent : 'transparent',
+        bw: it.focused ? '6px' : '0px',
+        bg: it.focused ? '#0E0E11' : 'transparent',
+        transform: it.focused ? 'scale(1.05)' : 'none'
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

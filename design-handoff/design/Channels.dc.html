@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Channels list</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wdth,wght@75..100,400..700&amp;family=Roboto+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1920px; height: 1080px; box-sizing: border-box; padding: 54px 96px; background: #000000; color: #E6F0F2; font-family: Roboto, sans-serif; display: flex; flex-direction: column; gap: 28px">
+
+  <div style="display: flex; align-items: flex-end; justify-content: space-between; padding-bottom: 20px; border-bottom: 2px solid #3A1E4F">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE; letter-spacing: 2px">02 // CHANNELS</span>
+      <h1 style="margin: 0; font-size: 40px; line-height: 48px; font-weight: 800; font-stretch: 75%; letter-spacing: 4px; text-transform: uppercase">Live Channels</h1>
+    </div>
+    <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">LAST SYNC 6:42 PM</span>
+  </div>
+
+  <div role="tablist" aria-label="Channel group" style="display: flex; align-items: center; gap: 4px">
+    <sc-for list="{{tabs}}" as="t" hint-placeholder-count="8">
+      <button role="tab" aria-selected="{{t.selected}}" style="height: 56px; padding: 0 18px; box-sizing: border-box; border: 0; background: {{t.bg}}; color: {{t.color}}; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); font-family: Roboto, sans-serif; font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase; white-space: nowrap">{{t.label}}</button>
+    </sc-for>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 48px; row-gap: 24px">
+    <sc-for list="{{channels}}" as="c" hint-placeholder-count="10">
+      <dc-import name="ChannelRow" channel="{{c.name}}" index="{{c.index}}" focused="{{c.focused}}" accent="{{accent}}" hint-size="840px,104px"></dc-import>
+    </sc-for>
+  </div>
+
+  <div style="flex: 1"></div>
+  <div style="display: flex; gap: 40px; font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">
+    <span style="display: flex; align-items: center; gap: 12px"><span style="border: 2px solid #3A1E4F; padding: 0 10px; color: #E6F0F2">OK</span>PLAY CHANNEL</span>
+    <span style="display: flex; align-items: center; gap: 12px"><span style="border: 2px solid #3A1E4F; padding: 0 10px; color: #E6F0F2">BACK</span>HOME</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#F5E50A","options":["#F5E50A","#00E5FF","#FF2E88"]},"$preview":{"width":1920,"height":1080}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const labels = ['All', 'League Networks', 'National Sports', 'College Sports', 'Regional Sports', 'International', 'News and Entertainment', 'Other'];
+    const names = ['FanDuel Sports Network Wisconsin Extra', 'NFL Network', 'Red Zone', 'ESPN', 'Fox Sports 1', 'SEC Network', 'Marquee Network', 'NBC Sports Bay Area+', 'TSN 1', 'Weather Channel'];
+    return {
+      accent: this.props.accent ?? '#F5E50A',
+      tabs: labels.map((label, i) => ({
+        label: label,
+        selected: i === 0 ? 'true' : 'false',
+        bg: i === 0 ? '#B0186E' : 'transparent',
+        color: i === 0 ? '#E6F0F2' : '#A99BBE'
+      })),
+      channels: names.map((name, i) => ({ name: name, index: String(i + 1).padStart(2, '0'), focused: i === 0 }))
+    };
+  }
+}
+</script>
+</body>
+</html>

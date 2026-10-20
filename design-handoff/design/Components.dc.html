@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Component states</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wdth,wght@75..100,400..700&amp;family=Roboto+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1920px; height: 1800px; box-sizing: border-box; padding: 54px 96px; background: #000000; color: #E6F0F2; font-family: Roboto, sans-serif; display: flex; flex-direction: column; gap: 56px">
+
+  <div style="display: flex; flex-direction: column; gap: 4px; padding-bottom: 20px; border-bottom: 2px solid #3A1E4F">
+    <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE; letter-spacing: 2px">// SPEC</span>
+    <h1 style="margin: 0; font-size: 40px; line-height: 48px; font-weight: 800; font-stretch: 75%; letter-spacing: 4px; text-transform: uppercase">Component states</h1>
+  </div>
+
+  <section style="display: flex; flex-direction: column; gap: 16px">
+    <h2 style="margin: 0; font-size: 32px; line-height: 40px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase">Game card <span style="font-family: 'Roboto Mono', monospace; font-weight: 400; font-size: 24px; color: #A99BBE; letter-spacing: 0; text-transform: none">tv.material3 Card · CutCornerShape</span></h2>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 48px; font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">
+      <span>UNFOCUSED · 2 px outline</span>
+      <span>FOCUSED · scale 1.05 · 6 px accent</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 32px">
+      <sc-for list="{{states}}" as="s" hint-placeholder-count="4">
+        <div style="display: flex; flex-direction: column; gap: 12px">
+          <span style="font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase">{{s.label}}</span>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 48px">
+            <dc-import name="GameCard" away="{{s.away}}" home="{{s.home}}" league="{{s.league}}" status="{{s.status}}" detail="{{s.detail}}" focused="{{ false }}" accent="{{accent}}" hint-size="840px,188px"></dc-import>
+            <dc-import name="GameCard" away="{{s.away}}" home="{{s.home}}" league="{{s.league}}" status="{{s.status}}" detail="{{s.detail}}" focused="{{ true }}" accent="{{accent}}" hint-size="840px,188px"></dc-import>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 16px">
+    <h2 style="margin: 0; font-size: 32px; line-height: 40px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase">Channel row <span style="font-family: 'Roboto Mono', monospace; font-weight: 400; font-size: 24px; color: #A99BBE; letter-spacing: 0; text-transform: none">tv.material3 ListItem</span></h2>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 48px">
+      <dc-import name="ChannelRow" channel="FanDuel Sports Network Wisconsin Extra" index="01" focused="{{ false }}" accent="{{accent}}" hint-size="840px,104px"></dc-import>
+      <dc-import name="ChannelRow" channel="FanDuel Sports Network Wisconsin Extra" index="01" focused="{{ true }}" accent="{{accent}}" hint-size="840px,104px"></dc-import>
+    </div>
+  </section>
+
+  <section style="display: flex; gap: 120px">
+    <div style="display: flex; flex-direction: column; gap: 16px">
+      <h2 style="margin: 0; font-size: 32px; line-height: 40px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase">Tab</h2>
+      <div style="display: flex; gap: 40px; align-items: flex-start">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 12px">
+          <button role="tab" aria-selected="true" style="height: 56px; padding: 0 22px; box-sizing: border-box; border: 0; background: #B0186E; color: #E6F0F2; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); font-family: Roboto, sans-serif; font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase">NHL</button>
+          <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">SELECTED</span>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 12px">
+          <button role="tab" aria-selected="false" style="height: 56px; padding: 0 22px; box-sizing: border-box; border: 0; background: transparent; color: #A99BBE; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); font-family: Roboto, sans-serif; font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase">NHL</button>
+          <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">UNSELECTED</span>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 12px">
+          <button role="tab" aria-selected="true" style="height: 56px; padding: 6px; border: 0; background: {{accent}}; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); transform: scale(1.05); font-family: Roboto, sans-serif">
+            <span style="height: 44px; padding: 0 16px; box-sizing: border-box; background: #B0186E; color: #E6F0F2; clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px); font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase; display: flex; align-items: center">NHL</span>
+          </button>
+          <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">FOCUSED</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 16px">
+      <h2 style="margin: 0; font-size: 32px; line-height: 40px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase">Button</h2>
+      <div style="display: flex; gap: 40px; align-items: flex-start">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 12px">
+          <button style="padding: 2px; border: 0; background: #3A1E4F; clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px); font-family: Roboto, sans-serif">
+            <span style="height: 60px; padding: 0 48px; box-sizing: border-box; background: #0E0E11; clip-path: polygon(13px 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%, 0 13px); color: #E6F0F2; font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase; display: flex; align-items: center">Retry</span>
+          </button>
+          <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">UNFOCUSED</span>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 12px">
+          <button style="padding: 6px; border: 0; background: {{accent}}; clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px); transform: scale(1.05); font-family: Roboto, sans-serif">
+            <span style="height: 56px; padding: 0 44px; box-sizing: border-box; background: #0E0E11; clip-path: polygon(11px 0, 100% 0, 100% calc(100% - 11px), calc(100% - 11px) 100%, 0 100%, 0 11px); color: #E6F0F2; font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase; display: flex; align-items: center">Retry</span>
+          </button>
+          <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">FOCUSED</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#F5E50A","options":["#F5E50A","#00E5FF","#FF2E88"]},"$preview":{"width":1920,"height":1800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      accent: this.props.accent ?? '#F5E50A',
+      states: [
+        { label: 'Scheduled', away: 'Washington Commanders', home: 'San Francisco 49ers', league: 'NFL', status: 'scheduled', detail: '7:15 PM' },
+        { label: 'Live', away: 'Anaheim Ducks', home: 'New York Rangers', league: 'NHL', status: 'live', detail: '2nd 8:14' },
+        { label: 'Final · content 40%, focus border 100%', away: 'Pittsburgh Penguins', home: 'Utah Mammoth', league: 'NHL', status: 'final', detail: 'Final' },
+        { label: 'Ungrouped · no time', away: 'Special Event Feed', home: '', league: '', status: 'ungrouped', detail: '' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

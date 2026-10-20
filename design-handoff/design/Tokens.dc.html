@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Design tokens</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wdth,wght@75..100,400..700&amp;family=Roboto+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1920px; height: 1200px; box-sizing: border-box; padding: 54px 96px; background: #000000; color: #E6F0F2; font-family: Roboto, sans-serif; display: flex; flex-direction: column; gap: 36px">
+
+  <div style="display: flex; align-items: flex-end; justify-content: space-between; padding-bottom: 20px; border-bottom: 2px solid #3A1E4F">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE; letter-spacing: 2px">// SPEC</span>
+      <h1 style="margin: 0; font-size: 40px; line-height: 48px; font-weight: 800; font-stretch: 75%; letter-spacing: 4px; text-transform: uppercase">Tokens</h1>
+    </div>
+    <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">PX ÷ 2 = DP/SP · 1080p xhdpi = 960 × 540 dp</span>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 80px">
+
+    <section style="display: flex; flex-direction: column; gap: 14px">
+      <h2 style="margin: 0; font-size: 32px; line-height: 40px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase">Color</h2>
+      <sc-for list="{{colors}}" as="c" hint-placeholder-count="10">
+        <div style="display: flex; align-items: center; gap: 20px">
+          <div style="width: 56px; height: 56px; flex: none; box-sizing: border-box; background: {{c.swatch}}; border: 2px solid #3A1E4F; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%)"></div>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+            <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 30px; font-weight: 500">{{c.name}}</span>
+            <span style="font-size: 24px; line-height: 30px; color: #A99BBE">{{c.use}}</span>
+          </div>
+          <span style="flex: none; font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px">{{c.code}}</span>
+        </div>
+      </sc-for>
+    </section>
+
+    <div style="display: flex; flex-direction: column; gap: 36px">
+      <section style="display: flex; flex-direction: column; gap: 12px">
+        <h2 style="margin: 0; font-size: 32px; line-height: 40px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase">Type · Roboto (wdth axis), Roboto Mono</h2>
+        <sc-for list="{{type}}" as="t" hint-placeholder-count="6">
+          <div style="display: grid; grid-template-columns: 180px minmax(0, 1fr) 330px; column-gap: 20px; align-items: baseline; font-size: 24px; line-height: 32px">
+            <span style="font-family: 'Roboto Mono', monospace; font-weight: 500">{{t.name}}</span>
+            <span style="color: #A99BBE">{{t.use}}</span>
+            <span style="font-family: 'Roboto Mono', monospace; text-align: right">{{t.spec}}</span>
+          </div>
+        </sc-for>
+      </section>
+
+      <section style="display: flex; flex-direction: column; gap: 12px">
+        <h2 style="margin: 0; font-size: 32px; line-height: 40px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase">Shape, spacing, focus</h2>
+        <sc-for list="{{rules}}" as="r" hint-placeholder-count="7">
+          <div style="display: grid; grid-template-columns: 180px minmax(0, 1fr); column-gap: 20px; font-size: 24px; line-height: 32px">
+            <span style="font-family: 'Roboto Mono', monospace; font-weight: 500">{{r.name}}</span>
+            <span style="font-family: 'Roboto Mono', monospace; color: #E6F0F2">{{r.value}}</span>
+          </div>
+        </sc-for>
+      </section>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#F5E50A","options":["#F5E50A","#00E5FF","#FF2E88"]},"$preview":{"width":1920,"height":1200}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#F5E50A';
+    const argb = 'FF' + accent.replace('#', '').toUpperCase();
+    return {
+      colors: [
+        { name: 'background', use: 'Screen ground, logo slot, text on accent', swatch: '#000000', code: '0xFF000000' },
+        { name: 'surface', use: 'Cards, rows, buttons, dialog', swatch: '#0E0E11', code: '0xFF0E0E11' },
+        { name: 'outline', use: 'Violet frames, rules, key chips', swatch: '#3A1E4F', code: '0xFF3A1E4F' },
+        { name: 'scrim', use: 'Tune banner, dialog backdrop', swatch: 'rgba(0, 0, 0, 0.88)', code: '0xE0000000' },
+        { name: 'overlayScrim', use: 'Player overlay panel (O1)', swatch: 'rgba(0, 0, 0, 0.75)', code: '0xBF000000' },
+        { name: 'textPrimary', use: 'Names, titles, values', swatch: '#E6F0F2', code: '0xFFE6F0F2' },
+        { name: 'textSecondary', use: 'Mono tags, times, hints, logo icon', swatch: '#A99BBE', code: '0xFFA99BBE' },
+        { name: 'active', use: 'Selected tab, active feed, Playing, tuned bar', swatch: '#B0186E', code: '0xFFB0186E' },
+        { name: 'accent', use: 'Focus border and LIVE marker only', swatch: accent, code: '0x' + argb },
+        { name: 'error', use: 'Error tag, icon, failing values', swatch: '#FF5A36', code: '0xFFFF5A36' }
+      ],
+      type: [
+        { name: 'display', use: 'Screen, tile titles', spec: '40/48 800 w75 +4 CAPS' },
+        { name: 'title', use: 'Dialog, banner', spec: '32/40 700 w80 +2 CAPS' },
+        { name: 'bodyLarge', use: 'Team, channel names', spec: '28/36 600 w85 +1 CAPS' },
+        { name: 'body', use: 'Sentences, subtitles', spec: '24/32 400 w100' },
+        { name: 'label', use: 'Tabs, buttons, LIVE', spec: '24/32 700 w80 +2 CAPS' },
+        { name: 'mono', use: 'Tags, times, diagnostics', spec: '24/32 Mono 400–700' }
+      ],
+      rules: [
+        { name: 'cut.sm', value: '8–10 · LIVE chip, tabs' },
+        { name: 'cut.md', value: '14–18 · buttons, rows, banner' },
+        { name: 'cut.lg', value: '24–40 · cards, dialog, tiles' },
+        { name: 'spacing', value: '4 8 12 16 24 32 48 64' },
+        { name: 'safe area', value: '96 horizontal · 54 vertical' },
+        { name: 'focus', value: 'scale 1.05 · 6 accent border' },
+        { name: 'motion', value: 'fade 150 ms · banner holds 3 s' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
