@@ -41,6 +41,8 @@ Requires JDK 17 and the Android SDK (platform 36). From the repo root:
 ./gradlew testDebugUnitTest lintDebug assembleDebug   # what CI runs
 ./gradlew recordRoborazziDebug                         # JVM screenshots -> app/build/outputs/roborazzi/
 adb install -r app/build/outputs/apk/debug/app-debug.apk
+./gradlew assembleBench                                # release code, debug key: use for perf timing
+adb shell am start -n com.bmiller.uzzu/.MainActivity --ez uzzu.fixture true   # debug: fake playlist + ESPN data
 ```
 
 Version: `-PversionName=1.2.3` (and optionally `-PversionCode=10203`); defaults to 0.1.0.

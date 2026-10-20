@@ -4,7 +4,7 @@ title: App wiring and playlist data flow
 description: Manual DI through AppContainer and how the playlist goes from URL to the in-memory model.
 resource: app/src/main/java/com/bmiller/uzzu/AppContainer.kt
 tags: [architecture, data]
-generated: {by: claude/opus-5.5, at: 2026-10-20T06:30:00Z}
+generated: {by: claude/opus-5.5, at: 2026-10-20T12:00:00Z}
 ---
 - **Manual DI**: `UzzuApp` builds one `AppContainer` in `onCreate`; activities reach it via
   `(application as UzzuApp).container`. No Hilt/Koin: one module, a handful of singletons.
@@ -23,5 +23,7 @@ generated: {by: claude/opus-5.5, at: 2026-10-20T06:30:00Z}
 - Bundled assets (teams.json, channel_groups.json) are parsed lazily on first use, inside the
   playlist fetch's IO dispatcher, not on the main thread at startup.
 - First-run `saveAndLoad` validates by fetching and parsing *before* saving the URL.
-- M1 navigation is a plain `Screen` state machine in `MainActivity` (Setup / List / Player);
-  the real S1–S7 screens arrive in M3.
+- Since M3, `MainActivity` only adapts repositories into `AppState`/`AppActions`; routing and
+  screens are in [UI navigation](/architecture/ui-navigation.md). The M1 debug list is gone.
+- Debug builds add `FixtureInterceptor` to the shared OkHttpClient; it is inert unless fixture
+  mode is on ([Fire TV testing](/guides/fire-tv-testing.md)).

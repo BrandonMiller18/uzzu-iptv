@@ -5,7 +5,7 @@ description: Why and how the account-bearing playlist URL is kept out of source,
 resource: app/src/main/java/com/bmiller/uzzu/log/SecretMasker.kt
 status: stable
 tags: [security]
-generated: {by: claude/opus-5.5, at: 2026-10-20T00:00:00Z}
+generated: {by: claude/opus-5.5, at: 2026-10-20T12:00:00Z}
 ---
 **Context**: The repo is public. The playlist URL carries the user's email and uzzu account id,
 every stream URL carries the account id, and Fastly away-feed URLs carry an `expiry~hash` token.
@@ -22,6 +22,11 @@ every stream URL carries the account id, and Fastly away-feed URLs carry an `exp
 - The test fixture `sample.m3u` is a scrubbed copy of a real playlist: account id, email and Fastly
   hashes replaced with fakes, so parser tests use realistic data without leaking anything. Real
   playlists are never committed; `.gitignore` blocks `*.m3u`, `*.m3u8`, keystores and `signing.properties`.
+
+- S7 shows the URL only through `maskPlaylistUrlForDisplay`: host, last path segment and query
+  *names*; middle path segments, query values (except `type`/`output`), userinfo, emails and digit
+  runs become dots. S7 screenshots are safe to share, but the edit dialog is prefilled
+  with the real, unmasked URL: never screenshot or log it with the dialog open.
 
 **Rejected**: a BuildConfig field or CI secret for the URL. It would be baked into public APKs.
 
