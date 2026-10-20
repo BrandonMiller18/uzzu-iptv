@@ -7,6 +7,16 @@ import com.bmiller.uzzu.data.PlaylistRepository
 import com.bmiller.uzzu.data.Settings
 import com.bmiller.uzzu.log.AppLogger
 import com.bmiller.uzzu.player.PlayerController
+import com.bmiller.uzzu.playlist.ChannelGrouper
+import com.bmiller.uzzu.schedule.EspnScheduleSource
+import com.bmiller.uzzu.schedule.LeagueClassifier
+import com.bmiller.uzzu.schedule.PlaylistClassifier
+import com.bmiller.uzzu.schedule.ScheduleMatcher
+import com.bmiller.uzzu.schedule.ScheduleRepository
+import com.bmiller.uzzu.schedule.TeamDictionary
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import okhttp3.OkHttpClient
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -37,7 +47,26 @@ class AppContainer(context: Context) {
 
     val settings = Settings(app.dataStore)
 
-    val playlistRepository = PlaylistRepository(okHttp, settings, logger)
+    /** Process-lifetime scope for background work (schedule polling). */
+    val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    private fun asset(name: String) = app.assets.open(name).bufferedReader().use { it.readText() }
+
+    // Bundled assets, parsed on first use (from the IO dispatcher inside the playlist fetch).
+    val teamDictionary by lazy { TeamDictionary.parse(asset("teams.json")) }
+    private val channelGrouper by lazy { ChannelGrouper.parse(asset("channel_groups.json")) }
+    private val playlistClassifier by lazy { PlaylistClassifier(LeagueClassifier(teamDictionary), channelGrouper) }
+
+    val playlistRepository = PlaylistRepository(okHttp, settings, logger, classify = { playlistClassifier.classify(it) })
+
+    /** Games/channels merged with ESPN start time + status. The UI reads [ScheduleRepository.model]. */
+    val scheduleRepository = ScheduleRepository(
+        playlistState = playlistRepository.state,
+        source = EspnScheduleSource(okHttp),
+        matcher = ScheduleMatcher(lazy { teamDictionary }) { logger.w("Schedule", it) },
+        logger = logger,
+        scope = appScope,
+    )
 
     val player = PlayerController(app, okHttp, logger)
 }

@@ -17,6 +17,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bmiller.uzzu.data.PlaylistState
 import com.bmiller.uzzu.log.SecretMasker
@@ -66,7 +67,8 @@ class MainActivity : ComponentActivity() {
         var focus by remember { mutableStateOf<DebugFocus?>(null) }
         val listState = rememberLazyListState()
         val scope = rememberCoroutineScope()
-        val state by repo.state.collectAsStateWithLifecycle()
+        // Playlist merged with league/start time/status; polled from ESPN while the list is visible.
+        val state by container.scheduleRepository.model.collectAsStateWithLifecycle()
 
         LaunchedEffect(Unit) {
             if (BuildConfig.DEBUG) ingestDebugPlaylistUrl()
@@ -93,6 +95,10 @@ class MainActivity : ComponentActivity() {
                 }
 
                 Screen.List -> {
+                    LifecycleStartEffect(Unit) {
+                        val polling = container.scheduleRepository.startPolling()
+                        onStopOrDispose { polling.close() }
+                    }
                     val loaded = state as? PlaylistState.Loaded
                     val status = when (val st = state) {
                         PlaylistState.Idle, PlaylistState.Loading -> "LOADING"
