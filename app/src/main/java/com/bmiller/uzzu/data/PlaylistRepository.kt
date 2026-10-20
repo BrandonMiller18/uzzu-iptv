@@ -31,6 +31,8 @@ class PlaylistRepository(
     private val logger: AppLogger,
     private val io: CoroutineDispatcher = Dispatchers.IO,
     private val clock: () -> Long = System::currentTimeMillis,
+    /** Offline enrichment after parsing (league per game, sub-group per channel). */
+    private val classify: (Playlist) -> Playlist = { it },
 ) {
     private val _state = MutableStateFlow<PlaylistState>(PlaylistState.Idle)
     val state: StateFlow<PlaylistState> = _state.asStateFlow()
@@ -88,14 +90,16 @@ class PlaylistRepository(
             logger.e(TAG, "playlist response is not an M3U file (${text.length} chars)")
             throw PlaylistException("Response is not an M3U playlist")
         }
-        val playlist = M3uParser { logger.w(TAG, it) }.parse(text)
+        val playlist = classify(M3uParser { logger.w(TAG, it) }.parse(text))
         if (playlist.games.isEmpty() && playlist.channels.isEmpty()) {
             throw PlaylistException("Playlist has no Live-Games or Live-Channels entries")
         }
         logger.i(
             TAG,
             "playlist fetched and parsed in ${clock() - started} ms: ${playlist.games.size} games, " +
-                "${playlist.channels.size} channels, stats=${playlist.stats}",
+                "${playlist.channels.size} channels, stats=${playlist.stats}, " +
+                "leagues=${playlist.games.groupingBy { it.league }.eachCount()}, " +
+                "groups=${playlist.channels.groupingBy { it.subGroup }.eachCount()}",
         )
         playlist
     }

@@ -36,7 +36,7 @@ data class Game(
     fun feed(side: FeedSide): Feed? = if (side == FeedSide.HOME) homeFeed else awayFeed
 }
 
-/** Live-Channels sub-groups. M2 fills in the rules (channel_groups.json); M1 puts everything in OTHER. */
+/** Live-Channels sub-groups, assigned by assets/channel_groups.json ([ChannelGrouper]). Declaration order = display order. */
 enum class ChannelGroup(val label: String) {
     LEAGUE_NETWORKS("League Networks"),
     NATIONAL_SPORTS("National Sports"),

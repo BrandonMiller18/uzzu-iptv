@@ -1,0 +1,21 @@
+{
+  "_comment": "Ordered Live-Channels sub-group rules. First matching rule wins; match is exact | prefix | contains, case-insensitive on the channel display name. No match goes to OTHER. Edit and rebuild to add channels.",
+  "rules": [
+    { "group": "NEWS_AND_ENTERTAINMENT", "match": "prefix", "values": ["Fox News", "Fox Business"] },
+
+    { "group": "LEAGUE_NETWORKS", "match": "prefix", "values": ["NFL Network", "NFL RedZone", "Red Zone", "RedZone", "NBA TV", "NHL Network", "MLB Network", "MLB Strike Zone"] },
+
+    { "group": "COLLEGE_SPORTS", "match": "prefix", "values": ["BTN", "Big Ten Network", "ACCN", "ACC Network", "SEC Network", "PAC 12", "PAC-12", "Pac12"] },
+
+    { "group": "REGIONAL_SPORTS", "match": "exact", "values": ["NBC SNY", "SNY", "YES", "Yes Network"] },
+    { "group": "REGIONAL_SPORTS", "match": "prefix", "values": ["FanDuel Sports", "Bally Sports", "NBC Sports", "SportsNet", "Spectrum SportsNet", "Marquee", "Root Sports", "MASN", "NESN", "Space City Home", "AT&T SportsNet", "AT&T Pittsburgh", "Altitude", "MSG", "Monumental"] },
+
+    { "group": "INTERNATIONAL", "match": "prefix", "values": ["TSN", "Star Sports", "Sky Sports", "Willow", "SuperSport", "Astro", "Premier Sports", "DAZN"] },
+
+    { "group": "NATIONAL_SPORTS", "match": "exact", "values": ["CBS", "NBC", "ABC", "FOX", "TBS", "TNT", "FS1", "FS2"] },
+    { "group": "NATIONAL_SPORTS", "match": "prefix", "values": ["ESPN", "Fox Sports", "USA Network", "CBS Sports", "truTV", "Golf Channel", "Tennis Channel", "TVG", "beIN", "Big East"] },
+
+    { "group": "NEWS_AND_ENTERTAINMENT", "match": "prefix", "values": ["CNN", "CNBC", "MSNBC", "MS NOW", "HGTV", "History", "Discovery", "Animal Planet", "Nickelodeon", "Cartoon Network", "A&E", "AMC", "Bravo", "Comedy Central", "Food Network", "TLC", "Travel Channel", "National Geographic", "Nat Geo"] },
+    { "group": "NEWS_AND_ENTERTAINMENT", "match": "contains", "values": ["Weather Channel"] }
+  ]
+}
