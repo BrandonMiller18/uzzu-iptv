@@ -3,7 +3,7 @@ type: Guide
 title: Testing on a Fire TV over adb
 description: Workflow for installing, driving, screenshotting and reading logs on a real Fire TV.
 tags: [testing, device]
-generated: {by: claude/opus-5.5, at: 2026-10-20T12:00:00Z}
+generated: {by: claude/opus-5.5, at: 2026-10-20T18:00:00Z}
 ---
 Reference device: Fire TV Stick HD (AFTSS), Fire OS 7 / API 28, armeabi-v7a, 1920x1080 at 320 dpi
 (960x540 dp). Treat it as the performance floor.
@@ -23,6 +23,11 @@ Reference device: Fire TV Stick HD (AFTSS), Fire OS 7 / API 28, armeabi-v7a, 192
   recorded scoreboards (today = the synthetic live set). The fixtures are added to the *debug*
   asset source set only, and the interceptor is installed only when `BuildConfig.DEBUG`; release
   APKs contain neither. Fixture streams are fake, so use real channels for playback checks.
+- **Debug hooks** (debug builds only, absent from release dex):
+  - `adb shell am broadcast -a com.bmiller.uzzu.DEBUG_BREAK_NEXT_TUNE -p com.bmiller.uzzu`: the next
+    tune (and its retries) points at a missing path, so you get S6 with a real HTTP 404.
+  - `am start ... --ez uzzu.suppress_errors true`: S6 never shows. Use it with fixture mode, whose
+    fake streams would otherwise land on S6, to check O1/S5.
 - Timing anything: install the `bench` build, not debug ([Performance](/guides/performance.md)).
 - In Git Bash, prefix adb commands that take device paths with `MSYS_NO_PATHCONV=1`
   ([gotcha](/gotchas/git-bash-adb-paths.md)).
