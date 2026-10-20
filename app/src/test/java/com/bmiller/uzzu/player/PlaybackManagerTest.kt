@@ -105,6 +105,101 @@ class PlaybackManagerTest {
         assertNull(manager.state.value.last)
     }
 
+    @Test fun `Back clears the last-channel slot and returns false when that item left the playlist`() {
+        val nhl = group(Section.GAMES, "NHL")
+        val ch = group(Section.CHANNELS, "All")
+        manager.tune(ctx(Section.GAMES, "NHL", nhl[0], FeedSide.HOME))
+        manager.tune(ctx(Section.CHANNELS, "All", ch[0]))
+        assertEquals(nhl[0], manager.state.value.last!!.currentKey)
+        // The game ended and dropped out on a refresh.
+        source.state.value = com.bmiller.uzzu.data.PlaylistState.Loaded(playlist.copy(games = playlist.games.filter { it.id != nhl[0] }), sched.now)
+        val loads = player.loads.size
+        assertFalse(manager.toggleLast())
+        assertNull(manager.state.value.last)
+        assertEquals(ch[0], now().currentKey)
+        assertEquals(loads, player.loads.size)
+        assertFalse(manager.toggleLast())
+    }
+
+    @Test fun `CH from an item that left its group continues from its old position`() {
+        val league = group(Section.CHANNELS, "League Networks")
+        manager.tune(ctx(Section.CHANNELS, "League Networks", league[1]))
+        val gone = league[1]
+        source.state.value = com.bmiller.uzzu.data.PlaylistState.Loaded(playlist.copy(channels = playlist.channels.filter { it.key != gone }), sched.now)
+        manager.step(1)
+        assertEquals(league[2], now().currentKey)
+    }
+
+    @Test fun `a policy reload ends a pause and pausing stops the stall timer`() {
+        val ch = group(Section.CHANNELS, "All")
+        manager.tune(ctx(Section.CHANNELS, "All", ch[0]))
+        player.listener!!.onBuffering()
+        manager.togglePause()
+        assertTrue(manager.state.value.paused)
+        sched.advance(60_000) // no false STALL while paused
+        assertEquals(1, player.loads.size)
+        // An error while paused: the backoff reload plays again, so the paused tag clears.
+        player.fail(500)
+        sched.advance(2_000)
+        assertEquals(2, player.loads.size)
+        assertFalse(manager.state.value.paused)
+    }
+
+    @Test fun `onStop stops the policy and onStart re-resolves and reloads the item`() {
+        val ch = group(Section.CHANNELS, "All")
+        manager.tune(ctx(Section.CHANNELS, "All", ch[0]))
+        player.listener!!.onBuffering()
+        player.fail(500) // backoff pending
+        manager.onBackground()
+        sched.advance(120_000)
+        assertEquals(1, player.loads.size)
+        assertNull(manager.state.value.error)
+        // The token rotated while stopped.
+        val newUrl = "https://uzzu.tv/hls/10000007220/rotated.m3u8"
+        source.state.value = com.bmiller.uzzu.data.PlaylistState.Loaded(
+            playlist.copy(channels = playlist.channels.map { if (it.key == ch[0]) it.copy(url = newUrl) else it }), sched.now,
+        )
+        manager.togglePause()
+        manager.onForeground()
+        assertEquals(newUrl, player.loads.last())
+        assertFalse(manager.state.value.paused)
+        assertEquals(ch[0], now().currentKey)
+        // A fresh budget: two retries before S6.
+        player.fail(500); sched.advance(2_000)
+        player.fail(500); sched.advance(5_000)
+        assertNull(manager.state.value.error)
+    }
+
+    @Test fun `onStart while S6 is up does not reload, nothing playing does nothing`() {
+        manager.onForeground()
+        assertTrue(player.loads.isEmpty())
+        val ch = group(Section.CHANNELS, "All")
+        manager.tune(ctx(Section.CHANNELS, "All", ch[0]))
+        player.fail(404); sched.advance(2_000); player.fail(404); sched.advance(5_000); player.fail(404)
+        assertNotNull(manager.state.value.error)
+        val loads = player.loads.size
+        manager.onBackground()
+        manager.onForeground()
+        assertEquals(loads, player.loads.size)
+    }
+
+    @Test fun `setGroup on the playing item swaps the CH group without reloading`() {
+        val all = group(Section.CHANNELS, "All")
+        val league = group(Section.CHANNELS, "League Networks")
+        val key = league[0]
+        manager.tune(ctx(Section.CHANNELS, "All", key))
+        val loads = player.loads.size
+        val tunes = manager.state.value.tuneCount
+        manager.setGroup(ctx(Section.CHANNELS, "League Networks", key))
+        assertEquals(loads, player.loads.size)
+        assertEquals(tunes, manager.state.value.tuneCount)
+        assertEquals("League Networks", now().group)
+        assertEquals(league, now().itemKeys)
+        manager.step(1)
+        assertEquals(league[1], now().currentKey)
+        assertTrue(all.size > league.size)
+    }
+
     @Test fun `merge rule - a refresh never touches the playing stream, the new URL is used on the next tune`() {
         val ch = group(Section.CHANNELS, "All")
         manager.tune(ctx(Section.CHANNELS, "All", ch[0]))

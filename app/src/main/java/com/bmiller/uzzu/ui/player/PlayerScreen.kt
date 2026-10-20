@@ -201,7 +201,10 @@ private fun OverlayHost(
 
     fun tune(ctx: com.bmiller.uzzu.player.PlayContext) {
         onClose()
-        if (!ctx.sameItem(playing) || ctx.group != playing.group) controls.tune(ctx)
+        when {
+            !ctx.sameItem(playing) -> controls.tune(ctx)
+            ctx.group != playing.group -> controls.setGroup(ctx) // same stream: no reload
+        }
     }
 
     PlayerOverlay(

@@ -53,10 +53,13 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
         container.player.start()
+        container.playback.onForeground()
     }
 
     override fun onStop() {
+        container.playback.onBackground()
         container.player.release()
+        container.logger.flush(timeoutMillis = 500)
         super.onStop()
     }
 

@@ -31,6 +31,8 @@ data class PlaybackState(
 interface PlayerControls {
     val state: StateFlow<PlaybackState>
     fun tune(context: PlayContext)
+    /** O1: the playing item picked from another tab. Only the CH up/down group changes; no reload. */
+    fun setGroup(context: PlayContext)
     /** CH up (-1) / down (+1) within the current group. */
     fun step(delta: Int)
     /** Back: toggle to the last channel. False when the slot is empty (caller returns to the list). */
@@ -43,6 +45,10 @@ interface PlayerControls {
     fun stop()
     /** O1 opened: silent playlist refresh when older than 10 min. Never interrupts playback. */
     fun overlayOpened()
+    /** Activity onStop (the player is released): stop the retry policy, keep the item. */
+    fun onBackground() {}
+    /** Activity onStart (the player is rebuilt): re-resolve the item and load it again. */
+    fun onForeground() {}
 }
 
 /**
@@ -69,7 +75,11 @@ class PlaybackManager(
     override val state: StateFlow<PlaybackState> = _state.asStateFlow()
 
     private val policy = RetryPolicy(clock, scheduler, object : RetryPolicy.Effects {
-        override fun load(url: String) = player.load(url)
+        override fun load(url: String) {
+            // Every load plays (PlayerController.prepare sets playWhenReady), so it ends a pause.
+            if (_state.value.paused) _state.update { it.copy(paused = false) }
+            player.load(url)
+        }
         override fun playlistAgeMillis(): Long? = playlistAge()
         override fun refreshAndResolve(onResult: (RefreshOutcome) -> Unit) {
             val ctx = _state.value.now?.context ?: return onResult(RefreshOutcome.ItemGone)
@@ -101,10 +111,14 @@ class PlaybackManager(
     private fun playlistAge(): Long? = (playlist.state.value as? PlaylistState.Loaded)?.let { clock() - it.fetchedAtMillis }
 
     override fun tune(context: PlayContext) {
-        val p = current() ?: return logger.w(TAG, "tune ignored: no playlist")
-        val keys = groups()?.let { groupKeys(it, context.section, context.group) }?.takeIf { context.currentKey in it } ?: context.itemKeys
-        val ctx = context.copy(itemKeys = keys)
-        val r = resolve(p, ctx) ?: return logger.w(TAG, "tune ignored: ${ctx.currentKey} not in the playlist")
+        tuneTo(context)
+    }
+
+    /** False when the item can't be resolved against the current playlist (nothing changes). */
+    private fun tuneTo(context: PlayContext): Boolean {
+        val p = current() ?: return false.also { logger.w(TAG, "tune ignored: no playlist") }
+        val ctx = context.copy(itemKeys = groupKeysFor(context))
+        val r = resolve(p, ctx) ?: return false.also { logger.w(TAG, "tune ignored: ${ctx.currentKey} not in the playlist") }
         val resolvedCtx = ctx.copy(side = r.side)
         _state.update { s ->
             val prev = s.now?.context
@@ -113,6 +127,19 @@ class PlaybackManager(
         }
         logger.i(TAG, "tune ${r.label} [${ctx.section.name.lowercase()}/${ctx.group}]")
         policy.start(r.url)
+        return true
+    }
+
+    private fun groupKeysFor(context: PlayContext): List<String> =
+        groups()?.let { groupKeys(it, context.section, context.group) }?.takeIf { context.currentKey in it } ?: context.itemKeys
+
+    override fun setGroup(context: PlayContext) {
+        val now = _state.value.now ?: return
+        if (!now.context.sameItem(context)) return tune(context)
+        if (now.context.group == context.group) return
+        logger.i(TAG, "group -> ${context.group} (same item, no reload)")
+        val ctx = now.context.copy(group = context.group, itemKeys = groupKeysFor(context))
+        _state.update { it.copy(now = it.now?.copy(context = ctx)) }
     }
 
     override fun step(delta: Int) {
@@ -126,8 +153,12 @@ class PlaybackManager(
     override fun toggleLast(): Boolean {
         val last = _state.value.last ?: return false
         logger.i(TAG, "back: toggle to last channel")
-        tune(last)
-        return true
+        if (tuneTo(last)) return true
+        // The previous item left the playlist (a game ended, refresh): drop the slot so Back
+        // falls through to the list instead of doing nothing on every press.
+        logger.w(TAG, "last channel is gone: clearing the slot")
+        _state.update { it.copy(last = null) }
+        return false
     }
 
     override fun flipSide() {
@@ -143,9 +174,11 @@ class PlaybackManager(
         if (s.now == null || s.error != null) return
         if (s.paused) {
             logger.i(TAG, "resume at live edge")
+            policy.onResume()
             player.resumeAtLiveEdge()
         } else {
             logger.i(TAG, "pause")
+            policy.onPause()
             player.pause()
         }
         _state.update { it.copy(paused = !s.paused) }
@@ -165,6 +198,23 @@ class PlaybackManager(
         player.stop()
         if (_state.value.now != null) logger.i(TAG, "playback stopped")
         _state.value = PlaybackState(tuneCount = _state.value.tuneCount)
+    }
+
+    override fun onBackground() {
+        if (_state.value.now == null) return
+        logger.i(TAG, "background: retry policy stopped")
+        policy.cancel()
+    }
+
+    override fun onForeground() {
+        val s = _state.value
+        val now = s.now ?: return
+        if (s.error != null) return // S6 stays up; Retry reloads
+        // Re-resolve: the stream URL (token) may have changed while stopped.
+        val r = current()?.let { resolve(it, now.context) } ?: now.resolved
+        logger.i(TAG, "foreground: reloading ${r.label}")
+        _state.update { it.copy(now = NowPlaying(now.context.copy(side = r.side), r), paused = false) }
+        policy.start(r.url)
     }
 
     override fun overlayOpened() {

@@ -29,9 +29,9 @@ data class Exhausted(
 /**
  * PLAN "Retry policy" for one tune session:
  * 1. On an error, retry the same URL up to [backoffMillis].size times (2 s, then 5 s).
- * 2. If the error is HTTP 401/403/404/410 on a fastly.net host, or happens while the playlist is
- *    older than [staleAfterMillis], first re-fetch the playlist, re-resolve the same item/side and
- *    retry once with the new URL (immediately). Only one refresh per session.
+ * 2. If the error is HTTP 401/403/404/410 on a fastly.net host, or on any host while the playlist
+ *    is older than [staleAfterMillis], first re-fetch the playlist, re-resolve the same item/side
+ *    and retry once with the new URL (immediately). Only one refresh per session.
  * 3. No rendered frame for [stallMillis] while buffering counts as an error.
  * 4. When nothing is left, [Effects.exhausted] (S6).
  * A session that has been playing for [healthyResetMillis] gets a fresh budget on its next error.
@@ -62,6 +62,9 @@ class RetryPolicy(
     private var pending: Cancellable? = null
     private var stallTimer: Cancellable? = null
     private var playingSince: Long? = null
+    private var lastErrorWasStall = false
+    /** The user paused: buffering then is not a stall. */
+    private var userPaused = false
     /** Bumped on every start/cancel so late callbacks (refresh results) from an old session are dropped. */
     private var session = 0
     var active = false
@@ -87,10 +90,22 @@ class RetryPolicy(
         refreshed = false
         refreshOutcome = null
         playingSince = null
+        lastErrorWasStall = false
+        userPaused = false
+    }
+
+    fun onPause() {
+        userPaused = true
+        stopStallTimer()
+    }
+
+    fun onResume() {
+        userPaused = false
     }
 
     fun onBuffering() {
-        if (!active || stallTimer != null) return
+        // A pending retry reloads anyway; a paused player buffering is not stalled.
+        if (!active || stallTimer != null || pending != null || userPaused) return
         val s = session
         stallTimer = scheduler.schedule(stallMillis) {
             stallTimer = null
@@ -105,6 +120,13 @@ class RetryPolicy(
 
     fun onFirstFrame() {
         stopStallTimer()
+        if (lastErrorWasStall && pending != null) {
+            // A late segment arrived during the stall backoff: the stream recovered, don't reload it.
+            effects.log('I', "frame rendered during stall backoff: retry cancelled")
+            pending?.cancel()
+            pending = null
+        }
+        lastErrorWasStall = false
         if (playingSince == null) playingSince = clock()
     }
 
@@ -124,6 +146,7 @@ class RetryPolicy(
             }
         }
         playingSince = null
+        lastErrorWasStall = error.errorCodeName == StreamError.STALL
         _attempts.lastOrNull()?.let { _attempts[_attempts.lastIndex] = it.copy(httpStatus = error.httpStatus, errorCodeName = error.errorCodeName) }
         val current = url ?: return
 
@@ -181,6 +204,7 @@ class RetryPolicy(
     }
 
     private fun load(url: String, viaRefresh: Boolean) {
+        userPaused = false // every load plays
         _attempts += Attempt(clock(), url, viaRefresh = viaRefresh)
         effects.load(url)
     }
@@ -195,8 +219,10 @@ class RetryPolicy(
         if (error.httpStatus in AUTH_STATUSES && hosts.any { it.endsWith("fastly.net", ignoreCase = true) }) {
             return "HTTP ${error.httpStatus} on a Fastly URL"
         }
+        // PLAN: the auth-type status qualifies both clauses (Fastly host, or any host once stale).
+        if (error.httpStatus !in AUTH_STATUSES) return null
         val age = effects.playlistAgeMillis()
-        if (age != null && age > staleAfterMillis) return "playlist is ${age / 60_000} min old"
+        if (age != null && age > staleAfterMillis) return "HTTP ${error.httpStatus} with a playlist ${age / 60_000} min old"
         return null
     }
 

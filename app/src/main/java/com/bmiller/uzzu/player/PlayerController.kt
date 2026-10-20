@@ -111,8 +111,7 @@ class PlayerController(
         exo.playWhenReady = true
         _player.value = exo
         logger.i(TAG, "player created")
-        // Rebuilt after onStop: resume whatever was on screen.
-        currentUrl?.let { prepare(exo, it) }
+        // Rebuilt after onStop: PlaybackManager.onForeground re-resolves and loads the item.
     }
 
     fun release() {

@@ -75,12 +75,57 @@ class RetryPolicyTest {
         assertEquals(0, refreshCalls)
     }
 
-    @Test fun `stale playlist refreshes on any error on any host`() {
+    @Test fun `stale playlist refreshes on an auth-type status on any host`() {
+        age = 11 * 60_000L
+        for (status in RetryPolicy.AUTH_STATUSES) {
+            refreshCalls = 0
+            policy.start(HOME)
+            err(status)
+            assertEquals("HTTP $status", 1, refreshCalls)
+            assertEquals(NEW, loads.last().second)
+        }
+    }
+
+    @Test fun `stale playlist does not refresh on network errors, 5xx or stalls`() {
         age = 11 * 60_000L
         policy.start(HOME)
         err(null)
-        assertEquals(1, refreshCalls)
-        assertEquals(NEW, loads.last().second)
+        assertEquals(0, refreshCalls)
+        sched.advance(2_000)
+        err(500)
+        assertEquals(0, refreshCalls)
+        sched.advance(5_000)
+        policy.onBuffering()
+        sched.advance(15_000)
+        assertEquals(0, refreshCalls)
+        assertEquals(listOf(HOME, HOME, HOME), loads.map { it.second })
+    }
+
+    @Test fun `buffering while the user paused is not a stall`() {
+        policy.start(HOME)
+        policy.onBuffering()
+        sched.advance(5_000)
+        policy.onPause()
+        sched.advance(60_000)
+        policy.onBuffering()
+        sched.advance(60_000)
+        assertEquals(1, loads.size)
+        assertTrue(policy.attempts.single().errorCodeName == null)
+        policy.onResume()
+        policy.onBuffering()
+        sched.advance(15_000)
+        assertEquals(StreamError.STALL, policy.attempts.last().errorCodeName)
+    }
+
+    @Test fun `a frame during a stall backoff cancels the reload`() {
+        policy.start(HOME)
+        policy.onBuffering()
+        sched.advance(15_000) // stall -> retry in 2 s
+        policy.onBuffering() // ignored while the retry is pending
+        policy.onFirstFrame() // late segment: recovered
+        sched.advance(60_000)
+        assertEquals(1, loads.size)
+        assertNull(exhausted)
     }
 
     @Test fun `only one refresh per session, then same-URL backoff on the new URL, then S6`() {
