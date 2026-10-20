@@ -14,6 +14,8 @@ import com.bmiller.uzzu.schedule.PlaylistClassifier
 import com.bmiller.uzzu.schedule.ScheduleMatcher
 import com.bmiller.uzzu.schedule.ScheduleRepository
 import com.bmiller.uzzu.schedule.TeamDictionary
+import com.bmiller.uzzu.update.PlaceholderUpdateChecker
+import com.bmiller.uzzu.update.UpdateChecker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -69,4 +71,7 @@ class AppContainer(context: Context) {
     )
 
     val player = PlayerController(app, okHttp, logger)
+
+    /** In-app updates (S1 bar, S7 row). M5 replaces the placeholder with the GitHub-release checker. */
+    val updates: UpdateChecker = PlaceholderUpdateChecker()
 }
