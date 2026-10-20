@@ -18,7 +18,8 @@ import com.bmiller.uzzu.schedule.PlaylistClassifier
 import com.bmiller.uzzu.schedule.ScheduleMatcher
 import com.bmiller.uzzu.schedule.ScheduleRepository
 import com.bmiller.uzzu.schedule.TeamDictionary
-import com.bmiller.uzzu.update.PlaceholderUpdateChecker
+import com.bmiller.uzzu.update.AndroidApkInstaller
+import com.bmiller.uzzu.update.GitHubUpdateChecker
 import com.bmiller.uzzu.update.UpdateChecker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -114,6 +115,9 @@ class AppContainer(context: Context) {
         return if (url == brokenUrl) url.substringBeforeLast('/') + "/uzzu-debug-missing.m3u8" else null
     }
 
-    /** In-app updates (S1 bar, S7 row). M5 replaces the placeholder with the GitHub-release checker. */
-    val updates: UpdateChecker = PlaceholderUpdateChecker()
+    /** In-app updates from GitHub Releases (S1 bar, S7 row). Debug builds only check from S7. */
+    val updates: UpdateChecker = GitHubUpdateChecker(
+        okHttp, settings, logger, BuildConfig.VERSION_NAME, File(app.cacheDir, "updates"), AndroidApkInstaller(app), appScope,
+        autoCheck = !BuildConfig.DEBUG,
+    )
 }

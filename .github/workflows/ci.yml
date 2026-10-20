@@ -29,8 +29,8 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Test, lint, assemble
-        run: ./gradlew --no-configuration-cache testDebugUnitTest lintDebug assembleDebug
+      - name: Test, lint, assemble (debug + unsigned R8 release)
+        run: ./gradlew --no-configuration-cache testDebugUnitTest lintDebug assembleDebug assembleRelease
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4

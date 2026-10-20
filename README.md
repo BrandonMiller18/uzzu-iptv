@@ -51,6 +51,20 @@ Release signing reads `UZZU_KEYSTORE`, `UZZU_STORE_PASSWORD`, `UZZU_KEY_ALIAS`, 
 the environment, or `storeFile`/`storePassword`/`keyAlias`/`keyPassword` from a gitignored
 `signing.properties`. Without either, `assembleRelease` produces an unsigned APK.
 
+## Releases
+
+Push a tag `vX.Y.Z` (for example `git tag v1.0.0 && git push origin v1.0.0`). The
+[Release workflow](.github/workflows/release.yml) runs the unit tests, builds the R8 release APK signed
+with the key from the repo secrets (`RELEASE_KEYSTORE_BASE64`, `RELEASE_STORE_PASSWORD`,
+`RELEASE_KEY_PASSWORD`, `RELEASE_KEY_ALIAS`), verifies the signature and publishes it as
+`uzzu-iptv-X.Y.Z.apk` on a GitHub Release named after the tag. versionName is the tag without `v`;
+versionCode is derived from it (`1.2.3` -> `10203`). Tags with a suffix (`v1.1.0-rc.1`) become
+pre-releases, which the app ignores.
+
+- Downloader / browser URL for the newest APK: `https://github.com/BrandonMiller18/uzzu-iptv/releases/latest`
+- Installed apps check `releases/latest` on launch (at most once per 24 h; debug builds only from
+  Settings) and from Settings → Check for updates, then offer the update on the home screen.
+
 ## Privacy
 
 The playlist URL contains account credentials. It is entered on the device at first run and stored in

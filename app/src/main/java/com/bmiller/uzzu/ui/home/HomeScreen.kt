@@ -80,7 +80,16 @@ fun HomeScreen(
             UzzuButton("Settings", onSettings, Modifier.focusRequester(requesters.getValue(HomeFocus.SETTINGS)).testTag("settings"), icon = UzzuIcons.Settings)
         }
 
-        if (update is UpdateState.Available) UpdateBar(update, onInstallUpdate, onDismissUpdate)
+        if (update is UpdateState.Available && !update.dismissed) {
+            // Both buttons leave the bar (Later hides it, Install swaps them for progress): move focus to
+            // the Live Games tile first, or focus is lost with the removed button and the D-pad goes dead.
+            val games = requesters.getValue(HomeFocus.GAMES)
+            UpdateBar(
+                update,
+                onInstall = { games.requestFocus(); onInstallUpdate() },
+                onLater = { games.requestFocus(); onDismissUpdate() },
+            )
+        }
         if (error != null) {
             Text(error, style = UzzuType.Body, color = UzzuColors.Error, maxLines = 2, overflow = TextOverflow.Ellipsis)
         }
@@ -153,7 +162,10 @@ private fun Tile(
     }
 }
 
-/** "Update available" bar (only when an update exists). */
+/**
+ * "Update available" bar (only when an update exists). While the APK downloads, the second line is a
+ * mono progress line and the buttons are hidden; a failed attempt shows its reason in Error color.
+ */
 @Composable
 private fun UpdateBar(update: UpdateState.Available, onInstall: () -> Unit, onLater: () -> Unit) {
     Row(
@@ -170,9 +182,16 @@ private fun UpdateBar(update: UpdateState.Available, onInstall: () -> Unit, onLa
         }
         Column(Modifier.weight(1f)) {
             Text("Update available: version ${update.version}".uppercase(), style = UzzuType.BodyLarge, color = UzzuColors.TextPrimary)
-            Text("You're on ${update.currentVersion}. Playback stops while it installs.", style = UzzuType.Body, color = UzzuColors.TextSecondary)
+            when {
+                update.progress != null -> Text(update.progress, style = UzzuType.Mono, color = UzzuColors.TextSecondary, modifier = Modifier.testTag("update:progress"))
+                update.error != null -> Text(update.error, style = UzzuType.Body, color = UzzuColors.Error, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                update.note != null -> Text(update.note, style = UzzuType.Body, color = UzzuColors.TextSecondary)
+                else -> Text("You're on ${update.currentVersion}. Playback stops while it installs.", style = UzzuType.Body, color = UzzuColors.TextSecondary)
+            }
         }
-        UzzuButton("Install update", onInstall, Modifier.testTag("update:install"), container = UzzuColors.Background)
-        UzzuButton("Later", onLater, Modifier.testTag("update:later"), container = UzzuColors.Background)
+        if (update.progress == null) {
+            UzzuButton("Install update", onInstall, Modifier.testTag("update:install"), container = UzzuColors.Background)
+            UzzuButton("Later", onLater, Modifier.testTag("update:later"), container = UzzuColors.Background)
+        }
     }
 }
