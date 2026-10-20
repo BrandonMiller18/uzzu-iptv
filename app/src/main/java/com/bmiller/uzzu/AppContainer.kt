@@ -7,7 +7,10 @@ import com.bmiller.uzzu.data.PlaylistRepository
 import com.bmiller.uzzu.debug.FixtureInterceptor
 import com.bmiller.uzzu.data.Settings
 import com.bmiller.uzzu.log.AppLogger
+import com.bmiller.uzzu.player.MainScheduler
+import com.bmiller.uzzu.player.PlaybackManager
 import com.bmiller.uzzu.player.PlayerController
+import com.bmiller.uzzu.player.networkStateLine
 import com.bmiller.uzzu.playlist.ChannelGrouper
 import com.bmiller.uzzu.schedule.EspnScheduleSource
 import com.bmiller.uzzu.schedule.LeagueClassifier
@@ -76,7 +79,40 @@ class AppContainer(context: Context) {
         scope = appScope,
     )
 
-    val player = PlayerController(app, okHttp, logger)
+    /** Debug builds only: make the next tuned URL (and its retries) 404 (`am broadcast` hook in MainActivity). */
+    @Volatile
+    var debugBreakNextTune = false
+    private var brokenUrl: String? = null
+
+    /** Debug builds only: never show S6 (fixture-mode screenshots of the overlay with fake stream URLs). */
+    @Volatile
+    var debugSuppressErrors = false
+
+    val player = PlayerController(app, okHttp, logger, debugRewrite = if (BuildConfig.DEBUG) ::debugRewrite else null)
+
+    private val mainScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
+    val playback = PlaybackManager(
+        player = player,
+        playlist = playlistRepository,
+        model = scheduleRepository.model,
+        network = { networkStateLine(app) },
+        logger = logger,
+        scope = mainScope,
+        scheduler = MainScheduler(),
+        suppressErrors = { debugSuppressErrors },
+    )
+
+    private fun debugRewrite(url: String): String? {
+        if (debugBreakNextTune) {
+            debugBreakNextTune = false
+            brokenUrl = url
+            logger.w("Debug", "breaking this tune: its URL is rewritten to a missing path")
+        } else if (url != brokenUrl) {
+            brokenUrl = null
+        }
+        return if (url == brokenUrl) url.substringBeforeLast('/') + "/uzzu-debug-missing.m3u8" else null
+    }
 
     /** In-app updates (S1 bar, S7 row). M5 replaces the placeholder with the GitHub-release checker. */
     val updates: UpdateChecker = PlaceholderUpdateChecker()

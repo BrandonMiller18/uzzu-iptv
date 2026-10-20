@@ -30,6 +30,12 @@ object UzzuIcons {
         "M14 4h4v4h-4z", "M8 10h4v4H8z", "M16 16h4v4h-4z",
     )
 
+    /** S6 error mark. */
+    val Warning = icon(2f, StrokeCap.Square, "M12 3l10 18H2z", "M12 10v5M12 18v.5")
+
+    /** O1 "Exit to menu". */
+    val ChevronLeft = icon(2f, StrokeCap.Square, "M15 6l-6 6 6 6")
+
     private fun icon(stroke: Float, cap: StrokeCap, vararg paths: String): ImageVector =
         ImageVector.Builder(defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f)
             .apply {

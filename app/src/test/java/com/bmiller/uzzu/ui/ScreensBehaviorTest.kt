@@ -59,10 +59,10 @@ class ScreensBehaviorTest {
         (start + route).forEach { if (it != Route.Home) nav.push(it) }
         compose.setContent {
             UzzuTheme {
-                AppContent(nav, UiFixtures.state(playlist), actions) { onBack ->
+                AppContent(nav, UiFixtures.state(playlist), actions) { exit ->
                     val r = remember { FocusRequester() }
                     Box(Modifier.fillMaxSize().testTag("player").focusRequester(r).focusable())
-                    BackHandler(onBack = onBack)
+                    BackHandler(onBack = exit.toList)
                     InitialFocus(r)
                 }
             }

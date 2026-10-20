@@ -59,11 +59,22 @@ class Navigator(start: Route = Route.Starting) {
         return true
     }
 
+    /** Pops back to [route] if it is on the stack. */
+    fun popTo(route: Route) {
+        val i = stack.lastIndexOf(route)
+        if (i < 0) return
+        while (stack.lastIndex > i) stack.removeAt(stack.lastIndex)
+    }
+
     fun reset(route: Route) {
         stack.clear()
         stack.add(route)
     }
 }
+
+/** How the player leaves: Back / S6 Back → the list it came from; long-press Back / "Exit to menu" → S1. */
+@Immutable
+class PlayerExit(val toList: () -> Unit, val toMenu: () -> Unit)
 
 /** Everything the screens read. Built by MainActivity from the repositories (fakes in tests). */
 @Immutable
@@ -124,13 +135,13 @@ fun homeCounts(model: PlaylistState): HomeCounts? = (model as? PlaylistState.Loa
     )
 }
 
-/** Routes the current screen. [player] renders S5 and calls its argument on Back. */
+/** Routes the current screen. [player] renders S5/O1/S6 and leaves through its [PlayerExit]. */
 @Composable
 fun AppContent(
     nav: Navigator,
     state: AppState,
     actions: AppActions,
-    player: @Composable (onBack: () -> Unit) -> Unit,
+    player: @Composable (exit: PlayerExit) -> Unit,
 ) {
     val gamesMemory = remember { mutableStateOf(ListMemory()) }
     val channelsMemory = remember { mutableStateOf(ListMemory()) }
@@ -216,10 +227,20 @@ fun AppContent(
                 onBack = back,
             )
 
-            Route.Player -> player {
-                actions.stopPlayback()
-                back()
-            }
+            Route.Player -> player(
+                remember(nav) {
+                    PlayerExit(
+                        toList = {
+                            actions.stopPlayback()
+                            back()
+                        },
+                        toMenu = {
+                            actions.stopPlayback()
+                            nav.popTo(Route.Home)
+                        },
+                    )
+                },
+            )
         }
     }
 }

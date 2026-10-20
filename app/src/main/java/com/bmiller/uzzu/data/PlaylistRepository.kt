@@ -23,6 +23,16 @@ sealed interface PlaylistState {
     data class Failed(val message: String) : PlaylistState
 }
 
+/** Outcome of the most recent [PlaylistRepository.refresh] in this process (S6 diagnostics). */
+data class RefreshRecord(val atMillis: Long, val ok: Boolean, val message: String)
+
+/** What the player needs from the playlist: the model, its last refresh, and a re-fetch. */
+interface PlaylistSource {
+    val state: StateFlow<PlaylistState>
+    val lastRefresh: RefreshRecord?
+    suspend fun refresh(): Result<Playlist>
+}
+
 class PlaylistException(message: String, cause: Throwable? = null) : IOException(message, cause)
 
 /** Fetches and parses the playlist and holds the in-memory model for the process lifetime. */
@@ -34,15 +44,19 @@ class PlaylistRepository(
     private val clock: () -> Long = System::currentTimeMillis,
     /** Offline enrichment after parsing (league per game, sub-group per channel). */
     private val classify: (Playlist) -> Playlist = { it },
-) {
+) : PlaylistSource {
     private val _state = MutableStateFlow<PlaylistState>(PlaylistState.Idle)
-    val state: StateFlow<PlaylistState> = _state.asStateFlow()
+    override val state: StateFlow<PlaylistState> = _state.asStateFlow()
+
+    @Volatile
+    override var lastRefresh: RefreshRecord? = null
+        private set
 
     /** Last successfully loaded playlist in this process, if any. */
     val current: Playlist? get() = (_state.value as? PlaylistState.Loaded)?.playlist
 
     /** Re-fetches the saved playlist URL. Keeps the previous model visible on failure. */
-    suspend fun refresh(): Result<Playlist> {
+    override suspend fun refresh(): Result<Playlist> {
         val url = settings.playlistUrl() ?: return Result.failure(PlaylistException("No playlist URL saved"))
         val previous = _state.value
         if (previous !is PlaylistState.Loaded) _state.value = PlaylistState.Loading
@@ -50,10 +64,12 @@ class PlaylistRepository(
         val now = clock()
         result.onSuccess { p ->
             _state.value = PlaylistState.Loaded(p, now)
+            lastRefresh = RefreshRecord(now, true, "OK")
             settings.recordFetch(now, "OK ${p.games.size} games, ${p.channels.size} channels")
         }.onFailure { t ->
             val msg = SecretMasker.mask(t.message ?: t.javaClass.simpleName)
             if (previous !is PlaylistState.Loaded) _state.value = PlaylistState.Failed(msg)
+            lastRefresh = RefreshRecord(now, false, msg)
             settings.recordFetch(now, "FAILED $msg")
         }
         return result
@@ -66,6 +82,7 @@ class PlaylistRepository(
         settings.setPlaylistUrl(url)
         settings.recordFetch(now, "OK ${playlist.games.size} games, ${playlist.channels.size} channels")
         _state.value = PlaylistState.Loaded(playlist, now)
+        lastRefresh = RefreshRecord(now, true, "OK")
         logger.i(TAG, "playlist URL saved")
         return playlist
     }

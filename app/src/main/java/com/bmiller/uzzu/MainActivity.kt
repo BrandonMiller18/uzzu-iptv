@@ -1,6 +1,11 @@
 package com.bmiller.uzzu
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
+import androidx.core.content.ContextCompat
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
@@ -21,6 +26,7 @@ import com.bmiller.uzzu.ui.AppState
 import com.bmiller.uzzu.ui.Navigator
 import com.bmiller.uzzu.ui.Route
 import com.bmiller.uzzu.ui.player.PlayerScreen
+import com.bmiller.uzzu.ui.player.VideoSurface
 import com.bmiller.uzzu.ui.theme.UzzuTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
@@ -36,6 +42,11 @@ class MainActivity : ComponentActivity() {
             container.fixtureMode = true
             container.logger.i("Setup", "fixture mode: test playlist + recorded ESPN data")
         }
+        if (BuildConfig.DEBUG && intent.getBooleanExtra("uzzu.suppress_errors", false)) {
+            container.debugSuppressErrors = true
+            container.logger.i("Setup", "debug: error screen suppressed")
+        }
+        if (BuildConfig.DEBUG) registerDebugReceiver()
         setContent { UzzuTheme { App() } }
     }
 
@@ -45,7 +56,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onStop() {
-        container.player.stop()
+        container.player.release()
         super.onStop()
     }
 
@@ -84,8 +95,8 @@ class MainActivity : ComponentActivity() {
                         onFailure = { SecretMasker.mask(it.message ?: "Could not load the playlist.") },
                     )
 
-                override fun play(item: PlayItem, context: PlayContext) = container.player.play(item, context)
-                override fun stopPlayback() = container.player.clear()
+                override fun play(item: PlayItem, context: PlayContext) = container.playback.tune(context)
+                override fun stopPlayback() = container.playback.stop()
                 override fun startPolling(): AutoCloseable = container.scheduleRepository.startPolling()
                 override fun checkForUpdates() {
                     scope.launch { container.updates.check(force = true) }
@@ -121,7 +132,16 @@ class MainActivity : ComponentActivity() {
                 logPath = container.logger.file.absolutePath,
             ),
             actions = actions,
-            player = { onBack -> PlayerScreen(container.player, onBack = onBack) },
+            player = { exit ->
+                PlayerScreen(
+                    controls = container.playback,
+                    model = model,
+                    exit = exit,
+                    startPolling = container.scheduleRepository::startPolling,
+                    video = { VideoSurface(container.player) },
+                    logKey = { container.logger.i("Keys", it) },
+                )
+            },
         )
     }
 
@@ -134,6 +154,29 @@ class MainActivity : ComponentActivity() {
         if (container.playlistRepository.state.first() is PlaylistState.Loaded) {
             launch { container.scheduleRepository.refresh() }
         }
+    }
+
+    /**
+     * Debug builds only: `adb shell am broadcast -a com.bmiller.uzzu.DEBUG_BREAK_NEXT_TUNE` makes the
+     * next tuned URL (and its retries) point at a missing path, to force S6 with a real HTTP 404.
+     */
+    private fun registerDebugReceiver() {
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                container.debugBreakNextTune = true
+                container.logger.i("Debug", "next tune will be broken (forced 404)")
+            }
+        }
+        ContextCompat.registerReceiver(this, receiver, IntentFilter(ACTION_BREAK_NEXT_TUNE), ContextCompat.RECEIVER_EXPORTED)
+        debugReceiver = receiver
+    }
+
+    private var debugReceiver: BroadcastReceiver? = null
+
+    override fun onDestroy() {
+        debugReceiver?.let(::unregisterReceiver)
+        debugReceiver = null
+        super.onDestroy()
     }
 
     /**
@@ -153,3 +196,5 @@ class MainActivity : ComponentActivity() {
         f.delete()
     }
 }
+
+private const val ACTION_BREAK_NEXT_TUNE = "com.bmiller.uzzu.DEBUG_BREAK_NEXT_TUNE"

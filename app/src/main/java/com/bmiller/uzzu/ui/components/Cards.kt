@@ -46,6 +46,8 @@ fun UzzuCard(
     modifier: Modifier = Modifier,
     interactionSource: MutableInteractionSource? = null,
     container: Color = UzzuColors.Surface,
+    focusedContainer: Color = container,
+    restBorder: Color = UzzuColors.Outline,
     content: @Composable () -> Unit,
 ) {
     val focused = Border(BorderStroke(Dimens.FocusBorder, UzzuColors.Accent), shape = shape)
@@ -56,13 +58,13 @@ fun UzzuCard(
         colors = CardDefaults.colors(
             containerColor = container,
             contentColor = UzzuColors.TextPrimary,
-            focusedContainerColor = container,
+            focusedContainerColor = focusedContainer,
             focusedContentColor = UzzuColors.TextPrimary,
-            pressedContainerColor = container,
+            pressedContainerColor = focusedContainer,
             pressedContentColor = UzzuColors.TextPrimary,
         ),
         border = CardDefaults.border(
-            border = Border(BorderStroke(Dimens.RestBorder, UzzuColors.Outline), shape = shape),
+            border = Border(BorderStroke(Dimens.RestBorder, restBorder), shape = shape),
             focusedBorder = focused,
             pressedBorder = focused,
         ),
