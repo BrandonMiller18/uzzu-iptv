@@ -86,9 +86,17 @@ class M3uParser(private val log: (String) -> Unit = {}) {
 
         return Playlist(
             games = buildGames(gameEntries),
-            channels = channels,
+            channels = withUniqueKeys(channels),
             stats = ParseStats(entries.size + malformed, malformed, duplicates, replays, unknown),
         )
+    }
+
+    private fun withUniqueKeys(channels: List<Channel>): List<Channel> {
+        val seen = HashMap<String, Int>()
+        return channels.map { ch ->
+            val n = seen.merge(ch.id, 1, Int::plus)!!
+            if (n == 1) ch else ch.copy(key = "${ch.id}#$n")
+        }
     }
 
     private fun parseEntry(index: Int, extinf: String, urlLine: String): Entry? {

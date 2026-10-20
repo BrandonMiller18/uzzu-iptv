@@ -54,6 +54,11 @@ data class Channel(
     val url: String,
     val subGroup: ChannelGroup,
     val playlistIndex: Int,
+    /**
+     * Unique, refresh-stable key ([id] is not unique): [id] for its first occurrence in playlist
+     * order, `id#2`, `id#3` â€¦ for later ones. Used for play contexts, CH up/down and the overlay.
+     */
+    val key: String = id,
 )
 
 data class Playlist(

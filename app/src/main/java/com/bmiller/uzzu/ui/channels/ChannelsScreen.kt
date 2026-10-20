@@ -88,7 +88,7 @@ fun ChannelsScreen(
                         index = index + 1,
                         name = ch.name,
                         logoUrl = ch.logoUrl,
-                        onClick = { onPlay(ch, PlayContext(Section.CHANNELS, tab, items.map { it.id }, ch.id)) },
+                        onClick = { onPlay(ch, PlayContext(Section.CHANNELS, tab, items.map { it.key }, ch.key)) },
                         modifier = m.testTag(ch.gridKey()),
                     )
                 }

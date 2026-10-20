@@ -163,8 +163,8 @@ class ScreensBehaviorTest {
         assertEquals(channel.url, item.url)
         assertEquals(Section.CHANNELS, ctx.section)
         assertEquals("All", ctx.group)
-        assertEquals(ordered.map { it.id }, ctx.itemKeys)
-        assertEquals(channel.id, ctx.currentKey)
+        assertEquals(ordered.map { it.key }, ctx.itemKeys)
+        assertEquals(channel.key, ctx.currentKey)
 
         back()
         assertEquals(Route.Channels, nav.current)

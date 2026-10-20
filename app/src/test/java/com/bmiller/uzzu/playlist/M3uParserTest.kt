@@ -267,4 +267,14 @@ class M3uParserTest {
         val text = "#EXTINF:0 tvg-id=\"Chan X\" group-title=\"Live-Channels\",\nhttps://h/x.m3u8"
         assertEquals("Chan X", parser.parse(text).channels.single().name)
     }
+
+    @Test
+    fun `duplicate channel ids get unique keys in playlist order`() {
+        val text = listOf("ESPN" to 1, "ESPN" to 2, "Fox" to 3, "ESPN" to 4).joinToString("\n") { (id, n) ->
+            "#EXTINF:0 tvg-id=\"$id\" group-title=\"Live-Channels\",$id\nhttps://h/$n.m3u8"
+        }
+        val ch = parser.parse(text).channels
+        assertEquals(listOf("ESPN", "ESPN", "Fox", "ESPN"), ch.map { it.id })
+        assertEquals(listOf("ESPN", "ESPN#2", "Fox", "ESPN#3"), ch.map { it.key })
+    }
 }
