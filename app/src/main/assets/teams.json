@@ -1,0 +1,1165 @@
+{
+ "source": "ESPN site API teams endpoints (tools/generate_teams.py)",
+ "teams": [
+  {
+   "league": "NFL",
+   "displayName": "Arizona Cardinals",
+   "location": "Arizona",
+   "name": "Cardinals",
+   "shortDisplayName": "Cardinals",
+   "abbreviation": "ARI",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Atlanta Falcons",
+   "location": "Atlanta",
+   "name": "Falcons",
+   "shortDisplayName": "Falcons",
+   "abbreviation": "ATL",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Baltimore Ravens",
+   "location": "Baltimore",
+   "name": "Ravens",
+   "shortDisplayName": "Ravens",
+   "abbreviation": "BAL",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Buffalo Bills",
+   "location": "Buffalo",
+   "name": "Bills",
+   "shortDisplayName": "Bills",
+   "abbreviation": "BUF",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Carolina Panthers",
+   "location": "Carolina",
+   "name": "Panthers",
+   "shortDisplayName": "Panthers",
+   "abbreviation": "CAR",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Chicago Bears",
+   "location": "Chicago",
+   "name": "Bears",
+   "shortDisplayName": "Bears",
+   "abbreviation": "CHI",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Cincinnati Bengals",
+   "location": "Cincinnati",
+   "name": "Bengals",
+   "shortDisplayName": "Bengals",
+   "abbreviation": "CIN",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Cleveland Browns",
+   "location": "Cleveland",
+   "name": "Browns",
+   "shortDisplayName": "Browns",
+   "abbreviation": "CLE",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Dallas Cowboys",
+   "location": "Dallas",
+   "name": "Cowboys",
+   "shortDisplayName": "Cowboys",
+   "abbreviation": "DAL",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Denver Broncos",
+   "location": "Denver",
+   "name": "Broncos",
+   "shortDisplayName": "Broncos",
+   "abbreviation": "DEN",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Detroit Lions",
+   "location": "Detroit",
+   "name": "Lions",
+   "shortDisplayName": "Lions",
+   "abbreviation": "DET",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Green Bay Packers",
+   "location": "Green Bay",
+   "name": "Packers",
+   "shortDisplayName": "Packers",
+   "abbreviation": "GB",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Houston Texans",
+   "location": "Houston",
+   "name": "Texans",
+   "shortDisplayName": "Texans",
+   "abbreviation": "HOU",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Indianapolis Colts",
+   "location": "Indianapolis",
+   "name": "Colts",
+   "shortDisplayName": "Colts",
+   "abbreviation": "IND",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Jacksonville Jaguars",
+   "location": "Jacksonville",
+   "name": "Jaguars",
+   "shortDisplayName": "Jaguars",
+   "abbreviation": "JAX",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Kansas City Chiefs",
+   "location": "Kansas City",
+   "name": "Chiefs",
+   "shortDisplayName": "Chiefs",
+   "abbreviation": "KC",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Las Vegas Raiders",
+   "location": "Las Vegas",
+   "name": "Raiders",
+   "shortDisplayName": "Raiders",
+   "abbreviation": "LV",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Los Angeles Chargers",
+   "location": "Los Angeles",
+   "name": "Chargers",
+   "shortDisplayName": "Chargers",
+   "abbreviation": "LAC",
+   "aliases": [
+    "LA Chargers"
+   ]
+  },
+  {
+   "league": "NFL",
+   "displayName": "Los Angeles Rams",
+   "location": "Los Angeles",
+   "name": "Rams",
+   "shortDisplayName": "Rams",
+   "abbreviation": "LAR",
+   "aliases": [
+    "LA Rams"
+   ]
+  },
+  {
+   "league": "NFL",
+   "displayName": "Miami Dolphins",
+   "location": "Miami",
+   "name": "Dolphins",
+   "shortDisplayName": "Dolphins",
+   "abbreviation": "MIA",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Minnesota Vikings",
+   "location": "Minnesota",
+   "name": "Vikings",
+   "shortDisplayName": "Vikings",
+   "abbreviation": "MIN",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "New England Patriots",
+   "location": "New England",
+   "name": "Patriots",
+   "shortDisplayName": "Patriots",
+   "abbreviation": "NE",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "New Orleans Saints",
+   "location": "New Orleans",
+   "name": "Saints",
+   "shortDisplayName": "Saints",
+   "abbreviation": "NO",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "New York Giants",
+   "location": "New York",
+   "name": "Giants",
+   "shortDisplayName": "Giants",
+   "abbreviation": "NYG",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "New York Jets",
+   "location": "New York",
+   "name": "Jets",
+   "shortDisplayName": "Jets",
+   "abbreviation": "NYJ",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Philadelphia Eagles",
+   "location": "Philadelphia",
+   "name": "Eagles",
+   "shortDisplayName": "Eagles",
+   "abbreviation": "PHI",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Pittsburgh Steelers",
+   "location": "Pittsburgh",
+   "name": "Steelers",
+   "shortDisplayName": "Steelers",
+   "abbreviation": "PIT",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "San Francisco 49ers",
+   "location": "San Francisco",
+   "name": "49ers",
+   "shortDisplayName": "49ers",
+   "abbreviation": "SF",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Seattle Seahawks",
+   "location": "Seattle",
+   "name": "Seahawks",
+   "shortDisplayName": "Seahawks",
+   "abbreviation": "SEA",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Tampa Bay Buccaneers",
+   "location": "Tampa Bay",
+   "name": "Buccaneers",
+   "shortDisplayName": "Buccaneers",
+   "abbreviation": "TB",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Tennessee Titans",
+   "location": "Tennessee",
+   "name": "Titans",
+   "shortDisplayName": "Titans",
+   "abbreviation": "TEN",
+   "aliases": []
+  },
+  {
+   "league": "NFL",
+   "displayName": "Washington Commanders",
+   "location": "Washington",
+   "name": "Commanders",
+   "shortDisplayName": "Commanders",
+   "abbreviation": "WSH",
+   "aliases": [
+    "Washington Football Team"
+   ]
+  },
+  {
+   "league": "MLB",
+   "displayName": "Arizona Diamondbacks",
+   "location": "Arizona",
+   "name": "Diamondbacks",
+   "shortDisplayName": "Diamondbacks",
+   "abbreviation": "ARI",
+   "aliases": [
+    "Arizona D-backs",
+    "Arizona Dbacks"
+   ]
+  },
+  {
+   "league": "MLB",
+   "displayName": "Athletics",
+   "location": "Athletics",
+   "name": "Athletics",
+   "shortDisplayName": "Athletics",
+   "abbreviation": "ATH",
+   "aliases": [
+    "Oakland Athletics",
+    "Las Vegas Athletics",
+    "Sacramento Athletics",
+    "A's",
+    "Oakland A's"
+   ]
+  },
+  {
+   "league": "MLB",
+   "displayName": "Atlanta Braves",
+   "location": "Atlanta",
+   "name": "Braves",
+   "shortDisplayName": "Braves",
+   "abbreviation": "ATL",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "Baltimore Orioles",
+   "location": "Baltimore",
+   "name": "Orioles",
+   "shortDisplayName": "Orioles",
+   "abbreviation": "BAL",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "Boston Red Sox",
+   "location": "Boston",
+   "name": "Red Sox",
+   "shortDisplayName": "Red Sox",
+   "abbreviation": "BOS",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "Chicago Cubs",
+   "location": "Chicago",
+   "name": "Cubs",
+   "shortDisplayName": "Cubs",
+   "abbreviation": "CHC",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "Chicago White Sox",
+   "location": "Chicago",
+   "name": "White Sox",
+   "shortDisplayName": "White Sox",
+   "abbreviation": "CHW",
+   "aliases": [
+    "Chicago Whitesox"
+   ]
+  },
+  {
+   "league": "MLB",
+   "displayName": "Cincinnati Reds",
+   "location": "Cincinnati",
+   "name": "Reds",
+   "shortDisplayName": "Reds",
+   "abbreviation": "CIN",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "Cleveland Guardians",
+   "location": "Cleveland",
+   "name": "Guardians",
+   "shortDisplayName": "Guardians",
+   "abbreviation": "CLE",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "Colorado Rockies",
+   "location": "Colorado",
+   "name": "Rockies",
+   "shortDisplayName": "Rockies",
+   "abbreviation": "COL",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "Detroit Tigers",
+   "location": "Detroit",
+   "name": "Tigers",
+   "shortDisplayName": "Tigers",
+   "abbreviation": "DET",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "Houston Astros",
+   "location": "Houston",
+   "name": "Astros",
+   "shortDisplayName": "Astros",
+   "abbreviation": "HOU",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "Kansas City Royals",
+   "location": "Kansas City",
+   "name": "Royals",
+   "shortDisplayName": "Royals",
+   "abbreviation": "KC",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "Los Angeles Angels",
+   "location": "Los Angeles",
+   "name": "Angels",
+   "shortDisplayName": "Angels",
+   "abbreviation": "LAA",
+   "aliases": [
+    "LA Angels",
+    "Anaheim Angels",
+    "Los Angeles Angels of Anaheim"
+   ]
+  },
+  {
+   "league": "MLB",
+   "displayName": "Los Angeles Dodgers",
+   "location": "Los Angeles",
+   "name": "Dodgers",
+   "shortDisplayName": "Dodgers",
+   "abbreviation": "LAD",
+   "aliases": [
+    "LA Dodgers"
+   ]
+  },
+  {
+   "league": "MLB",
+   "displayName": "Miami Marlins",
+   "location": "Miami",
+   "name": "Marlins",
+   "shortDisplayName": "Marlins",
+   "abbreviation": "MIA",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "Milwaukee Brewers",
+   "location": "Milwaukee",
+   "name": "Brewers",
+   "shortDisplayName": "Brewers",
+   "abbreviation": "MIL",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "Minnesota Twins",
+   "location": "Minnesota",
+   "name": "Twins",
+   "shortDisplayName": "Twins",
+   "abbreviation": "MIN",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "New York Mets",
+   "location": "New York",
+   "name": "Mets",
+   "shortDisplayName": "Mets",
+   "abbreviation": "NYM",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "New York Yankees",
+   "location": "New York",
+   "name": "Yankees",
+   "shortDisplayName": "Yankees",
+   "abbreviation": "NYY",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "Philadelphia Phillies",
+   "location": "Philadelphia",
+   "name": "Phillies",
+   "shortDisplayName": "Phillies",
+   "abbreviation": "PHI",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "Pittsburgh Pirates",
+   "location": "Pittsburgh",
+   "name": "Pirates",
+   "shortDisplayName": "Pirates",
+   "abbreviation": "PIT",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "San Diego Padres",
+   "location": "San Diego",
+   "name": "Padres",
+   "shortDisplayName": "Padres",
+   "abbreviation": "SD",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "San Francisco Giants",
+   "location": "San Francisco",
+   "name": "Giants",
+   "shortDisplayName": "Giants",
+   "abbreviation": "SF",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "Seattle Mariners",
+   "location": "Seattle",
+   "name": "Mariners",
+   "shortDisplayName": "Mariners",
+   "abbreviation": "SEA",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "St. Louis Cardinals",
+   "location": "St. Louis",
+   "name": "Cardinals",
+   "shortDisplayName": "Cardinals",
+   "abbreviation": "STL",
+   "aliases": [
+    "Saint Louis Cardinals"
+   ]
+  },
+  {
+   "league": "MLB",
+   "displayName": "Tampa Bay Rays",
+   "location": "Tampa Bay",
+   "name": "Rays",
+   "shortDisplayName": "Rays",
+   "abbreviation": "TB",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "Texas Rangers",
+   "location": "Texas",
+   "name": "Rangers",
+   "shortDisplayName": "Rangers",
+   "abbreviation": "TEX",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "Toronto Blue Jays",
+   "location": "Toronto",
+   "name": "Blue Jays",
+   "shortDisplayName": "Blue Jays",
+   "abbreviation": "TOR",
+   "aliases": []
+  },
+  {
+   "league": "MLB",
+   "displayName": "Washington Nationals",
+   "location": "Washington",
+   "name": "Nationals",
+   "shortDisplayName": "Nationals",
+   "abbreviation": "WSH",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Anaheim Ducks",
+   "location": "Anaheim",
+   "name": "Ducks",
+   "shortDisplayName": "Ducks",
+   "abbreviation": "ANA",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Boston Bruins",
+   "location": "Boston",
+   "name": "Bruins",
+   "shortDisplayName": "Bruins",
+   "abbreviation": "BOS",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Buffalo Sabres",
+   "location": "Buffalo",
+   "name": "Sabres",
+   "shortDisplayName": "Sabres",
+   "abbreviation": "BUF",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Calgary Flames",
+   "location": "Calgary",
+   "name": "Flames",
+   "shortDisplayName": "Flames",
+   "abbreviation": "CGY",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Carolina Hurricanes",
+   "location": "Carolina",
+   "name": "Hurricanes",
+   "shortDisplayName": "Hurricanes",
+   "abbreviation": "CAR",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Chicago Blackhawks",
+   "location": "Chicago",
+   "name": "Blackhawks",
+   "shortDisplayName": "Blackhawks",
+   "abbreviation": "CHI",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Colorado Avalanche",
+   "location": "Colorado",
+   "name": "Avalanche",
+   "shortDisplayName": "Avalanche",
+   "abbreviation": "COL",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Columbus Blue Jackets",
+   "location": "Columbus",
+   "name": "Blue Jackets",
+   "shortDisplayName": "Blue Jackets",
+   "abbreviation": "CBJ",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Dallas Stars",
+   "location": "Dallas",
+   "name": "Stars",
+   "shortDisplayName": "Stars",
+   "abbreviation": "DAL",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Detroit Red Wings",
+   "location": "Detroit",
+   "name": "Red Wings",
+   "shortDisplayName": "Red Wings",
+   "abbreviation": "DET",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Edmonton Oilers",
+   "location": "Edmonton",
+   "name": "Oilers",
+   "shortDisplayName": "Oilers",
+   "abbreviation": "EDM",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Florida Panthers",
+   "location": "Florida",
+   "name": "Panthers",
+   "shortDisplayName": "Panthers",
+   "abbreviation": "FLA",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Los Angeles Kings",
+   "location": "Los Angeles",
+   "name": "Kings",
+   "shortDisplayName": "Kings",
+   "abbreviation": "LA",
+   "aliases": [
+    "LA Kings"
+   ]
+  },
+  {
+   "league": "NHL",
+   "displayName": "Minnesota Wild",
+   "location": "Minnesota",
+   "name": "Wild",
+   "shortDisplayName": "Wild",
+   "abbreviation": "MIN",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Montreal Canadiens",
+   "location": "Montreal",
+   "name": "Canadiens",
+   "shortDisplayName": "Canadiens",
+   "abbreviation": "MTL",
+   "aliases": [
+    "Montréal Canadiens"
+   ]
+  },
+  {
+   "league": "NHL",
+   "displayName": "Nashville Predators",
+   "location": "Nashville",
+   "name": "Predators",
+   "shortDisplayName": "Predators",
+   "abbreviation": "NSH",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "New Jersey Devils",
+   "location": "New Jersey",
+   "name": "Devils",
+   "shortDisplayName": "Devils",
+   "abbreviation": "NJ",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "New York Islanders",
+   "location": "New York",
+   "name": "Islanders",
+   "shortDisplayName": "Islanders",
+   "abbreviation": "NYI",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "New York Rangers",
+   "location": "New York",
+   "name": "Rangers",
+   "shortDisplayName": "Rangers",
+   "abbreviation": "NYR",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Ottawa Senators",
+   "location": "Ottawa",
+   "name": "Senators",
+   "shortDisplayName": "Senators",
+   "abbreviation": "OTT",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Philadelphia Flyers",
+   "location": "Philadelphia",
+   "name": "Flyers",
+   "shortDisplayName": "Flyers",
+   "abbreviation": "PHI",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Pittsburgh Penguins",
+   "location": "Pittsburgh",
+   "name": "Penguins",
+   "shortDisplayName": "Penguins",
+   "abbreviation": "PIT",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "San Jose Sharks",
+   "location": "San Jose",
+   "name": "Sharks",
+   "shortDisplayName": "Sharks",
+   "abbreviation": "SJ",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Seattle Kraken",
+   "location": "Seattle",
+   "name": "Kraken",
+   "shortDisplayName": "Kraken",
+   "abbreviation": "SEA",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "St. Louis Blues",
+   "location": "St. Louis",
+   "name": "Blues",
+   "shortDisplayName": "Blues",
+   "abbreviation": "STL",
+   "aliases": [
+    "Saint Louis Blues"
+   ]
+  },
+  {
+   "league": "NHL",
+   "displayName": "Tampa Bay Lightning",
+   "location": "Tampa Bay",
+   "name": "Lightning",
+   "shortDisplayName": "Lightning",
+   "abbreviation": "TB",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Toronto Maple Leafs",
+   "location": "Toronto",
+   "name": "Maple Leafs",
+   "shortDisplayName": "Maple Leafs",
+   "abbreviation": "TOR",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Utah Mammoth",
+   "location": "Utah",
+   "name": "Mammoth",
+   "shortDisplayName": "Mammoth",
+   "abbreviation": "UTAH",
+   "aliases": [
+    "Utah Hockey Club",
+    "Utah HC"
+   ]
+  },
+  {
+   "league": "NHL",
+   "displayName": "Vancouver Canucks",
+   "location": "Vancouver",
+   "name": "Canucks",
+   "shortDisplayName": "Canucks",
+   "abbreviation": "VAN",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Vegas Golden Knights",
+   "location": "Vegas",
+   "name": "Golden Knights",
+   "shortDisplayName": "Golden Knights",
+   "abbreviation": "VGK",
+   "aliases": [
+    "Las Vegas Golden Knights"
+   ]
+  },
+  {
+   "league": "NHL",
+   "displayName": "Washington Capitals",
+   "location": "Washington",
+   "name": "Capitals",
+   "shortDisplayName": "Capitals",
+   "abbreviation": "WSH",
+   "aliases": []
+  },
+  {
+   "league": "NHL",
+   "displayName": "Winnipeg Jets",
+   "location": "Winnipeg",
+   "name": "Jets",
+   "shortDisplayName": "Jets",
+   "abbreviation": "WPG",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Atlanta Hawks",
+   "location": "Atlanta",
+   "name": "Hawks",
+   "shortDisplayName": "Hawks",
+   "abbreviation": "ATL",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Boston Celtics",
+   "location": "Boston",
+   "name": "Celtics",
+   "shortDisplayName": "Celtics",
+   "abbreviation": "BOS",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Brooklyn Nets",
+   "location": "Brooklyn",
+   "name": "Nets",
+   "shortDisplayName": "Nets",
+   "abbreviation": "BKN",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Charlotte Hornets",
+   "location": "Charlotte",
+   "name": "Hornets",
+   "shortDisplayName": "Hornets",
+   "abbreviation": "CHA",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Chicago Bulls",
+   "location": "Chicago",
+   "name": "Bulls",
+   "shortDisplayName": "Bulls",
+   "abbreviation": "CHI",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Cleveland Cavaliers",
+   "location": "Cleveland",
+   "name": "Cavaliers",
+   "shortDisplayName": "Cavaliers",
+   "abbreviation": "CLE",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Dallas Mavericks",
+   "location": "Dallas",
+   "name": "Mavericks",
+   "shortDisplayName": "Mavericks",
+   "abbreviation": "DAL",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Denver Nuggets",
+   "location": "Denver",
+   "name": "Nuggets",
+   "shortDisplayName": "Nuggets",
+   "abbreviation": "DEN",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Detroit Pistons",
+   "location": "Detroit",
+   "name": "Pistons",
+   "shortDisplayName": "Pistons",
+   "abbreviation": "DET",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Golden State Warriors",
+   "location": "Golden State",
+   "name": "Warriors",
+   "shortDisplayName": "Warriors",
+   "abbreviation": "GS",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Houston Rockets",
+   "location": "Houston",
+   "name": "Rockets",
+   "shortDisplayName": "Rockets",
+   "abbreviation": "HOU",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Indiana Pacers",
+   "location": "Indiana",
+   "name": "Pacers",
+   "shortDisplayName": "Pacers",
+   "abbreviation": "IND",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "LA Clippers",
+   "location": "LA",
+   "name": "Clippers",
+   "shortDisplayName": "Clippers",
+   "abbreviation": "LAC",
+   "aliases": [
+    "Los Angeles Clippers"
+   ]
+  },
+  {
+   "league": "NBA",
+   "displayName": "Los Angeles Lakers",
+   "location": "Los Angeles",
+   "name": "Lakers",
+   "shortDisplayName": "Lakers",
+   "abbreviation": "LAL",
+   "aliases": [
+    "LA Lakers"
+   ]
+  },
+  {
+   "league": "NBA",
+   "displayName": "Memphis Grizzlies",
+   "location": "Memphis",
+   "name": "Grizzlies",
+   "shortDisplayName": "Grizzlies",
+   "abbreviation": "MEM",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Miami Heat",
+   "location": "Miami",
+   "name": "Heat",
+   "shortDisplayName": "Heat",
+   "abbreviation": "MIA",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Milwaukee Bucks",
+   "location": "Milwaukee",
+   "name": "Bucks",
+   "shortDisplayName": "Bucks",
+   "abbreviation": "MIL",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Minnesota Timberwolves",
+   "location": "Minnesota",
+   "name": "Timberwolves",
+   "shortDisplayName": "Timberwolves",
+   "abbreviation": "MIN",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "New Orleans Pelicans",
+   "location": "New Orleans",
+   "name": "Pelicans",
+   "shortDisplayName": "Pelicans",
+   "abbreviation": "NO",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "New York Knicks",
+   "location": "New York",
+   "name": "Knicks",
+   "shortDisplayName": "Knicks",
+   "abbreviation": "NY",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Oklahoma City Thunder",
+   "location": "Oklahoma City",
+   "name": "Thunder",
+   "shortDisplayName": "Thunder",
+   "abbreviation": "OKC",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Orlando Magic",
+   "location": "Orlando",
+   "name": "Magic",
+   "shortDisplayName": "Magic",
+   "abbreviation": "ORL",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Philadelphia 76ers",
+   "location": "Philadelphia",
+   "name": "76ers",
+   "shortDisplayName": "76ers",
+   "abbreviation": "PHI",
+   "aliases": [
+    "Philadelphia Sixers"
+   ]
+  },
+  {
+   "league": "NBA",
+   "displayName": "Phoenix Suns",
+   "location": "Phoenix",
+   "name": "Suns",
+   "shortDisplayName": "Suns",
+   "abbreviation": "PHX",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Portland Trail Blazers",
+   "location": "Portland",
+   "name": "Trail Blazers",
+   "shortDisplayName": "Trail Blazers",
+   "abbreviation": "POR",
+   "aliases": [
+    "Portland Trailblazers"
+   ]
+  },
+  {
+   "league": "NBA",
+   "displayName": "Sacramento Kings",
+   "location": "Sacramento",
+   "name": "Kings",
+   "shortDisplayName": "Kings",
+   "abbreviation": "SAC",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "San Antonio Spurs",
+   "location": "San Antonio",
+   "name": "Spurs",
+   "shortDisplayName": "Spurs",
+   "abbreviation": "SA",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Toronto Raptors",
+   "location": "Toronto",
+   "name": "Raptors",
+   "shortDisplayName": "Raptors",
+   "abbreviation": "TOR",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Utah Jazz",
+   "location": "Utah",
+   "name": "Jazz",
+   "shortDisplayName": "Jazz",
+   "abbreviation": "UTAH",
+   "aliases": []
+  },
+  {
+   "league": "NBA",
+   "displayName": "Washington Wizards",
+   "location": "Washington",
+   "name": "Wizards",
+   "shortDisplayName": "Wizards",
+   "abbreviation": "WSH",
+   "aliases": []
+  }
+ ]
+}
