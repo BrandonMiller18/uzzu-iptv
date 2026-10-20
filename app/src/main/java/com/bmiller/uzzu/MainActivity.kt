@@ -2,12 +2,7 @@ package com.bmiller.uzzu
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,32 +10,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bmiller.uzzu.data.PlaylistState
 import com.bmiller.uzzu.log.SecretMasker
+import com.bmiller.uzzu.player.PlayContext
 import com.bmiller.uzzu.player.PlayItem
-import com.bmiller.uzzu.playlist.FeedSide
-import com.bmiller.uzzu.ui.components.MonoTag
-import com.bmiller.uzzu.ui.debug.DebugFocus
-import com.bmiller.uzzu.ui.debug.DebugListScreen
+import com.bmiller.uzzu.ui.AppActions
+import com.bmiller.uzzu.ui.AppContent
+import com.bmiller.uzzu.ui.AppState
+import com.bmiller.uzzu.ui.Navigator
+import com.bmiller.uzzu.ui.Route
 import com.bmiller.uzzu.ui.player.PlayerScreen
-import com.bmiller.uzzu.ui.setup.SetupScreen
-import com.bmiller.uzzu.ui.theme.UzzuColors
 import com.bmiller.uzzu.ui.theme.UzzuTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.File
-import java.text.DateFormat
-import java.util.Date
-
-private sealed interface Screen {
-    data object Starting : Screen
-    data class Setup(val canGoBack: Boolean) : Screen
-    data object List : Screen
-    data object Player : Screen
-}
 
 class MainActivity : ComponentActivity() {
     private val container get() = (application as UzzuApp).container
@@ -62,77 +47,88 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun App() {
-        val repo = container.playlistRepository
-        var screen by remember { mutableStateOf<Screen>(Screen.Starting) }
-        var focus by remember { mutableStateOf<DebugFocus?>(null) }
-        val listState = rememberLazyListState()
+        val nav = remember { Navigator(Route.Starting) }
         val scope = rememberCoroutineScope()
-        // Playlist merged with league/start time/status; polled from ESPN while the list is visible.
-        val state by container.scheduleRepository.model.collectAsStateWithLifecycle()
+        var refreshing by remember { mutableStateOf(false) }
+        // Playlist merged with league/start time/status (ESPN, polled while S2 is visible).
+        val model by container.scheduleRepository.model.collectAsStateWithLifecycle()
+        val url by container.settings.playlistUrl.collectAsStateWithLifecycle(null)
+        val lastFetchAt by container.settings.lastFetchAt.collectAsStateWithLifecycle(null)
+        val lastFetchResult by container.settings.lastFetchResult.collectAsStateWithLifecycle(null)
+        val update by container.updates.state.collectAsStateWithLifecycle()
+
+        val actions = remember {
+            object : AppActions {
+                override fun refresh() {
+                    if (refreshing) return
+                    refreshing = true
+                    scope.launch {
+                        try {
+                            refreshPlaylistThenSchedule()
+                        } finally {
+                            refreshing = false
+                        }
+                    }
+                }
+
+                override suspend fun saveUrl(url: String): String? =
+                    runCatching { container.playlistRepository.saveAndLoad(url) }.fold(
+                        onSuccess = {
+                            scope.launch { container.scheduleRepository.refresh() }
+                            null
+                        },
+                        onFailure = { SecretMasker.mask(it.message ?: "Could not load the playlist.") },
+                    )
+
+                override fun play(item: PlayItem, context: PlayContext) = container.player.play(item, context)
+                override fun stopPlayback() = container.player.clear()
+                override fun startPolling(): AutoCloseable = container.scheduleRepository.startPolling()
+                override fun checkForUpdates() {
+                    scope.launch { container.updates.check(force = true) }
+                }
+                override fun installUpdate() = container.updates.install()
+                override fun dismissUpdate() = container.updates.dismiss()
+                override fun exit() = finish()
+            }
+        }
 
         LaunchedEffect(Unit) {
             if (BuildConfig.DEBUG) ingestDebugPlaylistUrl()
             if (container.settings.playlistUrl() == null) {
-                screen = Screen.Setup(canGoBack = false)
+                nav.reset(Route.Setup(canGoBack = false))
             } else {
-                screen = Screen.List
-                repo.refresh() // every launch, before showing data
+                // Every launch, before S1 shows counts (S1 shows LOADING meanwhile).
+                nav.reset(Route.Home)
+                refreshPlaylistThenSchedule()
             }
+            launch { container.updates.check(force = false) }
         }
 
-        Box(Modifier.fillMaxSize().background(UzzuColors.Background)) {
-            when (val s = screen) {
-                Screen.Starting -> MonoTag("LOADING", Modifier.align(Alignment.Center))
+        AppContent(
+            nav = nav,
+            state = AppState(
+                model = model,
+                refreshing = refreshing,
+                lastFetchAtMillis = lastFetchAt,
+                lastFetchResult = lastFetchResult,
+                playlistUrl = url,
+                update = update,
+                appVersion = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+                logPath = container.logger.file.absolutePath,
+            ),
+            actions = actions,
+            player = { onBack -> PlayerScreen(container.player, onBack = onBack) },
+        )
+    }
 
-                is Screen.Setup -> {
-                    if (s.canGoBack) BackHandler { screen = Screen.List }
-                    SetupScreen(onSave = { url ->
-                        runCatching { repo.saveAndLoad(url) }.fold(
-                            onSuccess = { screen = Screen.List; null },
-                            onFailure = { SecretMasker.mask(it.message ?: "Could not load the playlist.") },
-                        )
-                    })
-                }
-
-                Screen.List -> {
-                    LifecycleStartEffect(Unit) {
-                        val polling = container.scheduleRepository.startPolling()
-                        onStopOrDispose { polling.close() }
-                    }
-                    val loaded = state as? PlaylistState.Loaded
-                    val status = when (val st = state) {
-                        PlaylistState.Idle, PlaylistState.Loading -> "LOADING"
-                        is PlaylistState.Failed -> "LOAD FAILED"
-                        is PlaylistState.Loaded ->
-                            "LAST SYNC ${DateFormat.getTimeInstance(DateFormat.SHORT).format(Date(st.fetchedAtMillis))}"
-                    }
-                    DebugListScreen(
-                        playlist = loaded?.playlist,
-                        status = status,
-                        error = (state as? PlaylistState.Failed)?.message,
-                        listState = listState,
-                        restoreFocus = focus,
-                        onPlayGame = { game, side ->
-                            val feed = game.feed(side) ?: return@DebugListScreen
-                            focus = DebugFocus("game:${game.id}:${if (side == FeedSide.HOME) "H" else "A"}")
-                            container.player.play(PlayItem("${game.title} · ${side.name}", feed.url))
-                            screen = Screen.Player
-                        },
-                        onPlayChannel = { ch ->
-                            focus = DebugFocus("ch:${ch.playlistIndex}")
-                            container.player.play(PlayItem(ch.name, ch.url))
-                            screen = Screen.Player
-                        },
-                        onRefresh = { scope.launch { repo.refresh() } },
-                        onEditUrl = { screen = Screen.Setup(canGoBack = true) },
-                    )
-                }
-
-                Screen.Player -> PlayerScreen(container.player, onBack = {
-                    container.player.clear()
-                    screen = Screen.List
-                })
-            }
+    /**
+     * Playlist first (it gates S1 and competes for bandwidth), then one schedule fetch so S1's live
+     * count is current. Continuous polling only runs while S2 is visible.
+     */
+    private suspend fun CoroutineScope.refreshPlaylistThenSchedule() {
+        container.playlistRepository.refresh()
+        if (container.playlistRepository.state.first() is PlaylistState.Loaded) {
+            launch { container.scheduleRepository.refresh() }
         }
     }
 
