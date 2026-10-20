@@ -53,7 +53,7 @@ import org.robolectric.annotation.GraphicsMode
 
 /**
  * JVM screenshots via Robolectric + Roborazzi at the Fire TV's 960x540 dp xhdpi screen.
- * `./gradlew recordRoborazziDebug` writes PNGs to app/build/outputs/roborazzi/.
+ * Goldens: see [Snapshots].
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -64,7 +64,7 @@ class ScreenshotTest {
 
     @Before fun setUp() = UiFixtures.pinLocale()
 
-    private fun shot(name: String) = compose.onRoot().captureRoboImage("build/outputs/roborazzi/$name.png")
+    private fun shot(name: String) = compose.onRoot().captureRoboImage(Snapshots.path(name), Snapshots.options)
 
     private fun app(route: Route, state: AppState = UiFixtures.state(), name: String) {
         compose.setContent { UzzuTheme { AppContent(Navigator(route), state, FakeActions()) { } } }
@@ -94,6 +94,22 @@ class ScreenshotTest {
 
     @Test fun s3Channels() = app(Route.Channels, name = "s3_channels")
 
+    /** All eight groups (one channel moved to Other): the tabs shrink to fit the safe area. */
+    @Test fun s3ChannelsAllGroups() {
+        val base = UiFixtures.playlist()
+        val playlist = base.copy(channels = base.channels.mapIndexed { i, c -> if (i == base.channels.lastIndex) c.copy(subGroup = com.bmiller.uzzu.playlist.ChannelGroup.OTHER) else c })
+        app(Route.Channels, UiFixtures.state(playlist), "s3_channels_all_groups")
+    }
+
+    @Test fun s2GamesLoadFailed() =
+        app(Route.Games, UiFixtures.state().copy(model = PlaylistState.Failed("Playlist request returned HTTP 500")), "s2_games_load_failed")
+
+    @Test fun s1HomeRefreshFailed() = app(
+        Route.Home,
+        UiFixtures.state().copy(lastFetchAtMillis = UiFixtures.FETCHED_AT + 60_000, lastFetchResult = "FAILED Playlist request returned HTTP 503"),
+        "s1_home_refresh_failed",
+    )
+
     @Test fun s7Settings() = app(Route.Settings, name = "s7_settings")
 
     /** S4 over S2, captured as the real Dialog window. */
@@ -102,7 +118,7 @@ class ScreenshotTest {
         compose.setContent { UzzuTheme { AppContent(Navigator(Route.Games), UiFixtures.state(playlist), FakeActions()) { } } }
         compose.waitForIdle()
         compose.key(android.view.KeyEvent.KEYCODE_DPAD_CENTER)
-        captureScreenRoboImage("build/outputs/roborazzi/s4_feed_picker.png")
+        captureScreenRoboImage(Snapshots.path("s4_feed_picker"), Snapshots.options)
     }
 
     /** S4 content alone (deterministic, no window composition). */

@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    // Screenshot goldens in src/test/snapshots: `recordRoborazziDebug` rewrites them,
+    // `verifyRoborazziDebug` fails on a visual change (local only; see ui/Snapshots.kt in tests).
     alias(libs.plugins.roborazzi)
 }
 

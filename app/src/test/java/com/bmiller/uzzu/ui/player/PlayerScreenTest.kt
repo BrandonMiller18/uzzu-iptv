@@ -32,6 +32,7 @@ import com.bmiller.uzzu.ui.UiFixtures
 import com.bmiller.uzzu.ui.focusedTag
 import com.bmiller.uzzu.ui.key
 import com.bmiller.uzzu.ui.theme.UzzuTheme
+import com.bmiller.uzzu.ui.Snapshots
 import com.github.takahirom.roborazzi.captureRoboImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -245,9 +246,9 @@ class PlayerScreenTest {
         assertTrue(texts.filter { score.containsMatchIn(it) }.toString(), texts.none { score.containsMatchIn(it) })
     }
 
-    // ---- Screenshots (build/outputs/roborazzi) ----
+    // ---- Screenshots (goldens: see Snapshots) ----
 
-    private fun shot(name: String) = compose.onRoot().captureRoboImage("build/outputs/roborazzi/$name.png")
+    private fun shot(name: String) = compose.onRoot().captureRoboImage(Snapshots.path(name), Snapshots.options)
 
     @Test fun shotBannerGame() {
         compose.mainClock.autoAdvance = false
