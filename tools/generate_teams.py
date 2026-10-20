@@ -76,7 +76,7 @@ def main():
         print(f"WARNING: manual alias target not found: {key}", file=sys.stderr)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps({"source": "ESPN site API teams endpoints (tools/generate_teams.py)", "teams": teams},
-                              ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+                              ensure_ascii=False, indent=1) + "\n", encoding="utf-8", newline="\n")
     print(f"wrote {len(teams)} teams to {out.relative_to(root)}")
 
 
