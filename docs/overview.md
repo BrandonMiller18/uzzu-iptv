@@ -1,0 +1,25 @@
+---
+type: Project
+title: Uzzu IPTV Player
+description: Single-user, sideloaded Android TV / Fire TV app that plays one uzzu.tv M3U playlist (live games with Home/Away feeds, live channels).
+generated: {by: claude/opus-5.5, at: 2026-10-20T00:00:00Z}
+---
+Kotlin, Compose for TV, Media3 ExoPlayer (HLS only), single `:app` module, package `com.bmiller.uzzu`.
+minSdk 28 (Fire TV Stick HD, Fire OS 7), compile/targetSdk 36, ABIs armeabi-v7a + arm64-v8a only.
+
+Not in scope: multiple users or playlists, EPG, DVR, Play Store distribution. Releases are signed
+APKs on GitHub Releases and the app updates itself (M5).
+
+**Status**: M1 done (first-run URL entry, fetch + parse, plain debug list, playback). M2
+(classification, ESPN schedule, channel sub-groups) in progress. Milestones M1–M5 live in `PLAN.md`.
+
+## Run / test
+- JDK 17 is required; set `JAVA_HOME` explicitly if the system `java` is older.
+- CI and local gate: `./gradlew testDebugUnitTest lintDebug assembleDebug`.
+- JVM screenshots (Roborazzi + Robolectric): `./gradlew recordRoborazziDebug`.
+- The only playlist in the repo is the scrubbed fixture `app/src/test/resources/fixtures/sample.m3u`.
+- On a device: see [Fire TV testing](/guides/fire-tv-testing.md). End-user install steps are in `README.md`.
+
+## Map
+- [App wiring](/architecture/app-wiring.md), [Playback lifecycle](/architecture/playback-lifecycle.md)
+- [Secret handling](/decisions/secret-handling.md), [Spec precedence](/decisions/spec-precedence.md)
