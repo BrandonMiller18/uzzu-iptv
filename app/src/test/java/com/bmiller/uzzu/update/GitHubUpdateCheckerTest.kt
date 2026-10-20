@@ -140,6 +140,7 @@ class GitHubUpdateCheckerTest {
         server.enqueue(MockResponse().setBody("not json"))
         c.check(force = true)
         assertTrue((c.state.value as UpdateState.Failed).message.startsWith("Update check failed"))
+        logger.flush()
         assertTrue(logger.file.readText().contains("check failed: HTTP 503"))
     }
 

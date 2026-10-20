@@ -262,6 +262,7 @@ class PlaybackManagerTest {
         assertFalse(report.lines.any { "10000007220" in it.value })
         assertEquals(1, player.stops)
         // Logged, masked.
+        logger.flush()
         val log = logger.file.readText()
         assertTrue("error screen: Stream returned 404" in log)
         assertFalse("10000007220" in log)

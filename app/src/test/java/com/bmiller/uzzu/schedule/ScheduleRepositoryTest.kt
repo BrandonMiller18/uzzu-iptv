@@ -157,6 +157,7 @@ class ScheduleRepositoryTest {
         repo.refresh()
         runCurrent()
         assertEquals(before, repo.games())
+        logger.flush()
         val log = logger.file.readText()
         assertTrue(log.contains("ESPN nhl 20261019 failed, keeping last values"))
         assertTrue(log.contains("ESPN fetch 0/10 ok"))

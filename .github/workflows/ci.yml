@@ -32,6 +32,17 @@ jobs:
       - name: Test, lint, assemble (debug + unsigned R8 release)
         run: ./gradlew --no-configuration-cache testDebugUnitTest lintDebug assembleDebug assembleRelease
 
+      # Debug-only hooks (fixture mode, URL feed, forced-404) must never reach the release dex.
+      - name: Release APK has no debug hooks
+        run: |
+          apk=$(ls app/build/outputs/apk/release/*.apk | head -n 1)
+          if unzip -p "$apk" 'classes*.dex' | grep -a -q -E 'uzzu-debug-missing|DEBUG_BREAK_NEXT_TUNE|debug_playlist_url|uzzu[.]fixture|suppress_errors'; then
+            echo "::error::debug hook strings found in the release dex"; exit 1
+          fi
+          if unzip -l "$apk" | grep -q -E 'assets/sample[.]m3u|assets/espn/'; then
+            echo "::error::fixture assets found in the release APK"; exit 1
+          fi
+
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:

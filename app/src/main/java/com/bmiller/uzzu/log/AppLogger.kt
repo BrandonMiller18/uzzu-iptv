@@ -3,10 +3,12 @@ package com.bmiller.uzzu.log
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Appends masked log lines to `files/logs/app.log`, rotating at [maxBytes] and keeping [keepFiles]
@@ -15,8 +17,8 @@ import java.util.concurrent.TimeUnit
  *
  * Masking, timestamping and logcat run on the caller's thread; the file append runs on [writer], a
  * single background thread by default, so player callbacks and key handlers on the main thread never
- * wait for flash I/O. One writer thread keeps lines in call order. [flush] waits for queued lines
- * (onStop, tests).
+ * wait for flash I/O. Lines are queued in call order and written in batches by one thread. [flush]
+ * waits for queued lines (onStop, tests).
  */
 class AppLogger(
     val dir: File,
@@ -40,24 +42,43 @@ class AppLogger(
         val masked = SecretMasker.mask(full)
         logcat?.invoke(level, tag, masked)
         val line = "${now().format(timeFormat)} $level/$tag: $masked\n"
-        try {
-            writer.execute { append(line) }
-        } catch (_: RejectedExecutionException) {
-            // Shut down: drop the line rather than block or crash.
+        queue.add(line)
+        // One drain task at a time; it writes everything queued so far in as few appends as possible.
+        if (drainScheduled.compareAndSet(false, true)) {
+            try {
+                writer.execute(::drain)
+            } catch (_: RejectedExecutionException) {
+                drainScheduled.set(false) // shut down: lines stay queued, nothing blocks or crashes
+            }
         }
     }
 
     /** Blocks until every line logged so far is on disk (at most [timeoutMillis]). */
-    fun flush(timeoutMillis: Long = 2_000) {
+    fun flush(timeoutMillis: Long = 5_000) {
         runCatching { writer.submit { }.get(timeoutMillis, TimeUnit.MILLISECONDS) }
     }
 
-    private fun append(line: String) {
+    private val queue = ConcurrentLinkedQueue<String>()
+    private val drainScheduled = AtomicBoolean(false)
+
+    private fun drain() {
+        // Reset first: a line queued after this point schedules another drain.
+        drainScheduled.set(false)
         try {
             dir.mkdirs()
-            val f = file
-            if (f.length() + line.length > maxBytes) rotate()
-            f.appendText(line)
+            var size = file.length()
+            val batch = StringBuilder()
+            while (true) {
+                val line = queue.poll() ?: break
+                if (size + batch.length + line.length > maxBytes) {
+                    if (batch.isNotEmpty()) file.appendText(batch.toString())
+                    batch.clear()
+                    rotate()
+                    size = 0
+                }
+                batch.append(line)
+            }
+            if (batch.isNotEmpty()) file.appendText(batch.toString())
         } catch (_: Exception) {
             // Logging must never crash the app.
         }
