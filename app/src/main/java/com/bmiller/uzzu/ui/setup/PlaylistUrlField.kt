@@ -53,6 +53,7 @@ fun maskPlaylistUrlForDisplay(url: String?): String {
 @Composable
 fun PlaylistUrlField(
     value: String,
+    placeholder: String,
     onValueChange: (String) -> Unit,
     onDone: () -> Unit,
     enabled: Boolean,
@@ -66,7 +67,7 @@ fun PlaylistUrlField(
         enabled = enabled,
         singleLine = true,
         label = { M3Text("PLAYLIST URL", style = UzzuType.Label) },
-        placeholder = { M3Text("https://", style = UzzuType.Mono, color = UzzuColors.TextSecondary) },
+        placeholder = { M3Text(placeholder, style = UzzuType.MonoPlain, color = UzzuColors.TextSecondary, maxLines = 1) },
         textStyle = UzzuType.Mono.copy(color = UzzuColors.TextPrimary),
         shape = UzzuShapes.SettingsRow,
         isError = isError,

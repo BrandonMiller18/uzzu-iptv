@@ -53,7 +53,6 @@ private val RowTitle = UzzuType.Label.copy(fontSize = UzzuType.BodyLarge.fontSiz
 @Composable
 fun SettingsScreen(
     maskedUrl: String,
-    currentUrl: String?,
     syncLine: String,
     updateLine: String,
     appVersion: String,
@@ -91,14 +90,17 @@ fun SettingsScreen(
 
     if (editing) {
         Dialog(onDismissRequest = { editing = false }, properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)) {
-            UrlEditDialogContent(currentUrl.orEmpty(), onSave = { url -> onSaveUrl(url).also { if (it == null) editing = false } }, onCancel = { editing = false })
+            UrlEditDialogContent(maskedUrl, onSave = { url -> onSaveUrl(url).also { if (it == null) editing = false } }, onCancel = { editing = false })
         }
     }
 }
 
-/** URL edit dialog body (Dialog + tv Surface, Scrim backdrop). */
+/**
+ * URL edit dialog body (Dialog + tv Surface, Scrim backdrop). Shows only the masked current value
+ * ([maskedUrl]); the field starts empty and an empty Save cancels (see [PlaylistUrlForm]).
+ */
 @Composable
-fun UrlEditDialogContent(initialUrl: String, onSave: suspend (String) -> String?, onCancel: () -> Unit) {
+fun UrlEditDialogContent(maskedUrl: String, onSave: suspend (String) -> String?, onCancel: () -> Unit) {
     Box(Modifier.fillMaxSize().background(UzzuColors.Scrim), contentAlignment = Alignment.Center) {
         Surface(
             shape = UzzuShapes.Dialog,
@@ -110,7 +112,7 @@ fun UrlEditDialogContent(initialUrl: String, onSave: suspend (String) -> String?
                     Text("// EDIT SIGNAL SOURCE", style = UzzuType.Mono, color = UzzuColors.TextSecondary)
                     Text("PLAYLIST URL", style = UzzuType.Title, color = UzzuColors.TextPrimary)
                 }
-                PlaylistUrlForm(initialUrl, onSave, onCancel = onCancel)
+                PlaylistUrlForm(onSave, currentMasked = maskedUrl, onCancel = onCancel)
             }
         }
     }

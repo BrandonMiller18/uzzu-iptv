@@ -114,7 +114,7 @@ class ScreenshotTest {
 
     @Test fun s7UrlEditDialog() {
         compose.setContent {
-            UzzuTheme { Box(Modifier.fillMaxSize().background(UzzuColors.Background)) { UrlEditDialogContent("https://example.test/playlist.m3u", { null }, {}) } }
+            UzzuTheme { Box(Modifier.fillMaxSize().background(UzzuColors.Background)) { UrlEditDialogContent(com.bmiller.uzzu.ui.setup.maskPlaylistUrlForDisplay(UiFixtures.state().playlistUrl), { null }, {}) } }
         }
         shot("s7_url_edit")
     }

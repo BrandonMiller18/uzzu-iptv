@@ -216,7 +216,6 @@ fun AppContent(
 
             Route.Settings -> SettingsScreen(
                 maskedUrl = maskPlaylistUrlForDisplay(state.playlistUrl),
-                currentUrl = state.playlistUrl,
                 syncLine = settingsSyncLine(state),
                 updateLine = updateLine(state.update),
                 appVersion = state.appVersion,

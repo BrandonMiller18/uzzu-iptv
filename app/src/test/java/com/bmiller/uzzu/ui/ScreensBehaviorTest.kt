@@ -315,6 +315,31 @@ class ScreensBehaviorTest {
         compose.onNodeWithTag("settings:url").assertIsFocused()
     }
 
+    @Test fun `S7 URL dialog never shows the saved URL in clear text and an empty Save cancels`() {
+        launch(Route.Settings)
+        compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
+        compose.onNodeWithTag("url:field").assertIsFocused()
+        val field = compose.onNodeWithTag("url:field").fetchSemanticsNode()
+        assertEquals("", field.config.getOrNull(SemanticsProperties.EditableText)?.text)
+        val texts = allTexts()
+        val secrets = listOf("someone", "example.com", "hunter22", "%40", "username=s", "password=h")
+        assertEquals(emptyList<String>(), texts.filter { t -> secrets.any { it in t } })
+        assertTrue(texts.any { it == "CURRENT: uzzu.example/get.php?username=••••&password=••••&type=m3u_plus" })
+        compose.onNodeWithTag("url:save").performSemanticsAction(SemanticsActions.OnClick)
+        compose.waitForIdle()
+        assertTrue(actions.saved.isEmpty())
+        assertTrue(compose.onAllNodesWithTag("url:field").fetchSemanticsNodes().isEmpty())
+        compose.onNodeWithTag("settings:url").assertIsFocused()
+    }
+
+    /** Every text (and editable text) in all windows, unmerged. */
+    private fun allTexts(): List<String> =
+        compose.onAllNodes(SemanticsMatcher("any") { true }, useUnmergedTree = true).fetchSemanticsNodes().flatMap { n ->
+            n.config.getOrNull(SemanticsProperties.Text).orEmpty().map { it.text } +
+                listOfNotNull(n.config.getOrNull(SemanticsProperties.EditableText)?.text) +
+                n.config.getOrNull(SemanticsProperties.ContentDescription).orEmpty()
+        }
+
     // ---- no scores ----
 
     @Test fun `no score text is rendered on S1, S2 or S4`() {

@@ -59,6 +59,10 @@ object UzzuType {
     // Section tags (// GAMES), times, key hints. 24/32 px mono.
     val Mono = TextStyle(fontFamily = robotoMono(400), fontWeight = FontWeight(400), fontSize = 12.sp, lineHeight = 16.sp, letterSpacing = 1.sp)
 
+    // Mono without tracking: everything mono that isn't a `//` section tag or the league tag
+    // (sync line, counts, key hints, settings values, channel index). App addition, not in the handoff file.
+    val MonoPlain = Mono.copy(letterSpacing = 0.sp)
+
     // Time / period on game cards. 28/36 px mono 500.
     val MonoLarge = TextStyle(fontFamily = robotoMono(500), fontWeight = FontWeight(500), fontSize = 14.sp, lineHeight = 18.sp)
 
