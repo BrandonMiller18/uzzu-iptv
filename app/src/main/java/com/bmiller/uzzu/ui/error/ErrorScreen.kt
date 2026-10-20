@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -71,7 +72,8 @@ fun ErrorScreen(report: ErrorReport, onRetry: () -> Unit, onBack: () -> Unit, mo
             Rule()
             Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 14.dp)) {
                 for (line in report.lines) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(Dimens.S6)) {
+                    // Fixed 20 dp rows (frame: 40 px line height); Compose trims line height on one-line Text.
+                    Row(Modifier.height(20.dp), horizontalArrangement = Arrangement.spacedBy(Dimens.S6), verticalAlignment = Alignment.CenterVertically) {
                         Text(line.label, style = UzzuType.Diagnostic, color = UzzuColors.TextSecondary, modifier = Modifier.width(130.dp))
                         Text(
                             line.value,
