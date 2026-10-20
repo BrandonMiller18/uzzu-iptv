@@ -41,7 +41,7 @@ class UpdateUiTest {
             UzzuTheme {
                 HomeScreen(
                     counts = homeCounts(UiFixtures.state().model),
-                    syncLabel = "LAST SYNC 7:10 PM",
+                    sync = com.bmiller.uzzu.ui.SyncStatus("LAST SYNC 7:10 PM"),
                     error = null,
                     update = update,
                     onGames = {}, onChannels = {}, onRefresh = {}, onSettings = {},

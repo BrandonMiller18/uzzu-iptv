@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleStartEffect
@@ -27,7 +28,12 @@ import com.bmiller.uzzu.playlist.League
 import com.bmiller.uzzu.ui.components.FocusGrid
 import com.bmiller.uzzu.ui.components.GameCard
 import com.bmiller.uzzu.ui.components.KeyHints
+import com.bmiller.uzzu.ui.components.ListFocus
 import com.bmiller.uzzu.ui.components.ListMemory
+import com.bmiller.uzzu.ui.components.LoadErrorBlock
+import com.bmiller.uzzu.ui.components.RecoverListFocus
+import com.bmiller.uzzu.ui.components.SyncTag
+import com.bmiller.uzzu.ui.SyncStatus
 import com.bmiller.uzzu.ui.components.LoadingTag
 import com.bmiller.uzzu.ui.components.MonoTag
 import com.bmiller.uzzu.ui.components.ScreenHeader
@@ -64,11 +70,13 @@ fun firstNotFinal(games: List<Game>): Game? = games.firstOrNull { it.status != G
 @Composable
 fun GamesScreen(
     games: List<Game>?,
-    syncLabel: String,
+    sync: SyncStatus,
     memory: ListMemory,
     startPolling: () -> AutoCloseable,
     onPlay: (Game, FeedSide, PlayContext) -> Unit,
     onBack: () -> Unit,
+    loadError: String? = null,
+    onRetry: () -> Unit = {},
 ) {
     BackHandler(onBack = onBack)
     LifecycleStartEffect(Unit) {
@@ -78,29 +86,38 @@ fun GamesScreen(
     var picking by remember { mutableStateOf<Game?>(null) }
     val tabs = remember(games) { gameTabs(games.orEmpty()) }
     val tab = memory.tab?.takeIf { it in tabs } ?: TAB_ALL
+    val items = remember(games, tab) { gamesInTab(games.orEmpty(), tab) }
+    val focus = remember { ListFocus() }
+    RecoverListFocus(focus, memory, paused = picking != null) { firstNotFinal(items)?.id }
 
     Column(
-        Modifier.fillMaxSize().background(UzzuColors.Background).padding(vertical = Dimens.SafeV),
+        Modifier.fillMaxSize().background(UzzuColors.Background).padding(vertical = Dimens.SafeV).then(focus.root),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        ScreenHeader("01 // GAMES", "Live Games", Modifier.padding(horizontal = Dimens.SafeH)) { MonoTag(syncLabel) }
+        ScreenHeader("01 // GAMES", "Live Games", Modifier.padding(horizontal = Dimens.SafeH)) { SyncTag(sync) }
 
         when {
+            games == null && loadError != null -> LoadErrorBlock(loadError, onRetry, Modifier.padding(horizontal = Dimens.SafeH))
             games == null -> LoadingTag(Modifier.padding(horizontal = Dimens.SafeH))
             tabs.isEmpty() -> Column(Modifier.padding(horizontal = Dimens.SafeH), verticalArrangement = Arrangement.spacedBy(Dimens.S2)) {
                 MonoTag("// NO GAMES")
                 Text("There are no games in the playlist right now. Games usually appear a few hours before start.", style = UzzuType.Body, color = UzzuColors.TextSecondary)
             }
             else -> {
-                val items = remember(games, tab) { gamesInTab(games, tab) }
                 val cards = remember(items) { items.associate { it.id to it.toCardData() } }
-                UzzuTabRow(tabs, tabs.indexOf(tab), onSelect = { memory.tab = tabs[it] }, Modifier.padding(horizontal = Dimens.SafeH), gap = Dimens.S2)
+                UzzuTabRow(
+                    tabs, tabs.indexOf(tab), onSelect = { memory.tab = tabs[it] },
+                    Modifier.padding(horizontal = Dimens.SafeH).onFocusChanged { if (it.hasFocus) memory.focusInTabs = true },
+                    gap = Dimens.S2,
+                    selectedRequester = focus.tab,
+                )
                 FocusGrid(
                     items = items,
                     key = { it.id },
                     initialFocusKey = remember { memory.focusKey?.takeIf { k -> items.any { it.id == k } } ?: firstNotFinal(items)?.id },
                     resetKey = tab,
                     memory = memory,
+                    focus = focus,
                     rowGap = Dimens.GridRowGapCards,
                     modifier = Modifier.weight(1f).fillMaxWidth(),
                 ) { game, _, m ->
@@ -116,7 +133,12 @@ fun GamesScreen(
             }
         }
         if (games.isNullOrEmpty()) Box(Modifier.weight(1f))
-        KeyHints("OK" to "Choose feed", "BACK" to "Home", modifier = Modifier.padding(horizontal = Dimens.SafeH))
+        val hints = when {
+            !games.isNullOrEmpty() -> arrayOf("OK" to "Choose feed", "BACK" to "Home")
+            games == null && loadError != null -> arrayOf("OK" to "Retry", "BACK" to "Home")
+            else -> arrayOf("BACK" to "Home") // nothing focusable
+        }
+        KeyHints(*hints, modifier = Modifier.padding(horizontal = Dimens.SafeH))
     }
 
     picking?.let { game ->

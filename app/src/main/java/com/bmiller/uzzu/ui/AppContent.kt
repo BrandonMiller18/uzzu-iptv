@@ -102,12 +102,30 @@ interface AppActions {
     fun exit()
 }
 
-fun syncLabel(state: AppState): String = when {
-    state.refreshing -> "SYNCING"
+/** Header sync line (S1, S2, S3). [failed] lines render in Error color. */
+@Immutable
+data class SyncStatus(val text: String, val failed: Boolean = false)
+
+/**
+ * Masked reason of the last manual refresh when it failed after the shown data was loaded (the
+ * repository keeps the old model on failure), else null.
+ */
+fun refreshFailure(state: AppState): String? {
+    val loaded = state.model as? PlaylistState.Loaded ?: return null
+    val result = state.lastFetchResult ?: return null
+    val at = state.lastFetchAtMillis ?: return null
+    if (state.refreshing || !result.startsWith("FAILED") || at <= loaded.fetchedAtMillis) return null
+    return result.removePrefix("FAILED").trim().ifEmpty { "unknown error" }
+}
+
+fun syncStatus(state: AppState): SyncStatus = when {
+    state.refreshing -> SyncStatus("SYNCING")
     else -> when (val m = state.model) {
-        PlaylistState.Idle, PlaylistState.Loading -> "LOADING"
-        is PlaylistState.Failed -> "SYNC FAILED"
-        is PlaylistState.Loaded -> "LAST SYNC ${formatClock(m.fetchedAtMillis)}"
+        PlaylistState.Idle, PlaylistState.Loading -> SyncStatus("LOADING")
+        is PlaylistState.Failed -> SyncStatus("SYNC FAILED", failed = true)
+        is PlaylistState.Loaded ->
+            if (refreshFailure(state) != null) SyncStatus("SYNC FAILED · LAST OK ${formatClock(m.fetchedAtMillis)}", failed = true)
+            else SyncStatus("LAST SYNC ${formatClock(m.fetchedAtMillis)}")
     }
 }
 
@@ -147,7 +165,8 @@ fun AppContent(
     val channelsMemory = remember { mutableStateOf(ListMemory()) }
     var homeFocus by remember { mutableStateOf(HomeFocus.GAMES) }
     val loaded = state.model as? PlaylistState.Loaded
-    val sync = syncLabel(state)
+    val sync = syncStatus(state)
+    val loadError = (state.model as? PlaylistState.Failed)?.message
     val back: () -> Unit = { if (!nav.pop()) actions.exit() }
 
     Box(Modifier.fillMaxSize().background(UzzuColors.Background)) {
@@ -161,8 +180,8 @@ fun AppContent(
 
             Route.Home -> HomeScreen(
                 counts = homeCounts(state.model),
-                syncLabel = sync,
-                error = (state.model as? PlaylistState.Failed)?.message,
+                sync = sync,
+                error = loadError ?: refreshFailure(state)?.let { "Refresh failed: $it" },
                 update = state.update,
                 onGames = {
                     homeFocus = HomeFocus.GAMES
@@ -190,7 +209,9 @@ fun AppContent(
 
             Route.Games -> GamesScreen(
                 games = loaded?.playlist?.games,
-                syncLabel = sync,
+                sync = sync,
+                loadError = loadError,
+                onRetry = actions::refresh,
                 memory = gamesMemory.value,
                 startPolling = actions::startPolling,
                 onPlay = { game, side, context ->
@@ -205,7 +226,9 @@ fun AppContent(
 
             Route.Channels -> ChannelsScreen(
                 channels = loaded?.playlist?.channels,
-                syncLabel = sync,
+                sync = sync,
+                loadError = loadError,
+                onRetry = actions::refresh,
                 memory = channelsMemory.value,
                 onPlay = { channel, context ->
                     actions.play(PlayItem(channel.name, channel.url), context)

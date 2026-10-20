@@ -16,6 +16,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.style.TextOverflow
+import com.bmiller.uzzu.ui.SyncStatus
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.Alignment
@@ -86,6 +91,28 @@ fun UzzuButton(
 @Composable
 fun MonoTag(text: String, modifier: Modifier = Modifier, color: Color = UzzuColors.TextSecondary) {
     Text(text.uppercase(), style = if ("//" in text) UzzuType.Mono else UzzuType.MonoPlain, color = color, modifier = modifier, maxLines = 1)
+}
+
+/** Header sync line; Error color when the last sync failed. */
+@Composable
+fun SyncTag(sync: SyncStatus, modifier: Modifier = Modifier) =
+    MonoTag(sync.text, modifier, if (sync.failed) UzzuColors.Error else UzzuColors.TextSecondary)
+
+/**
+ * S2/S3 when the playlist could not be loaded (HANDOFF "Not designed"): `// NO DATA`, the masked
+ * reason in Error color, and a focused Retry (otherwise nothing on screen would be focusable).
+ */
+@Composable
+fun LoadErrorBlock(message: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
+    val retry = remember { FocusRequester() }
+    InitialFocus(retry, message)
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(Dimens.S5)) {
+        Column(verticalArrangement = Arrangement.spacedBy(Dimens.S2)) {
+            MonoTag("// NO DATA")
+            Text(message, style = UzzuType.Body, color = UzzuColors.Error, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.testTag("list:error"))
+        }
+        UzzuButton("Retry", onRetry, Modifier.focusRequester(retry).testTag("list:retry"))
+    }
 }
 
 /** HANDOFF "Not designed": loading is a static TextSecondary mono tag, no spinner. */

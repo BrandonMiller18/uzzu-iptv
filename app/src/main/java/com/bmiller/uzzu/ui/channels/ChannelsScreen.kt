@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.bmiller.uzzu.player.PlayContext
@@ -20,7 +21,12 @@ import com.bmiller.uzzu.playlist.ChannelGroup
 import com.bmiller.uzzu.ui.components.ChannelRow
 import com.bmiller.uzzu.ui.components.FocusGrid
 import com.bmiller.uzzu.ui.components.KeyHints
+import com.bmiller.uzzu.ui.components.ListFocus
 import com.bmiller.uzzu.ui.components.ListMemory
+import com.bmiller.uzzu.ui.components.LoadErrorBlock
+import com.bmiller.uzzu.ui.components.RecoverListFocus
+import com.bmiller.uzzu.ui.components.SyncTag
+import com.bmiller.uzzu.ui.SyncStatus
 import com.bmiller.uzzu.ui.components.LoadingTag
 import com.bmiller.uzzu.ui.components.MonoTag
 import com.bmiller.uzzu.ui.components.ScreenHeader
@@ -54,33 +60,45 @@ fun Channel.gridKey(): String = "ch:$playlistIndex"
 @Composable
 fun ChannelsScreen(
     channels: List<Channel>?,
-    syncLabel: String,
+    sync: SyncStatus,
     memory: ListMemory,
     onPlay: (Channel, PlayContext) -> Unit,
     onBack: () -> Unit,
+    loadError: String? = null,
+    onRetry: () -> Unit = {},
 ) {
     BackHandler(onBack = onBack)
     val ordered = remember(channels) { orderedChannels(channels.orEmpty()) }
     val tabs = remember(ordered) { channelTabs(ordered) }
     val tab = memory.tab?.takeIf { it in tabs } ?: TAB_ALL_CHANNELS
+    val items = remember(ordered, tab) { channelsInTab(ordered, tab) }
+    val focus = remember { ListFocus() }
+    RecoverListFocus(focus, memory, paused = false) { items.firstOrNull()?.gridKey() }
 
     Column(
-        Modifier.fillMaxSize().background(UzzuColors.Background).padding(vertical = Dimens.SafeV),
+        Modifier.fillMaxSize().background(UzzuColors.Background).padding(vertical = Dimens.SafeV).then(focus.root),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        ScreenHeader("02 // CHANNELS", "Live Channels", Modifier.padding(horizontal = Dimens.SafeH)) { MonoTag(syncLabel) }
+        ScreenHeader("02 // CHANNELS", "Live Channels", Modifier.padding(horizontal = Dimens.SafeH)) { SyncTag(sync) }
         when {
+            channels == null && loadError != null -> LoadErrorBlock(loadError, onRetry, Modifier.padding(horizontal = Dimens.SafeH))
             channels == null -> LoadingTag(Modifier.padding(horizontal = Dimens.SafeH))
             tabs.isEmpty() -> MonoTag("// NO CHANNELS IN THE PLAYLIST", Modifier.padding(horizontal = Dimens.SafeH))
             else -> {
-                val items = remember(ordered, tab) { channelsInTab(ordered, tab) }
-                UzzuTabRow(tabs, tabs.indexOf(tab), onSelect = { memory.tab = tabs[it] }, Modifier.padding(horizontal = Dimens.SafeH), gap = Dimens.S1, horizontalPadding = 9.dp)
+                UzzuTabRow(
+                    tabs, tabs.indexOf(tab), onSelect = { memory.tab = tabs[it] },
+                    Modifier.padding(horizontal = Dimens.SafeH).onFocusChanged { if (it.hasFocus) memory.focusInTabs = true },
+                    gap = Dimens.S1,
+                    horizontalPadding = 9.dp,
+                    selectedRequester = focus.tab,
+                )
                 FocusGrid(
                     items = items,
                     key = { it.gridKey() },
                     initialFocusKey = remember { memory.focusKey?.takeIf { k -> items.any { it.gridKey() == k } } ?: items.firstOrNull()?.gridKey() },
                     resetKey = tab,
                     memory = memory,
+                    focus = focus,
                     rowGap = Dimens.GridRowGapRows,
                     modifier = Modifier.weight(1f).fillMaxWidth(),
                 ) { ch, index, m ->
@@ -95,6 +113,11 @@ fun ChannelsScreen(
             }
         }
         if (channels.isNullOrEmpty()) Box(Modifier.weight(1f))
-        KeyHints("OK" to "Play channel", "BACK" to "Home", modifier = Modifier.padding(horizontal = Dimens.SafeH))
+        val hints = when {
+            !channels.isNullOrEmpty() -> arrayOf("OK" to "Play channel", "BACK" to "Home")
+            channels == null && loadError != null -> arrayOf("OK" to "Retry", "BACK" to "Home")
+            else -> arrayOf("BACK" to "Home") // nothing focusable
+        }
+        KeyHints(*hints, modifier = Modifier.padding(horizontal = Dimens.SafeH))
     }
 }

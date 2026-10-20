@@ -53,9 +53,9 @@ fun UzzuTabRow(
     modifier: Modifier = Modifier,
     gap: Dp = Dimens.S2,
     horizontalPadding: Dp = 11.dp,
-) {
     // Entering the row from below lands on the selected tab, not the one geometrically above.
-    val selectedRequester = remember { FocusRequester() }
+    selectedRequester: FocusRequester = remember { FocusRequester() },
+) {
     val measurer = rememberTextMeasurer()
     val density = LocalDensity.current
     BoxWithConstraints(modifier) {

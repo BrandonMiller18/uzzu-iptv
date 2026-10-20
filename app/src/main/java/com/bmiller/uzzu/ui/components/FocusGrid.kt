@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -27,12 +27,63 @@ import com.bmiller.uzzu.ui.theme.Dimens
 /**
  * What a list screen remembers while it is on the back stack (selected tab, last focused item), so
  * Back from the player lands on the item that was played. Not observable on purpose for
- * [focusKey]: writing it on every focus move must not recompose anything.
+ * [focusKey] and [focusInTabs]: writing them on every focus move must not recompose anything.
  */
 @Stable
 class ListMemory {
     var tab: String? by mutableStateOf(null)
     var focusKey: String? = null
+    /** True while focus is in the tab row (set by the screen), false once a grid item has it. */
+    var focusInTabs: Boolean = false
+}
+
+/**
+ * Focus handles for a tab-row + [FocusGrid] screen (S2, S3): the selected tab's requester, the
+ * grid (scroll-then-focus by key), and a watchdog for the whole screen ([root]) that notices when
+ * focus drops out of it, e.g. because the focused tab or card vanished on a model update.
+ */
+@Stable
+class ListFocus {
+    val tab = FocusRequester()
+    internal val lazy = LazyGridState()
+    internal val requesters = HashMap<String, FocusRequester>()
+    internal var keys: List<String> = emptyList()
+    internal var hasFocus by mutableStateOf(false)
+    internal var everFocused = false
+
+    val root: Modifier = Modifier.onFocusChanged {
+        hasFocus = it.hasFocus
+        if (it.hasFocus) everFocused = true
+    }
+
+    fun hasItem(key: String): Boolean = key in keys
+
+    /** Scrolls [key] into view and focuses it; false if it isn't in the grid. */
+    suspend fun focusItem(key: String): Boolean {
+        val index = keys.indexOf(key)
+        if (index < 0) return false
+        lazy.scrollToItem(index)
+        withFrameNanos { }
+        return runCatching { requesters[key]?.requestFocus() }.getOrNull() == true
+    }
+}
+
+/**
+ * Restores focus when it drops out of the screen while the screen is shown and not [paused] (a
+ * dialog is up): the focused tab or card vanished on a model update (a league tab emptied by the
+ * schedule poll, a refresh), which would leave the D-pad dead. Focus goes back to the selected tab
+ * if the tab row had it, else to the remembered item if still present, else to [fallbackKey]
+ * (S2: first card that isn't Final; S3: first row), else to the selected tab.
+ */
+@Composable
+fun RecoverListFocus(focus: ListFocus, memory: ListMemory, paused: Boolean, fallbackKey: () -> String?) {
+    LaunchedEffect(focus.hasFocus, paused) {
+        if (focus.hasFocus || !focus.everFocused || paused) return@LaunchedEffect
+        withFrameNanos { } // let the new model compose
+        if (focus.hasFocus) return@LaunchedEffect
+        val key = if (memory.focusInTabs) null else memory.focusKey?.takeIf(focus::hasItem) ?: fallbackKey()
+        if (key == null || !focus.focusItem(key)) runCatching { focus.tab.requestFocus() }
+    }
 }
 
 /** Room for the 1.05 focus scale of a 420 dp item (10.5 dp per side) inside the grid's clip. */
@@ -53,20 +104,17 @@ fun <T> FocusGrid(
     initialFocusKey: String?,
     resetKey: Any?,
     memory: ListMemory,
+    focus: ListFocus,
     rowGap: Dp,
     modifier: Modifier = Modifier,
     itemContent: @Composable (item: T, index: Int, modifier: Modifier) -> Unit,
 ) {
-    val state = rememberLazyGridState()
-    val requesters = remember { HashMap<String, FocusRequester>() }
+    val state = focus.lazy
+    val requesters = focus.requesters
+    focus.keys = remember(items) { items.map(key) }
 
     LaunchedEffect(Unit) {
-        val target = initialFocusKey ?: return@LaunchedEffect
-        val index = items.indexOfFirst { key(it) == target }
-        if (index < 0) return@LaunchedEffect
-        state.scrollToItem(index)
-        withFrameNanos { }
-        runCatching { requesters[target]?.requestFocus() }
+        initialFocusKey?.let { focus.focusItem(it) }
     }
     var lastReset by remember { mutableStateOf(resetKey) }
     LaunchedEffect(resetKey) {
@@ -91,7 +139,12 @@ fun <T> FocusGrid(
             itemContent(
                 item,
                 index,
-                Modifier.focusRequester(requester).onFocusChanged { if (it.isFocused) memory.focusKey = k },
+                Modifier.focusRequester(requester).onFocusChanged {
+                    if (it.isFocused) {
+                        memory.focusKey = k
+                        memory.focusInTabs = false
+                    }
+                },
             )
         }
     }

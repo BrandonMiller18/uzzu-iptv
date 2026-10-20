@@ -31,7 +31,9 @@ import com.bmiller.uzzu.ui.components.KeyHints
 import com.bmiller.uzzu.ui.components.LiveChip
 import com.bmiller.uzzu.ui.components.LoadingTag
 import com.bmiller.uzzu.ui.components.MonoTag
+import com.bmiller.uzzu.ui.SyncStatus
 import com.bmiller.uzzu.ui.components.ScreenHeader
+import com.bmiller.uzzu.ui.components.SyncTag
 import com.bmiller.uzzu.ui.components.UzzuButton
 import com.bmiller.uzzu.ui.components.UzzuCard
 import com.bmiller.uzzu.ui.components.UzzuIcons
@@ -55,7 +57,7 @@ enum class HomeFocus { GAMES, CHANNELS, REFRESH, SETTINGS }
 @Composable
 fun HomeScreen(
     counts: HomeCounts?,
-    syncLabel: String,
+    sync: SyncStatus,
     error: String?,
     update: UpdateState,
     onGames: () -> Unit,
@@ -76,7 +78,7 @@ fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         ScreenHeader(tag = "// IPTV TERMINAL", title = "Uzzu", titleStyle = UzzuType.Display.copy(letterSpacing = UzzuType.Display.letterSpacing * 2.5f)) {
-            MonoTag(syncLabel, Modifier.testTag("sync"))
+            SyncTag(sync, Modifier.testTag("sync"))
             UzzuButton("Refresh", onRefresh, Modifier.focusRequester(requesters.getValue(HomeFocus.REFRESH)).testTag("refresh"), icon = UzzuIcons.Refresh)
             UzzuButton("Settings", onSettings, Modifier.focusRequester(requesters.getValue(HomeFocus.SETTINGS)).testTag("settings"), icon = UzzuIcons.Settings)
         }
