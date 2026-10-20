@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -33,7 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * consumer holds a [startPolling] handle. A failed fetch keeps that league/day's last known events.
  */
 class ScheduleRepository(
-    playlistState: StateFlow<PlaylistState>,
+    private val playlistState: StateFlow<PlaylistState>,
     private val source: ScheduleSource,
     private val matcher: ScheduleMatcher,
     private val logger: AppLogger,
@@ -57,6 +58,8 @@ class ScheduleRepository(
                 if (!active) return@collectLatest
                 logger.i(TAG, "polling started")
                 try {
+                    // Let the launch playlist fetch finish first; it gates S1 and competes for bandwidth/CPU.
+                    playlistState.first { it !is PlaylistState.Idle && it !is PlaylistState.Loading }
                     val sinceLast = clock.millis() - lastFetchAt
                     if (sinceLast < intervalMillis) delay(intervalMillis - sinceLast)
                     while (true) {
