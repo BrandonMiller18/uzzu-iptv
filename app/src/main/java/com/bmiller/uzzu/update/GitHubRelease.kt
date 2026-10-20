@@ -23,6 +23,9 @@ data class GitHubRelease(
     /** The release APK: the .apk asset (the release workflow attaches exactly one). */
     val apk: Asset? get() = assets.firstOrNull { it.name.endsWith(".apk", ignoreCase = true) }
 
+    /** The `<apk name>.sha256` asset the release workflow publishes next to [asset], if any. */
+    fun checksumFor(asset: Asset): Asset? = assets.firstOrNull { it.name.equals("${asset.name}.sha256", ignoreCase = true) }
+
     companion object {
         private val json = Json { ignoreUnknownKeys = true }
 

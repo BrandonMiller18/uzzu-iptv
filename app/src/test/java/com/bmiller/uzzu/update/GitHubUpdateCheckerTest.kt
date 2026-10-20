@@ -47,7 +47,9 @@ class GitHubUpdateCheckerTest {
 
     @After fun tearDown() = server.shutdown()
 
-    private fun checker(current: String = "0.9.0", autoCheck: Boolean = true) = GitHubUpdateChecker(
+    private var foreground = true
+
+    private fun checker(current: String = "0.9.0", autoCheck: Boolean = true, installable: Boolean = true) = GitHubUpdateChecker(
         http = OkHttpClient(),
         settings = settings,
         logger = logger,
@@ -59,7 +61,22 @@ class GitHubUpdateCheckerTest {
         autoCheck = autoCheck,
         clock = { now },
         io = UnconfinedTestDispatcher(),
+        isForeground = { foreground },
+        installable = installable,
     )
+
+    /** Release with the APK and its `.sha256` asset (served by the mock server). */
+    private fun releaseWithChecksum(tag: String, apkSize: Long): String {
+        val apkName = "uzzu-iptv-${tag.removePrefix("v")}.apk"
+        return """
+            {"tag_name":"$tag","draft":false,"prerelease":false,"assets":[
+              {"name":"$apkName","size":$apkSize,"browser_download_url":"${server.url("/download/$apkName")}"},
+              {"name":"$apkName.sha256","size":90,"browser_download_url":"${server.url("/download/$apkName.sha256")}"}]}
+        """.trimIndent()
+    }
+
+    private fun sha256(bytes: ByteArray) =
+        java.security.MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { String.format(java.util.Locale.ROOT, "%02x", it) }
 
     private fun release(tag: String, apkSize: Long, apkName: String = "uzzu-iptv-${tag.removePrefix("v")}.apk") = """
         {"tag_name":"$tag","name":"$tag","draft":false,"prerelease":false,"assets":[
@@ -227,6 +244,57 @@ class GitHubUpdateCheckerTest {
         c.install()
         assertEquals(1, installer.installs.size)
         assertEquals(2, server.requestCount)
+    }
+
+    @Test fun `install verifies the published SHA-256`() = runTest {
+        val apk = ByteArray(300_000) { (it % 13).toByte() }
+        server.enqueue(MockResponse().setBody(releaseWithChecksum("v1.0.0", apk.size.toLong())))
+        server.enqueue(MockResponse().setBody("${sha256(apk)}  uzzu-iptv-1.0.0.apk\n"))
+        server.enqueue(MockResponse().setBody(Buffer().write(apk)))
+        val c = checker()
+        c.check(force = false)
+        c.install()
+        assertEquals(1, installer.installs.size)
+        assertNull((c.state.value as UpdateState.Available).error)
+        logger.flush()
+        assertTrue(logger.file.readText().contains("SHA-256 verified"))
+    }
+
+    @Test fun `checksum mismatch fails the install, deletes the file and shows the error`() = runTest {
+        val apk = ByteArray(300_000) { (it % 13).toByte() }
+        val corrupted = apk.copyOf().also { it[1234] = 99 }
+        server.enqueue(MockResponse().setBody(releaseWithChecksum("v1.0.0", apk.size.toLong())))
+        server.enqueue(MockResponse().setBody("${sha256(apk)}  uzzu-iptv-1.0.0.apk\n"))
+        server.enqueue(MockResponse().setBody(Buffer().write(corrupted)))
+        val c = checker()
+        c.check(force = false)
+        c.install()
+        assertTrue(installer.installs.isEmpty())
+        assertEquals("Update failed: checksum mismatch", (c.state.value as UpdateState.Available).error)
+        assertTrue(updatesDir.list()!!.isEmpty())
+    }
+
+    @Test fun `a download finishing in the background waits for Install instead of launching the installer`() = runTest {
+        val apk = ByteArray(10) { 1 }
+        server.enqueue(MockResponse().setBody(release("v1.0.0", apk.size.toLong())))
+        server.enqueue(MockResponse().setBody(Buffer().write(apk)))
+        val c = checker()
+        c.check(force = false)
+        foreground = false
+        c.install()
+        assertTrue(installer.installs.isEmpty())
+        assertEquals("Download complete. Select Install update.", (c.state.value as UpdateState.Available).note)
+        foreground = true
+        c.install()
+        assertEquals(1, installer.installs.size)
+        assertEquals(2, server.requestCount)
+    }
+
+    @Test fun `debug builds note that the release APK can't install over them`() = runTest {
+        server.enqueue(MockResponse().setBody(fixture))
+        val c = checker(installable = false)
+        c.check(force = true)
+        assertTrue((c.state.value as UpdateState.Available).note!!.contains("Uninstall this build first"))
     }
 
     @Test fun `progress text is mono-friendly`() {

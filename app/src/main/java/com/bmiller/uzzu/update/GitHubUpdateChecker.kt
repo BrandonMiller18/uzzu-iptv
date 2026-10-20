@@ -19,6 +19,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
 import java.io.IOException
+import java.security.MessageDigest
 import java.util.Locale
 
 /**
@@ -27,8 +28,12 @@ import java.util.Locale
  * - [check] (force = false) runs at most once per [THROTTLE_MS], tracked in [Settings.lastUpdateCheckAt];
  *   when [autoCheck] is false (debug builds) only forced checks from S7 run.
  * - 404 (no release published yet) means up to date. Failures are logged masked and never throw.
- * - [install] downloads to [updatesDir] (a FileProvider cache path), verifies the size, then hands the
- *   file to [installer], asking for "Install unknown apps" first when it is not granted.
+ * - [install] downloads to [updatesDir] (a FileProvider cache path), verifies the size and, when the
+ *   release has a `.sha256` asset, the SHA-256, then hands the file to [installer], asking for
+ *   "Install unknown apps" first when it is not granted. The installer is only launched while the
+ *   app is in the foreground ([isForeground]; Android 10+ blocks background activity starts).
+ * - [installable] false (debug builds, debug-signed): the bar notes that a release APK can't
+ *   install over this build.
  */
 class GitHubUpdateChecker(
     private val http: OkHttpClient,
@@ -42,13 +47,17 @@ class GitHubUpdateChecker(
     private val autoCheck: Boolean = true,
     private val clock: () -> Long = System::currentTimeMillis,
     private val io: CoroutineDispatcher = Dispatchers.IO,
+    private val isForeground: () -> Boolean = { true },
+    private val installable: Boolean = true,
 ) : UpdateChecker {
+
+    private class Pending(val version: String, val apk: GitHubRelease.Asset, val checksum: GitHubRelease.Asset?)
 
     private val _state = MutableStateFlow<UpdateState>(UpdateState.Idle)
     override val state: StateFlow<UpdateState> = _state.asStateFlow()
 
     /** The release behind [UpdateState.Available]. */
-    @Volatile private var pending: Pair<String, GitHubRelease.Asset>? = null
+    @Volatile private var pending: Pending? = null
     private var download: Job? = null
 
     override suspend fun check(force: Boolean) {
@@ -62,7 +71,7 @@ class GitHubUpdateChecker(
         settings.setLastUpdateCheckAt(now)
         _state.value = UpdateState.Checking
         _state.value = try {
-            evaluate(fetchLatest(), now)
+            withContext(io) { evaluate(fetchLatest(), now) } // evaluate cleans the cache: file I/O
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -85,9 +94,10 @@ class GitHubUpdateChecker(
         }
         val version = tag.removePrefix("v")
         logger.i(TAG, "update available: $version (current $currentVersion, ${apk.size} bytes)")
-        pending = version to apk
+        pending = Pending(version, apk, release.checksumFor(apk))
         cleanCache(keep = apkFile(version))
-        return UpdateState.Available(version, currentVersion)
+        val note = if (installable) null else "Debug build: the release APK is signed differently. Uninstall this build first."
+        return UpdateState.Available(version, currentVersion, note = note)
     }
 
     /** Null when the repo has no published release (404). */
@@ -107,12 +117,17 @@ class GitHubUpdateChecker(
     }
 
     override fun install() {
-        val (version, asset) = pending ?: return
+        val p = pending ?: return
         if (download?.isActive == true) return
         download = scope.launch {
             try {
-                val apk = withContext(io) { downloadApk(version, asset) }
+                val apk = withContext(io) { downloadApk(p) }
                 setAvailable { copy(progress = null) }
+                if (!isForeground()) {
+                    logger.i(TAG, "download complete while in the background: waiting for Install")
+                    setAvailable { copy(note = "Download complete. Select Install update.") }
+                    return@launch
+                }
                 if (!installer.canInstall() && installer.openInstallPermission()) {
                     logger.i(TAG, "asking for install-unknown-apps permission")
                     setAvailable { copy(note = "Allow Uzzu to install apps, then select Install update again.") }
@@ -130,12 +145,16 @@ class GitHubUpdateChecker(
         }
     }
 
-    private fun downloadApk(version: String, asset: GitHubRelease.Asset): File {
-        val target = apkFile(version)
+    private fun downloadApk(p: Pending): File {
+        val asset = p.apk
+        val target = apkFile(p.version)
+        // Only ever renamed into place after verification.
         if (target.isFile && target.length() == asset.size) return target
+        val expected = p.checksum?.let(::fetchChecksum)
         updatesDir.mkdirs()
         val part = File(updatesDir, target.name + ".part")
         setAvailable { copy(progress = progressText(0, asset.size), note = null, error = null) }
+        val digest = MessageDigest.getInstance("SHA-256")
         val request = Request.Builder().url(asset.downloadUrl).header("Accept", "application/octet-stream").build()
         http.newCall(request).execute().use { r ->
             if (!r.isSuccessful) throw IOException("download HTTP ${r.code}")
@@ -148,6 +167,7 @@ class GitHubUpdateChecker(
                         val n = input.read(buf)
                         if (n < 0) break
                         out.write(buf, 0, n)
+                        digest.update(buf, 0, n)
                         total += n
                         // Refresh the bar every ~512 KB.
                         if (total / PROGRESS_STEP != lastShown) {
@@ -163,10 +183,30 @@ class GitHubUpdateChecker(
             part.delete()
             throw IOException("size mismatch ($got of ${asset.size} bytes)")
         }
+        if (expected != null) {
+            val actual = digest.digest().joinToString("") { String.format(Locale.ROOT, "%02x", it) }
+            if (actual != expected) {
+                part.delete()
+                logger.w(TAG, "checksum mismatch for ${asset.name}: expected $expected, got $actual")
+                throw IOException("checksum mismatch")
+            }
+            logger.i(TAG, "SHA-256 verified")
+        }
         target.delete()
         if (!part.renameTo(target)) throw IOException("could not save the APK")
         logger.i(TAG, "downloaded ${target.name} (${target.length()} bytes)")
         return target
+    }
+
+    /** The hex digest from a `sha256sum` line ("<hex>  <file>"). */
+    private fun fetchChecksum(asset: GitHubRelease.Asset): String {
+        val request = Request.Builder().url(asset.downloadUrl).header("Accept", "application/octet-stream").build()
+        val text = http.newCall(request).execute().use { r ->
+            if (!r.isSuccessful) throw IOException("checksum download HTTP ${r.code}")
+            r.body.string()
+        }
+        return text.trim().substringBefore(' ').lowercase().takeIf { SHA256.matches(it) }
+            ?: throw IOException("unreadable checksum file")
     }
 
     override fun dismiss() = setAvailable { copy(dismissed = true) }
@@ -186,6 +226,7 @@ class GitHubUpdateChecker(
         const val THROTTLE_MS = 24L * 60 * 60 * 1000
         private const val PROGRESS_STEP = 512L * 1024
         private const val TAG = "Update"
+        private val SHA256 = Regex("[0-9a-f]{64}")
 
         fun progressText(done: Long, total: Long): String {
             val pct = if (total > 0) (done * 100 / total).toInt() else 0

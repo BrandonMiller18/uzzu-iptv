@@ -14,6 +14,7 @@ plugins {
 val appVersionName: String = (findProperty("versionName") as String?)?.removePrefix("v") ?: "0.1.0"
 val appVersionCode: Int = (findProperty("versionCode") as String?)?.toInt() ?: run {
     val parts = appVersionName.substringBefore('-').split('.').map { it.toIntOrNull() ?: 0 } + listOf(0, 0, 0)
+    require(parts[1] < 100 && parts[2] < 100) { "versionName $appVersionName: minor and patch must be below 100 (versionCode)" }
     parts[0] * 10_000 + parts[1] * 100 + parts[2]
 }
 

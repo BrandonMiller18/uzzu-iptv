@@ -52,11 +52,13 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
+        container.foreground = true
         container.player.start()
         container.playback.onForeground()
     }
 
     override fun onStop() {
+        container.foreground = false
         container.playback.onBackground()
         container.player.release()
         container.logger.flush(timeoutMillis = 500)

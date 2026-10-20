@@ -119,5 +119,10 @@ class AppContainer(context: Context) {
     val updates: UpdateChecker = GitHubUpdateChecker(
         okHttp, settings, logger, BuildConfig.VERSION_NAME, File(app.cacheDir, "updates"), AndroidApkInstaller(app), appScope,
         autoCheck = !BuildConfig.DEBUG,
+        isForeground = { foreground },
+        installable = !BuildConfig.DEBUG,
     )
+
+    /** Set by MainActivity onStart/onStop. */
+    @Volatile var foreground = false
 }
