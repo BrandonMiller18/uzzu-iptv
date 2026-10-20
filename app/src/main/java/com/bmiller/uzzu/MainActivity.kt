@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bmiller.uzzu.data.PlaylistState
+import com.bmiller.uzzu.log.SecretMasker
 import com.bmiller.uzzu.player.PlayItem
 import com.bmiller.uzzu.playlist.FeedSide
 import com.bmiller.uzzu.ui.components.MonoTag
@@ -86,7 +87,7 @@ class MainActivity : ComponentActivity() {
                     SetupScreen(onSave = { url ->
                         runCatching { repo.saveAndLoad(url) }.fold(
                             onSuccess = { screen = Screen.List; null },
-                            onFailure = { it.message ?: "Could not load the playlist." },
+                            onFailure = { SecretMasker.mask(it.message ?: "Could not load the playlist.") },
                         )
                     })
                 }

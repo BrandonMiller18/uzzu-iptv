@@ -94,7 +94,7 @@ class PlaylistRepository(
         }
         logger.i(
             TAG,
-            "playlist parsed in ${clock() - started} ms: ${playlist.games.size} games, " +
+            "playlist fetched and parsed in ${clock() - started} ms: ${playlist.games.size} games, " +
                 "${playlist.channels.size} channels, stats=${playlist.stats}",
         )
         playlist
