@@ -56,6 +56,7 @@ class PlaylistRepositoryTest {
         val state = repo.state.value as PlaylistState.Loaded
         assertEquals(96, state.playlist.channels.size)
         // Logged URL is masked.
+        logger.flush()
         val log = logger.file.readText()
         assertTrue(log.contains("******7220"))
         assertTrue(!log.contains("10000007220"))
