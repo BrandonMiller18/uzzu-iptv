@@ -4,17 +4,19 @@ title: Stream retry policy and the S6 error report
 description: State machine that decides when a failing stream is retried, refreshed or handed to S6, and what S6 shows.
 resource: app/src/main/java/com/bmiller/uzzu/player/RetryPolicy.kt
 tags: [player, errors]
-generated: {by: claude/opus-5.5, at: 2026-10-20T18:00:00Z}
+generated: {by: claude/opus-5.5, at: 2026-10-20T23:00:00Z}
 ---
 There is one policy per tune session, and `start(url)` resets the budget. The clock and scheduler are
 injected, so `RetryPolicyTest` runs in virtual time.
 
 1. **Error** (a player error or a stall): retry the same URL after **2 s**, then after **5 s**.
-2. **Refresh once**: the error is HTTP 401/403/404/410 on a `fastly.net` host (expired
-   `expiry~hash` token), or the playlist is older than 10 min. The policy first re-fetches the
+2. **Refresh once**: the error is HTTP 401/403/404/410 *and* either the host is `fastly.net`
+   (expired `expiry~hash` token) or the playlist is older than 10 min. The policy re-fetches the
    playlist, re-resolves the same key + side and loads the new URL at once. One refresh per session.
-   As built, the stale-playlist branch fires on *any* error, not only on 4xx (QA M45-03, open).
-3. **Stall**: 15 s in BUFFERING without a rendered frame counts as an error.
+   Network errors, 5xx and stalls never refresh; they go straight to same-URL retries (PLAN).
+3. **Stall**: 15 s in BUFFERING without a rendered frame counts as an error. Buffering while
+   paused, or while a retry is already pending, starts no stall timer; a frame during a stall
+   backoff cancels the reload. Every policy load ends a pause (the player plays again).
 4. **Healthy reset**: after **30 s** of playback, the next error starts with a fresh budget. A
    stream that runs for hours and hiccups now and then never reaches S6 because of old failures.
 5. **Budget spent**: `exhausted` → `ErrorReport` → S6. If the refresh outcome is `ItemGone`, S6 says

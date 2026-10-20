@@ -4,7 +4,7 @@ title: Measuring performance and the bench build
 description: Why perf numbers come from the bench build type, measured Fire TV results, and the open S1 budget issue.
 resource: app/build.gradle.kts
 tags: [performance, device]
-generated: {by: claude/opus-5.5, at: 2026-10-20T18:00:00Z}
+generated: {by: claude/opus-5.5, at: 2026-10-20T23:00:00Z}
 ---
 - **Never measure a debug build.** Debug is unminified and debuggable (ART runs it much slower).
 - **`bench` build type** (`./gradlew assembleBench`): `initWith(release)` (R8, shrink, not
@@ -17,5 +17,5 @@ generated: {by: claude/opus-5.5, at: 2026-10-20T18:00:00Z}
   HLS load-timing log lines). PSS grew +1.3 MB over 50 switches, so no leak per tune.
 - **Open issue**: the provider's playlist fetch takes ~8.7 s and is server-side,
   so "cold start to S1 with counts < 4 s" (PLAN budget) cannot be met from the app alone.
-  Not fixed in M3.
+  Still open after v1.0.
 - Budgets live in `PLAN.md` ("Performance budget"). Device workflow: [Fire TV testing](/guides/fire-tv-testing.md).

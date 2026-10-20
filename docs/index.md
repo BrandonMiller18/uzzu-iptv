@@ -3,15 +3,15 @@ okf_version: "0.2"
 ---
 # Uzzu IPTV docs
 
-- [Overview](/overview.md) — what the app is, scope, milestone status
+- [Overview](/overview.md) — what the app is, scope, milestone status, device acceptance, open items
 
 ## Architecture
 - [App wiring](/architecture/app-wiring.md) — AppContainer manual DI; playlist fetch → parse → in-memory model
 - [Schedule pipeline](/architecture/schedule-pipeline.md) — classify → ESPN match → sort; polling only while visible, after launch fetch
-- [Playback lifecycle](/architecture/playback-lifecycle.md) — one ExoPlayer, created onStart, released onStop
+- [Playback lifecycle](/architecture/playback-lifecycle.md) — one ExoPlayer, created onStart, released onStop; onStart re-resolves; AppLogger writer
 - [PlaybackManager](/architecture/playback-manager.md) — session owner; merge rule (resolve by key+side at tune); Channel.key id#n; last-channel slot
-- [Retry policy and S6](/architecture/retry-policy.md) — 2 s/5 s backoff, one refresh, 15 s stall, 30 s healthy reset, Media3 4xx retry off; S6 fields
-- [UI navigation](/architecture/ui-navigation.md) — Navigator back stack, AppState/AppActions test seam, ListMemory/FocusGrid, PlayContext, UpdateChecker slot
+- [Retry policy and S6](/architecture/retry-policy.md) — 2 s/5 s backoff, one refresh, 15 s stall, 30 s healthy reset, Media3 4xx retry off; refresh only on 401/403/404/410; S6 fields
+- [UI navigation](/architecture/ui-navigation.md) — Navigator back stack, AppState/AppActions test seam, ListMemory/FocusGrid, focus on model updates, failure states, S1 focus links
 
 ## Decisions
 - [Spec precedence](/decisions/spec-precedence.md) — PLAN.md wins on behavior, HANDOFF.md on presentation
@@ -24,12 +24,12 @@ okf_version: "0.2"
 
 ## Integrations
 - [ESPN scoreboard](/integrations/espn-scoreboard.md) — undocumented API, ScheduleSource swap point, status mapping, synthetic fixtures
-- [GitHub Releases updater](/integrations/github-releases.md) — releases/latest, 24 h throttle, FileProvider install, unknown-apps prompt, signature mismatch
+- [GitHub Releases updater](/integrations/github-releases.md) — releases/latest, 24 h throttle, SHA-256 check, foreground-only install, Fire OS install steps
 
 ## Guides
 - [Channel rules](/guides/channel-rules.md) — adding a channel_groups.json rule; first-match ordering traps
 - [Fire TV testing](/guides/fire-tv-testing.md) — adb over Wi-Fi, keyevents, screenshots, logs, fixture mode, debug hooks (forced 404, suppress S6)
-- [Releasing](/guides/releasing.md) — tag vX.Y.Z → signed APK + .sha256 on GitHub Releases; secrets; versionCode; prereleases
+- [Releasing](/guides/releasing.md) — tag vX.Y.Z → signed APK + .sha256 + mapping.txt; secrets; versionCode guard; CI debug-hook check
 - [Performance](/guides/performance.md) — bench build type, measured cold start and channel switch, open playlist-fetch budget issue
 
 ## Gotchas
@@ -37,3 +37,6 @@ okf_version: "0.2"
 - [File DataStore fails in Windows JVM tests](/gotchas/datastore-windows-tests.md) — use in-memory DataStore
 - [D-pad can't leave a text field in Robolectric](/gotchas/robolectric-textfield-focus.md) — click via semantics in tests
 - [CI: setup-android and gradlew mode](/gotchas/ci-android-setup.md) — use runner SDK; `git update-index --chmod=+x gradlew`
+- [Compose focus differs on device](/gotchas/compose-focus-device-vs-robolectric.md) — Robolectric can't reproduce Fire TV 2D focus; use explicit focusProperties
+- [gh secret set from PowerShell 5.1](/gotchas/gh-secret-powershell.md) — stored empty secrets; set them from Git Bash
+- [URL entry on release builds](/gotchas/release-build-url-entry.md) — on-device `input text "$(cat …)"`, verify without printing, no screenshots

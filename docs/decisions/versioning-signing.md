@@ -5,10 +5,11 @@ description: How version numbers and release signing are supplied without commit
 resource: app/build.gradle.kts
 status: stable
 tags: [build, release]
-generated: {by: claude/opus-5.5, at: 2026-10-20T18:00:00Z}
+generated: {by: claude/opus-5.5, at: 2026-10-20T23:00:00Z}
 ---
 **Version**: `-PversionName=1.2.3`. A leading `v` is stripped, so a git tag can be passed as-is.
-`-PversionCode=N` is optional; otherwise it is derived as `major*10000 + minor*100 + patch`.
+`-PversionCode=N` is optional; otherwise it is derived as `major*10000 + minor*100 + patch`
+(the build fails if minor or patch ≥ 100).
 Default is `0.1.0`. The in-app updater (M5) compares the GitHub release `tag_name` with `VERSION_NAME`.
 
 **Signing**: each value comes from an env var first, then from a gitignored root `signing.properties`:

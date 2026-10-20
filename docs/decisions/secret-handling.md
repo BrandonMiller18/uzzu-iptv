@@ -5,7 +5,7 @@ description: Why and how the account-bearing playlist URL is kept out of source,
 resource: app/src/main/java/com/bmiller/uzzu/log/SecretMasker.kt
 status: stable
 tags: [security]
-generated: {by: claude/opus-5.5, at: 2026-10-20T12:00:00Z}
+generated: {by: claude/opus-5.5, at: 2026-10-20T23:00:00Z}
 ---
 **Context**: The repo is public. The playlist URL carries the user's email and uzzu account id,
 every stream URL carries the account id, and Fastly away-feed URLs carry an `expiry~hash` token.
@@ -25,8 +25,10 @@ every stream URL carries the account id, and Fastly away-feed URLs carry an `exp
 
 - S7 shows the URL only through `maskPlaylistUrlForDisplay`: host, last path segment and query
   *names*; middle path segments, query values (except `type`/`output`), userinfo, emails and digit
-  runs become dots. S7 screenshots are safe to share, but the edit dialog is prefilled
-  with the real, unmasked URL: never screenshot or log it with the dialog open.
+  runs become dots. The S7 edit dialog never pre-fills the saved URL: the field starts empty, the
+  masked value is shown as a `CURRENT:` line, and Save with an empty field cancels. Still, never
+  screenshot while a real URL is being *typed* in it. Entering it on a release build (no
+  `run-as`): [Fire TV testing](/guides/fire-tv-testing.md).
 
 **Rejected**: a BuildConfig field or CI secret for the URL. It would be baked into public APKs.
 

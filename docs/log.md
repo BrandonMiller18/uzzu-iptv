@@ -1,6 +1,7 @@
 # Log
 
 ## 2026-10-20
+- QA fix rounds + v1.0 acceptance: updated player/retry/lifecycle, UI navigation, styling, secret handling, updater, releasing, overview; added gotchas (device vs Robolectric focus, gh secrets from PS 5.1, release-build URL entry).
 - M4/M5: added PlaybackManager, retry policy + S6, player key map, GitHub updater, releasing, CI gotcha; updated lifecycle, navigation, signing, Fire TV testing, performance, overview.
 - M3: added UI navigation, tv-material3 styling, performance/bench, Robolectric text-field gotcha; fixture mode, S7 URL masking, wiring and overview updated.
 - M2: added schedule pipeline, league dictionary, ESPN integration, channel rules; updated wiring and overview.
