@@ -37,6 +37,10 @@ class PlayerController(
     private val _current = MutableStateFlow<PlayItem?>(null)
     val current: StateFlow<PlayItem?> = _current.asStateFlow()
 
+    /** The list and group the current item was played from (for CH up/down and the overlay, M4). */
+    private val _context = MutableStateFlow<PlayContext?>(null)
+    val playContext: StateFlow<PlayContext?> = _context.asStateFlow()
+
     private var tuneStartedAt = 0L
 
     private val listener = object : Player.Listener {
@@ -92,8 +96,9 @@ class PlayerController(
         logger.i(TAG, "player released")
     }
 
-    fun play(item: PlayItem) {
+    fun play(item: PlayItem, playContext: PlayContext? = _context.value) {
         _current.value = item
+        _context.value = playContext
         logger.i(TAG, "tune ${item.label} ${maskedTarget(item.url)}")
         _player.value?.let { prepare(it, item) }
     }
@@ -101,6 +106,7 @@ class PlayerController(
     /** Stops playback and forgets the item (Back to the list). The player itself stays alive. */
     fun clear() {
         _current.value = null
+        _context.value = null
         _player.value?.run {
             stop()
             clearMediaItems()
