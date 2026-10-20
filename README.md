@@ -31,7 +31,9 @@ The app is not in any store; you sideload the APK from
 4. **Open Uzzu** and enter your playlist URL on the first-run screen.
 
 Later versions install from inside the app. The first in-app update makes the system ask you to allow
-**Install unknown apps** for Uzzu; that prompt is expected, so allow it once.
+**Install unknown apps** for Uzzu; that prompt is expected, so allow it once. On Fire TV, the system
+installer screen may not focus its **Install** button right away: press Down (then Right) on the remote
+until **Install** is highlighted, then OK.
 
 ## Build
 

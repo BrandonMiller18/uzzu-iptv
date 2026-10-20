@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
@@ -70,6 +71,11 @@ fun HomeScreen(
     initialFocus: HomeFocus = HomeFocus.GAMES,
 ) {
     val requesters = remember { HomeFocus.entries.associateWith { FocusRequester() } }
+    val install = remember { FocusRequester() }
+    // Explicit Up links: on the Fire TV the geometric search sent Up from Live Games past the
+    // right-aligned bar buttons to Refresh. Down still uses the default search (that works).
+    val barButtons = update is UpdateState.Available && !update.dismissed && update.progress == null
+    val upToBar = Modifier.focusProperties { if (barButtons) up = install }
     BackHandler(onBack = onExit)
     InitialFocus(requesters.getValue(initialFocus))
 
@@ -89,6 +95,8 @@ fun HomeScreen(
             val games = requesters.getValue(HomeFocus.GAMES)
             UpdateBar(
                 update,
+                installModifier = Modifier.focusRequester(install).focusProperties { up = requesters.getValue(HomeFocus.REFRESH) },
+                laterModifier = Modifier.focusProperties { up = requesters.getValue(HomeFocus.SETTINGS) },
                 onInstall = { games.requestFocus(); onInstallUpdate() },
                 onLater = { games.requestFocus(); onDismissUpdate() },
             )
@@ -107,7 +115,7 @@ fun HomeScreen(
                 icon = UzzuIcons.Games,
                 title = "Live Games",
                 onClick = onGames,
-                modifier = Modifier.focusRequester(requesters.getValue(HomeFocus.GAMES)).testTag("tile:games"),
+                modifier = upToBar.focusRequester(requesters.getValue(HomeFocus.GAMES)).testTag("tile:games"),
             ) {
                 if (counts == null) {
                     if (error != null) MonoTag("NO DATA") else LoadingTag()
@@ -124,7 +132,7 @@ fun HomeScreen(
                 icon = UzzuIcons.Tv,
                 title = "Live Channels",
                 onClick = onChannels,
-                modifier = Modifier.focusRequester(requesters.getValue(HomeFocus.CHANNELS)).testTag("tile:channels"),
+                modifier = upToBar.focusRequester(requesters.getValue(HomeFocus.CHANNELS)).testTag("tile:channels"),
             ) {
                 if (counts == null) {
                     if (error != null) MonoTag("NO DATA") else LoadingTag()
@@ -170,7 +178,13 @@ private fun Tile(
  * mono progress line and the buttons are hidden; a failed attempt shows its reason in Error color.
  */
 @Composable
-private fun UpdateBar(update: UpdateState.Available, onInstall: () -> Unit, onLater: () -> Unit) {
+private fun UpdateBar(
+    update: UpdateState.Available,
+    installModifier: Modifier,
+    laterModifier: Modifier,
+    onInstall: () -> Unit,
+    onLater: () -> Unit,
+) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -193,8 +207,8 @@ private fun UpdateBar(update: UpdateState.Available, onInstall: () -> Unit, onLa
             }
         }
         if (update.progress == null) {
-            UzzuButton("Install update", onInstall, Modifier.testTag("update:install"), container = UzzuColors.Background)
-            UzzuButton("Later", onLater, Modifier.testTag("update:later"), container = UzzuColors.Background)
+            UzzuButton("Install update", onInstall, installModifier.testTag("update:install"), container = UzzuColors.Background)
+            UzzuButton("Later", onLater, laterModifier.testTag("update:later"), container = UzzuColors.Background)
         }
     }
 }

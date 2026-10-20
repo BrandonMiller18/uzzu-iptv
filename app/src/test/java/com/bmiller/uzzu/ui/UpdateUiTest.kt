@@ -5,11 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performSemanticsAction
 import com.bmiller.uzzu.ui.home.HomeScreen
 import com.bmiller.uzzu.ui.theme.UzzuTheme
 import com.bmiller.uzzu.update.UpdateState
@@ -72,6 +74,41 @@ class UpdateUiTest {
         update = UpdateState.Available("1.0.0", "0.9.0", dismissed = true)
         compose.waitForIdle()
         assertTrue(!exists("update:install"))
+    }
+
+    // On the Fire TV (960x540 dp) Up from Live Games skipped the bar for Refresh; the links are explicit now.
+    @Test fun `Up from Live Games lands on Install, then on Refresh`() {
+        home()
+        compose.onNodeWithTag("tile:games").assertIsFocused()
+        compose.key(KeyEvent.KEYCODE_DPAD_UP)
+        assertEquals("update:install", compose.focusedTag())
+        compose.key(KeyEvent.KEYCODE_DPAD_UP)
+        assertEquals("refresh", compose.focusedTag())
+    }
+
+    @Test fun `Up from Live Channels lands on Install, Up from Later on Settings`() {
+        home()
+        compose.key(KeyEvent.KEYCODE_DPAD_RIGHT)
+        compose.onNodeWithTag("tile:channels").assertIsFocused()
+        compose.key(KeyEvent.KEYCODE_DPAD_UP)
+        assertEquals("update:install", compose.focusedTag())
+        compose.key(KeyEvent.KEYCODE_DPAD_RIGHT)
+        assertEquals("update:later", compose.focusedTag())
+        compose.key(KeyEvent.KEYCODE_DPAD_UP)
+        assertEquals("settings", compose.focusedTag())
+    }
+
+    @Test fun `without the bar, or while it downloads, Up from the tiles goes to the header`() {
+        update = UpdateState.UpToDate(0)
+        home()
+        compose.key(KeyEvent.KEYCODE_DPAD_UP)
+        assertEquals("refresh", compose.focusedTag())
+
+        update = UpdateState.Available("1.0.0", "0.9.0", progress = "DOWNLOADING 0.0 / 9.9 MB · 0%")
+        compose.waitForIdle()
+        compose.onNodeWithTag("tile:channels").performSemanticsAction(SemanticsActions.RequestFocus)
+        compose.key(KeyEvent.KEYCODE_DPAD_UP)
+        assertTrue(compose.focusedTag() in setOf("refresh", "settings"))
     }
 
     @Test fun `Later via D-pad hides the bar and focus lands on Live Games`() {
