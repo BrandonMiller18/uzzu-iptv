@@ -63,8 +63,8 @@ This takes about 10 minutes. Uzzu isn't in the Amazon Appstore, so you install i
    ```
 
 3. Select **Go**. The download page for the newest version opens.
-4. Scroll down to the **Assets** section. Select the file whose name **ends in `.apk`**, for example
-   `uzzu-iptv-1.0.2.apk`. Skip the files that end in `.sha256` or `.txt`.
+4. Scroll down to the **Assets** section. Select the file whose name **ends in `.apk`**
+   (it starts with `uzzu-iptv-`). Skip the files that end in `.sha256` or `.txt`.
 5. When the download finishes, select **Install**.
    - If the **Install** button isn't highlighted, press **Down** (then **Right**) on the remote until
      it is, then press **OK**.
@@ -93,8 +93,8 @@ called **Downloader**.
    ```
 
 3. Select **Go**. The download page for the newest version opens.
-4. Scroll down to the **Assets** section. Select the file whose name **ends in `.apk`**, for example
-   `uzzu-iptv-1.0.2.apk`. Skip the files that end in `.sha256` or `.txt`.
+4. Scroll down to the **Assets** section. Select the file whose name **ends in `.apk`**
+   (it starts with `uzzu-iptv-`). Skip the files that end in `.sha256` or `.txt`.
 5. The TV says it isn't allowed to install apps from this source. Select **Settings** on that message,
    switch **Downloader** to **ON**, then press **Back**.
    - If you don't see that message, go to **Settings → Apps → Security & restrictions → Unknown sources**
