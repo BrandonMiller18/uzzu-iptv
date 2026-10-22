@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -58,8 +59,9 @@ import com.bmiller.uzzu.ui.theme.UzzuType
 val OverlayWidth = 384.dp
 
 /**
- * O1 (Overlay.dc.html): left 384 dp, OverlayScrim fill, 1 dp Outline right edge. Mono tag, group
- * tabs (display only: Left/Right switch them from anywhere in the panel), the item list with the
+ * O1 (Overlay.dc.html): left 384 dp, OverlayScrim fill, 1 dp Outline right edge. Mono tag, the
+ * Games/Channels switch and the group tabs (display only: Left/Right switch tabs from anywhere in
+ * the panel; Left on the first tab switches section, see [neighbourView]), the item list with the
  * PLAYING chip and the H/A row under the playing game, and "Exit to menu" pinned at the bottom.
  * Up/Down move focus (items, H/A row, Exit), Select acts, Back closes. Opens on the playing item.
  */
@@ -69,7 +71,8 @@ fun PlayerOverlay(
     tabs: List<String>,
     tab: String,
     rows: List<OverlayRow>,
-    onTab: (String) -> Unit,
+    /** Left (-1) / Right (+1). */
+    onStep: (Int) -> Unit,
     onSelectItem: (OverlayRow.Item) -> Unit,
     onFlipSide: () -> Unit,
     onExit: () -> Unit,
@@ -89,8 +92,8 @@ fun PlayerOverlay(
         withFrameNanos { }
         runCatching { requester(key).requestFocus() }
     }
-    // On open and on every tab switch: scroll to and focus the playing item (or the first row).
-    LaunchedEffect(tab) { focusDefault() }
+    // On open and on every tab or section switch: scroll to and focus the playing item (or the first row).
+    LaunchedEffect(section, tab) { focusDefault() }
     // A model update (refresh, ESPN poll) removed the focused row: don't leave the D-pad dead.
     LaunchedEffect(rows) {
         val k = focusedKey ?: return@LaunchedEffect
@@ -105,10 +108,7 @@ fun PlayerOverlay(
             .onPreviewKeyEvent { e ->
                 val code = e.nativeKeyEvent.keyCode
                 if (code != KeyEvent.KEYCODE_DPAD_LEFT && code != KeyEvent.KEYCODE_DPAD_RIGHT) return@onPreviewKeyEvent false
-                if (e.nativeKeyEvent.action == KeyEvent.ACTION_DOWN) {
-                    val next = neighbourTab(tabs, tab, if (code == KeyEvent.KEYCODE_DPAD_LEFT) -1 else 1)
-                    if (next != tab) onTab(next)
-                }
+                if (e.nativeKeyEvent.action == KeyEvent.ACTION_DOWN) onStep(if (code == KeyEvent.KEYCODE_DPAD_LEFT) -1 else 1)
                 true
             },
     ) {
@@ -121,7 +121,11 @@ fun PlayerOverlay(
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             MonoTag(if (section == Section.GAMES) "// SWITCH SIGNAL · GAMES" else "// SWITCH SIGNAL · CHANNELS")
-            OverlayTabs(tabs, tab)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Dimens.S3)) {
+                SectionSwitch(section)
+                // Fresh scroll state per section: both start with "All".
+                key(section) { OverlayTabs(tabs, tab) }
+            }
             LazyColumn(
                 state = listState,
                 modifier = Modifier.weight(1f).fillMaxWidth(),
@@ -151,18 +155,34 @@ fun PlayerOverlay(
     }
 }
 
+/** `[GAMES|CHANNELS]`, display only, styled like the H/A toggle. Left past the first tab flips it. */
+@Composable
+private fun SectionSwitch(section: Section) {
+    Row(
+        Modifier.background(UzzuColors.Outline, UzzuShapes.Toggle).padding(Dimens.RestBorder),
+        horizontalArrangement = Arrangement.spacedBy(Dimens.S1),
+    ) {
+        Segment("Games", section == Section.GAMES)
+        Segment("Channels", section == Section.CHANNELS)
+    }
+}
+
 /** Display-only tab row; the selected tab is kept in view. */
 @Composable
 private fun OverlayTabs(tabs: List<String>, tab: String) {
     val state = rememberLazyListState()
     val selected = tabs.indexOf(tab)
-    // Scroll only when the selected tab is not fully in view.
+    // Scroll only when the selected tab is not fully in view. Its left neighbour stays visible when
+    // both fit; the row is narrower than the panel (section switch), so a long tab may need the whole row.
     LaunchedEffect(selected) {
         if (selected < 0) return@LaunchedEffect
-        val info = state.layoutInfo
-        val item = info.visibleItemsInfo.firstOrNull { it.index == selected }
-        val inView = item != null && item.offset >= info.viewportStartOffset && item.offset + item.size <= info.viewportEndOffset
-        if (!inView) state.animateScrollToItem((selected - 1).coerceAtLeast(0))
+        fun inView(): Boolean {
+            val info = state.layoutInfo
+            val item = info.visibleItemsInfo.firstOrNull { it.index == selected }
+            return item != null && item.offset >= info.viewportStartOffset && item.offset + item.size <= info.viewportEndOffset
+        }
+        if (!inView()) state.animateScrollToItem((selected - 1).coerceAtLeast(0))
+        if (!inView()) state.animateScrollToItem(selected)
     }
     LazyRow(state = state, horizontalArrangement = Arrangement.spacedBy(Dimens.S1), userScrollEnabled = false) {
         itemsIndexed(tabs, key = { _, t -> t }) { i, t ->

@@ -105,6 +105,31 @@ class PlaybackManagerTest {
         assertNull(manager.state.value.last)
     }
 
+    @Test fun `Back toggles channel to game and back, each keeping its own group for CH`() {
+        val league = group(Section.CHANNELS, "League Networks")
+        val nhl = group(Section.GAMES, "NHL")
+        manager.tune(ctx(Section.CHANNELS, "League Networks", league[1]))
+        manager.tune(ctx(Section.GAMES, "NHL", nhl[2], FeedSide.AWAY))
+        assertTrue(manager.toggleLast())
+        assertEquals(Section.CHANNELS to league[1], now().section to now().currentKey)
+        manager.step(1)
+        assertEquals(league[2], now().currentKey)
+        assertEquals("League Networks", now().group)
+        // CH is a tune too: league[1] took the slot over from the game.
+        assertTrue(manager.toggleLast())
+        assertEquals(league[1], now().currentKey)
+
+        manager.tune(ctx(Section.GAMES, "NHL", nhl[2], FeedSide.AWAY))
+        assertTrue(manager.toggleLast())
+        assertTrue(manager.toggleLast())
+        assertEquals(Section.GAMES to nhl[2], now().section to now().currentKey)
+        assertEquals(FeedSide.AWAY, now().side)
+        assertEquals(playlist.games.first { it.id == nhl[2] }.awayFeed!!.url, player.loads.last())
+        manager.step(1)
+        assertEquals(nhl[3], now().currentKey)
+        assertEquals(Section.GAMES, now().section)
+    }
+
     @Test fun `Back clears the last-channel slot and returns false when that item left the playlist`() {
         val nhl = group(Section.GAMES, "NHL")
         val ch = group(Section.CHANNELS, "All")

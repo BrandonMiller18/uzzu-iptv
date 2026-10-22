@@ -32,6 +32,11 @@ generated: {by: claude/opus-5.5, at: 2026-10-20T23:00:00Z}
 - **PlayContext** travels with every `play()`: section, the tab (group) played from, that tab's
   ordered item keys, current key, and last feed side. CH up/down cycles within those keys and
   re-resolves them against a refreshed playlist by id, so it never needs the UI.
+- **O1 section switch**: `OverlayHost` holds an `OverlayView` (section + tab), starting on the
+  playing item's section and group. Left on the first tab (`neighbourView`) flips to the other
+  section's initial tab: its first tab, or the playing group if the item is in it. An empty section
+  is skipped. A tune from either section builds its `PlayContext` from the listed section + tab.
+  Player Back after leaving still returns to the route the player was opened from.
 - **UpdateState** slots (S1 bar, S7 row) are fed by `UpdateChecker`; `AppContainer` wires the
   [GitHub checker](/integrations/github-releases.md). UI tests use fakes. After Later/Install the
   S1 bar moves focus to the Live Games tile *before* the pressed button leaves composition, or D-pad focus is lost.

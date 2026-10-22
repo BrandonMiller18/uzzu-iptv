@@ -178,7 +178,7 @@ fun PlayerScreen(
     }
 }
 
-/** O1 state holder: tab, rows, polling while visible, FeedPicker over the overlay. */
+/** O1 state holder: section + tab, rows, polling while visible, FeedPicker over the overlay. */
 @Composable
 private fun OverlayHost(
     controls: PlayerControls,
@@ -192,11 +192,15 @@ private fun OverlayHost(
         val polling = startPolling()
         onDispose { polling.close() }
     }
-    val section = playing.section
-    val tabs = remember(playlist, section) { overlayTabs(playlist, section) }
-    var tab by remember { mutableStateOf(initialOverlayTab(tabs, playing) ?: "") }
-    if (tab !in tabs && tabs.isNotEmpty()) tab = tabs.first()
-    val rows = remember(playlist, tab, playing) { overlayRows(playlist, section, tab, playing) }
+    // Opens on the playing item's section; Left past the first tab shows the other one.
+    var view by remember { mutableStateOf(overlayView(playlist, playing.section, playing)) }
+    val tabs = remember(playlist, view.section) { overlayTabs(playlist, view.section) }
+    if (view.tab !in tabs) {
+        // A refresh removed the tab (or emptied the section): first tab, else back to the playing section.
+        view = if (tabs.isNotEmpty()) view.copy(tab = tabs.first()) else overlayView(playlist, playing.section, playing)
+    }
+    val (section, tab) = view
+    val rows = remember(playlist, view, playing) { overlayRows(playlist, section, tab, playing) }
     var picking by remember { mutableStateOf<Game?>(null) }
 
     fun tune(ctx: com.bmiller.uzzu.player.PlayContext) {
@@ -212,7 +216,7 @@ private fun OverlayHost(
         tabs = tabs,
         tab = tab,
         rows = rows,
-        onTab = { tab = it },
+        onStep = { view = neighbourView(playlist, view, playing, it) },
         onSelectItem = { item ->
             if (section == Section.CHANNELS) {
                 tune(overlayTuneContext(section, tab, rows, item.id, null))

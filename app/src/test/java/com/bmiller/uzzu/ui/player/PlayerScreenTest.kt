@@ -166,6 +166,65 @@ class PlayerScreenTest {
         assertEquals(FeedSide.HOME, now.side)
     }
 
+    private fun closeOverlay() {
+        compose.mainClock.advanceTimeBy(500)
+        compose.waitForIdle()
+    }
+
+    @Test fun `overlay - from a channel, Left past the first tab lists games, a game plays after the picker, Back toggles`() {
+        val start = channels("League Networks", 1)
+        launch(start)
+        compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
+        compose.onAllNodesWithTag("segment:channels:on", useUnmergedTree = true).fetchSemanticsNodes().let { assertEquals(1, it.size) }
+        compose.key(KeyEvent.KEYCODE_DPAD_LEFT) // League Networks -> All
+        compose.key(KeyEvent.KEYCODE_DPAD_LEFT) // All -> Games
+        compose.onAllNodesWithTag("segment:games:on", useUnmergedTree = true).fetchSemanticsNodes().let { assertEquals(1, it.size) }
+        compose.onNodeWithTag("otab:MLB").assertExists()
+        val mlb = groupKeys(playlist, Section.GAMES, "MLB")
+        compose.key(KeyEvent.KEYCODE_DPAD_RIGHT) // All -> MLB
+        assertEquals("item:${mlb.first()}", compose.focusedTag())
+        compose.key(KeyEvent.KEYCODE_DPAD_CENTER) // two feeds: picker
+        compose.key(KeyEvent.KEYCODE_DPAD_DOWN)
+        assertEquals("feed:away", compose.focusedTag())
+        compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
+        closeOverlay()
+        assertFalse(overlayShown())
+        var now = manager.state.value.now!!.context
+        assertEquals(Triple(Section.GAMES, "MLB", mlb.first()), Triple(now.section, now.group, now.currentKey))
+        assertEquals(FeedSide.AWAY, now.side)
+
+        back()
+        now = manager.state.value.now!!.context
+        assertEquals(Section.CHANNELS to start.currentKey, now.section to now.currentKey)
+        back()
+        now = manager.state.value.now!!.context
+        assertEquals(Triple(Section.GAMES, mlb.first(), FeedSide.AWAY), Triple(now.section, now.currentKey, now.side))
+        assertEquals(0, toList)
+    }
+
+    @Test fun `overlay - from a game, the channels list is one Left from All, a channel plays, Back returns to the same side`() {
+        launch(nhl(1, FeedSide.AWAY))
+        compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
+        compose.key(KeyEvent.KEYCODE_DPAD_LEFT, 3) // NHL -> MLB -> All -> Channels
+        compose.onAllNodesWithTag("segment:channels:on", useUnmergedTree = true).fetchSemanticsNodes().let { assertEquals(1, it.size) }
+        val all = groupKeys(playlist, Section.CHANNELS, "All")
+        assertEquals("item:${all.first()}", compose.focusedTag())
+        compose.key(KeyEvent.KEYCODE_DPAD_DOWN)
+        compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
+        closeOverlay()
+        var now = manager.state.value.now!!.context
+        assertEquals(Triple(Section.CHANNELS, "All", all[1]), Triple(now.section, now.group, now.currentKey))
+        assertEquals(playlist.channels.first { it.key == all[1] }.url, player.loads.last())
+
+        back()
+        now = manager.state.value.now!!.context
+        assertEquals(Triple(Section.GAMES, nhl(1).currentKey, FeedSide.AWAY), Triple(now.section, now.currentKey, now.side))
+        assertEquals("NHL", now.group)
+        back()
+        assertEquals(all[1], manager.state.value.now!!.context.currentKey)
+        assertEquals(0, toList)
+    }
+
     @Test fun `Exit to menu leaves the player to S1`() {
         launch(channels())
         compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
