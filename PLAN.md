@@ -1,3 +1,8 @@
+---
+title: Uzzu IPTV Player Plan
+description: Initial implementation plan for the application. The plan has already been implemented. This file is retained in the repo for historical purposes only.
+status: complete
+---
 # **Uzzu IPTV Player — Implementation Plan**
 
 Oct 19, 2026 · @Brandon
