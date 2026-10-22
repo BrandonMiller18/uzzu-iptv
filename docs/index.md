@@ -29,6 +29,7 @@ okf_version: "0.2"
 ## Guides
 - [Channel rules](/guides/channel-rules.md) — adding a channel_groups.json rule; first-match ordering traps
 - [Fire TV testing](/guides/fire-tv-testing.md) — adb over Wi-Fi, keyevents, screenshots, logs, fixture mode, debug hooks (forced 404, suppress S6)
+- [Emulator on macOS](/guides/emulator-macos.md) — Homebrew JDK 17 + SDK, API 31 arm64 TV AVD, placeholder URL for fixture mode; limits vs the stick
 - [Releasing](/guides/releasing.md) — tag vX.Y.Z → signed APK + .sha256 + mapping.txt; secrets; versionCode guard; CI debug-hook check
 - [Performance](/guides/performance.md) — bench build type, measured cold start and channel switch, open playlist-fetch budget issue
 

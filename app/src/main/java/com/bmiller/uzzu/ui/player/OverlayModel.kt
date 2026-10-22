@@ -37,15 +37,37 @@ sealed interface OverlayRow {
     }
 }
 
+/** What O1 lists: a section (either one, not only the playing item's) and one of its tabs. */
+data class OverlayView(val section: Section, val tab: String)
+
+fun Section.other() = if (this == Section.GAMES) Section.CHANNELS else Section.GAMES
+
 /** Tab the overlay opens on: the current group, else the first tab. */
 fun initialOverlayTab(tabs: List<String>, ctx: PlayContext?): String? =
     ctx?.group?.takeIf { it in tabs } ?: tabs.firstOrNull()
+
+/** [section] on its initial tab: the playing group when the item is in that section, else the first tab ("" if none). */
+fun overlayView(playlist: Playlist, section: Section, playing: PlayContext?) =
+    OverlayView(section, initialOverlayTab(overlayTabs(playlist, section), playing?.takeIf { it.section == section }).orEmpty())
 
 /** Left/Right: neighbour tab, clamped at the ends. */
 fun neighbourTab(tabs: List<String>, current: String, delta: Int): String {
     if (tabs.isEmpty()) return current
     val i = tabs.indexOf(current).coerceAtLeast(0)
     return tabs[(i + delta).coerceIn(0, tabs.lastIndex)]
+}
+
+/**
+ * Left/Right in O1: neighbour tab, clamped at the right end. Left on the first tab crosses the
+ * section switch to the other section's initial tab (no-op when that section is empty).
+ */
+fun neighbourView(playlist: Playlist, view: OverlayView, playing: PlayContext?, delta: Int): OverlayView {
+    val tabs = overlayTabs(playlist, view.section)
+    if (delta < 0 && tabs.indexOf(view.tab) <= 0) {
+        val other = overlayView(playlist, view.section.other(), playing)
+        return if (other.tab.isEmpty()) view else other
+    }
+    return view.copy(tab = neighbourTab(tabs, view.tab, delta))
 }
 
 fun overlayTabs(playlist: Playlist, section: Section) = sectionTabs(playlist, section)

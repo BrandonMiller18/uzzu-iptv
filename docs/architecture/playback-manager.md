@@ -27,8 +27,10 @@ provider keeps its order. Games key by the normalized `away|home` pair instead.
 
 **Last-channel slot**: exactly one previous `PlayContext`, including its side. A tune that changes
 the item or the side moves the current item into the slot. An H/A flip counts as a change (QA M45-12).
-`stop()` **clears the slot when you leave the player**. So after re-entering from a list, Back
-returns to that list, not to a channel from an earlier session.
+The slot is section-agnostic (game ↔ channel works); the way across sections is O1's section
+switch, which tunes the other section's item with its own `PlayContext`. CH up/down always uses the
+playing item's own group. `stop()` **clears the slot when you leave the player**. So after
+re-entering from a list, Back returns to that list, not to a channel from an earlier session.
 
 If the slot's item can no longer be resolved, `toggleLast` clears the slot and returns false, so
 Back falls through to the list instead of doing nothing.

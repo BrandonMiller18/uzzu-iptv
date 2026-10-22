@@ -84,7 +84,7 @@ Notes per screen:
 - **S2**: tabs All, MLB, NHL, NBA, NFL, NCAAF, Ungrouped. **Hide tabs with zero games.** A 2-column grid of game cards, 24 dp column gap, 16 dp row gap.
 - **S3**: tabs All, League Networks, National Sports, College Sports, Regional Sports, International, News and Entertainment, Other. A 2-column grid of channel rows with a 2-digit index.
 - **S5**: tune banner, bottom-left inside the safe area: `Scrim` fill, 3 dp `Active` bar on the left, two logo slots, a mono line (`// TUNED · HOME FEED · NFL`) and the title.
-- **O1**: covers the left 40% (384 dp), `OverlayScrim` fill (75% black), 1 dp `Outline` line on its right edge. Content: mono tag, tab row, item list, the Home/Away row under the playing game, and "Exit to menu" pinned to the bottom.
+- **O1**: covers the left 40% (384 dp), `OverlayScrim` fill (75% black), 1 dp `Outline` line on its right edge. Content: mono tag, tab row, item list, the Home/Away row under the playing game, and "Exit to menu" pinned to the bottom. The tab row starts with a display-only `GAMES | CHANNELS` switch, drawn like the Home/Away toggle (`Outline` frame, `Active` fill on the listed section). The group tabs after it belong to that section; the row scrolls the selected tab fully into view.
 - **S6**: `ERR // SIGNAL LOST` tag + title + plain summary line. Diagnostic block in mono with label/value lines: item + feed, host + masked path, HTTP status, player error code, attempts with timestamps, playlist age + last refresh, network. The failing values (HTTP status, player error) use `Error` color.
 - **S7**: focusable rows for Playlist URL (masked), Refresh now, Check for updates. Read-only lines for app version and log file path. First-run setup reuses this styling: a single URL field and a Save button.
 
@@ -98,7 +98,7 @@ Notes per screen:
 | Player | Select | Open overlay |
 | Player | Up / Down | Previous / next item in the current group |
 | Player | Back | Toggle to last channel; if none, return to list |
-| Overlay | Left / Right | Switch group tab |
+| Overlay | Left / Right | Switch group tab; Left on the first tab switches Games ↔ Channels |
 | Overlay | Up / Down | Move through items (includes the Home/Away row and Exit) |
 | Overlay | Select | Tune the focused item, or flip Home/Away on the toggle row |
 | Overlay | Back | Close overlay |
