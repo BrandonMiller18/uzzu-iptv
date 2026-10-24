@@ -96,8 +96,8 @@ android {
         disable += listOf(
             // Versions are pinned deliberately (compile/targetSdk 36 per PLAN; newer libs need 37).
             "GradleDependency", "NewerVersionAvailable", "AndroidGradlePluginVersion", "OldTargetApi",
-            // TV-only app: ARM ABIs only, square banner-style launcher icons, xhdpi banner.
-            "ChromeOsAbiSupport", "IconLauncherShape", "IconMissingDensityFolder",
+            // TV-only app: ARM ABIs only, square banner-style launcher icons, no themed (monochrome) icon.
+            "ChromeOsAbiSupport", "IconLauncherShape", "IconMissingDensityFolder", "MonochromeLauncherIcon",
         )
     }
 }
