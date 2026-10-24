@@ -1,5 +1,8 @@
 # Log
 
+## 2026-10-24
+- New logo: adaptive launcher icon (`mipmap-anydpi`, black background + foreground per density) and `@mipmap/tv_banner` at every density replace the old PNG icon and xhdpi-only banner. Source art in `design-handoff/brand/`.
+
 ## 2026-10-21
 - Issue #4: O1 can list and tune the other section (Games/Channels switch, Left past the first tab); Back toggles across sections. Updated HANDOFF, PlaybackManager and UI navigation pages.
 - Added the Android TV emulator guide for macOS (JDK 17 + SDK via Homebrew, API 31 arm64 TV AVD, fixture mode with a placeholder URL).
