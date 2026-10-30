@@ -180,7 +180,7 @@ Games route through the feed picker; channels play directly. The overlay and err
 | S3 | Channels list | Browse channels | Sub-group tabs: All first; empty tabs hidden |
 | S4 | Feed picker | Choose Home or Away feed | Opens from S2 or the overlay; skipped when only one feed exists |
 | S5 | Player | Full-screen playback | Channel banner on tune |
-| O1 | Player overlay | Switch without stopping playback | Group tabs \+ item list for the current section, H/A toggle on the playing game, "Exit to menu" item |
+| O1 | Player overlay | Switch without stopping playback | Live Games / Live Channels picker, group row (opens a group list), item list, H/A toggle on the playing game, "Exit to menu" item |
 | S6 | Error | Show failure and diagnostics | See Error screen contents below; Retry, Back |
 | S7 | Settings | Maintenance | Playlist URL (edit), Refresh now, Check for updates, app version, log path |
 
@@ -202,10 +202,10 @@ Games route through the feed picker; channels play directly. The overlay and err
 | Player | Back | Toggle to the last channel; if none, return to the list it came from |
 | Player | Long-press Back | Exit to S1 (if the remote reports it) |
 | Player | Play/Pause | Pause / resume (live edge on resume) |
-| Overlay | D-pad left / right | Switch group tab |
-| Overlay | D-pad up / down | Move focus in the item list |
-| Overlay | Select | Tune the focused item (feed picker for games) |
-| Overlay | Back | Close overlay |
+| Overlay | D-pad up / down | Move focus through list picker, group row, items and Exit |
+| Overlay | D-pad left / right | Move between Live Games and Live Channels in the list picker only |
+| Overlay | Select | List segment: show that list. Group row: open the group list. Item: tune it (feed picker for games) |
+| Overlay | Back | Close the group list if open, else close overlay |
 
 **Navigation rules**
 

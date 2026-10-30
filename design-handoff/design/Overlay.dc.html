@@ -8,7 +8,7 @@
 <body>
 <x-dc>
 <helmet>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wdth,wght@75..100,400..700&amp;family=Roboto+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wdth,wght@75..100,400..800&amp;family=Roboto+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0}
 </style>
@@ -16,77 +16,166 @@ body{margin:0}
 <div style="width: 1920px; height: 1080px; position: relative; overflow: hidden; background: #000000; color: #E6F0F2; font-family: Roboto, sans-serif">
   <img src="/_blob/ebc05e7a81b192aeb89d5699ec7d1158" alt="" aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; display: block">
 
-  <div role="dialog" aria-label="Switch stream" style="position: absolute; left: 0; top: 0; width: 768px; height: 1080px; box-sizing: border-box; padding: 54px 40px 54px 96px; background: rgba(0, 0, 0, 0.75); border-right: 2px solid #3A1E4F; display: flex; flex-direction: column; gap: 20px">
+  <div role="dialog" aria-label="Switch stream" style="position: absolute; left: 0; top: 0; width: 768px; height: 1080px; box-sizing: border-box; padding: 54px 40px 54px 96px; background: rgba(0, 0, 0, 0.75); border-right: 2px solid #3A1E4F; display: flex; flex-direction: column">
 
     <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE; letter-spacing: 2px">// SWITCH SIGNAL</span>
 
-    <div role="tablist" aria-label="League" style="display: flex; align-items: center; gap: 4px">
-      <sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
-        <button role="tab" aria-selected="{{t.selected}}" style="height: 56px; padding: 0 16px; box-sizing: border-box; border: 0; background: {{t.bg}}; color: {{t.color}}; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); font-family: Roboto, sans-serif; font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase; white-space: nowrap">{{t.label}}</button>
+    <div role="radiogroup" aria-label="List" style="margin-top: 16px; display: flex; gap: 8px">
+      <sc-for list="{{lists}}" as="s" hint-placeholder-count="2">
+        <button role="radio" aria-checked="{{s.checked}}" style="flex: 1; min-width: 0; height: 64px; box-sizing: border-box; padding: {{s.bw}}; border: 0; background: {{s.border}}; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); transform: {{s.transform}}; font-family: Roboto, sans-serif">
+          <span style="width: 100%; height: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center; background: {{s.bg}}; color: {{s.color}}; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); font-size: 32px; line-height: 40px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase; white-space: nowrap">{{s.label}}</span>
+        </button>
       </sc-for>
     </div>
 
-    <div style="display: flex; flex-direction: column; gap: 8px">
-      <sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
-        <sc-if value="{{r.isItem}}" hint-placeholder-val="{{ true }}">
-          <button style="width: 100%; height: 96px; padding: {{r.bw}}; border: 0; background: {{r.border}}; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px)); transform: {{r.transform}}; font-family: Roboto, sans-serif">
-            <span style="width: 100%; height: 100%; box-sizing: border-box; padding: 0 20px; background: {{r.bg}}; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); color: #E6F0F2; text-align: left; display: flex; flex-direction: column; justify-content: center">
-              <span style="display: flex; flex-direction: column; opacity: {{r.opacity}}; min-width: 0; width: 100%">
-                <span style="font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.title}}</span>
-                <span style="display: flex; align-items: center; gap: 12px">
-                  <sc-if value="{{r.live}}" hint-placeholder-val="{{ false }}">
-                    <span style="font-size: 24px; line-height: 28px; font-weight: 800; font-stretch: 80%; letter-spacing: 2px; padding: 0 12px 0 10px; background: {{accent}}; color: #000000; clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 0 100%); display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; background: #000000"></span>LIVE</span>
-                  </sc-if>
-                  <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: {{r.detailColor}}">{{r.detail}}</span>
-                  <sc-if value="{{r.playing}}" hint-placeholder-val="{{ false }}">
-                    <span style="font-size: 24px; line-height: 28px; font-weight: 800; font-stretch: 80%; letter-spacing: 2px; padding: 0 10px; background: #B0186E; color: #E6F0F2; clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 0 100%)">PLAYING</span>
-                  </sc-if>
+    <button aria-haspopup="listbox" aria-expanded="{{groupOpen}}" style="margin-top: 12px; width: 100%; height: 72px; flex: none; box-sizing: border-box; padding: {{g.bw}}; border: 0; background: {{g.border}}; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px)); transform: {{g.transform}}; font-family: Roboto, sans-serif">
+      <span style="width: 100%; height: 100%; box-sizing: border-box; padding: 0 20px; background: #0E0E11; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); display: flex; align-items: center; gap: 20px; text-align: left">
+        <span style="flex: none; font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE; letter-spacing: 2px">GROUP</span>
+        <span style="flex: 1; min-width: 0; font-size: 32px; line-height: 40px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase; color: #E6F0F2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{groupName}}</span>
+        <span style="flex: none; font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">{{groupCount}}</span>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E6F0F2" stroke-width="2" stroke-linecap="square" aria-hidden="true" style="flex: none; transform: {{chevron}}"><path d="M6 9l6 6 6-6"></path></svg>
+      </span>
+    </button>
+
+    <div style="margin-top: 24px; flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px">
+      <sc-if value="{{showItems}}" hint-placeholder-val="{{ true }}">
+        <sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+          <sc-if value="{{r.isItem}}" hint-placeholder-val="{{ true }}">
+            <button style="width: 100%; height: 96px; flex: none; padding: {{r.bw}}; border: 0; background: {{r.border}}; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px)); transform: {{r.transform}}; font-family: Roboto, sans-serif">
+              <span style="width: 100%; height: 100%; box-sizing: border-box; padding: 0 20px; background: {{r.bg}}; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); color: #E6F0F2; text-align: left; display: flex; flex-direction: column; justify-content: center">
+                <span style="display: flex; flex-direction: column; opacity: {{r.opacity}}; min-width: 0; width: 100%">
+                  <span style="font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.title}}</span>
+                  <span style="display: flex; align-items: center; gap: 12px">
+                    <sc-if value="{{r.live}}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size: 24px; line-height: 28px; font-weight: 800; font-stretch: 80%; letter-spacing: 2px; padding: 0 12px 0 10px; background: {{accent}}; color: #000000; clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 0 100%); display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; background: #000000"></span>LIVE</span>
+                    </sc-if>
+                    <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: {{r.detailColor}}; white-space: nowrap">{{r.detail}}</span>
+                    <sc-if value="{{r.playing}}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size: 24px; line-height: 28px; font-weight: 800; font-stretch: 80%; letter-spacing: 2px; padding: 0 10px; background: #B0186E; color: #E6F0F2; clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 0 100%)">PLAYING</span>
+                    </sc-if>
+                  </span>
                 </span>
               </span>
-            </span>
-          </button>
-        </sc-if>
-        <sc-if value="{{r.isToggle}}" hint-placeholder-val="{{ false }}">
-          <button aria-label="Feed: Home. Select to switch to Away" style="width: 100%; height: 72px; box-sizing: border-box; padding: 0 12px 0 44px; border: 0; background: transparent; color: #E6F0F2; font-family: Roboto, sans-serif; display: flex; align-items: center; justify-content: space-between">
-            <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">└ FEED</span>
-            <span style="display: flex; gap: 4px; padding: 2px; background: #3A1E4F; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px)">
-              <span style="padding: 4px 20px; background: #B0186E; color: #E6F0F2; font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase">Home</span>
-              <span style="padding: 4px 20px; background: #000000; color: #A99BBE; font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase">Away</span>
-            </span>
-          </button>
-        </sc-if>
-      </sc-for>
+            </button>
+          </sc-if>
+          <sc-if value="{{r.isToggle}}" hint-placeholder-val="{{ false }}">
+            <button aria-label="Feed: Home. Select to switch to Away" style="width: 100%; height: 72px; flex: none; box-sizing: border-box; padding: 0 12px 0 44px; border: 0; background: transparent; color: #E6F0F2; font-family: Roboto, sans-serif; display: flex; align-items: center; justify-content: space-between">
+              <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE">└ FEED</span>
+              <span style="display: flex; gap: 4px; padding: 2px; background: #3A1E4F; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px)">
+                <span style="padding: 4px 20px; background: #B0186E; color: #E6F0F2; font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase">Home</span>
+                <span style="padding: 4px 20px; background: #000000; color: #A99BBE; font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase">Away</span>
+              </span>
+            </button>
+          </sc-if>
+        </sc-for>
+      </sc-if>
+
+      <sc-if value="{{showGroups}}" hint-placeholder-val="{{ false }}">
+        <span style="font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: #A99BBE; letter-spacing: 2px; margin-bottom: 4px">{{groupTag}}</span>
+        <div role="listbox" aria-label="Group" style="display: flex; flex-direction: column; gap: 8px">
+          <sc-for list="{{groups}}" as="o" hint-placeholder-count="8">
+            <button role="option" aria-selected="{{o.selected}}" style="width: 100%; height: 64px; flex: none; padding: {{o.bw}}; border: 0; background: {{o.border}}; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px)); transform: {{o.transform}}; font-family: Roboto, sans-serif">
+              <span style="width: 100%; height: 100%; box-sizing: border-box; padding: 0 20px; background: {{o.bg}}; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); color: #E6F0F2; display: flex; align-items: center; gap: 16px; text-align: left">
+                <span style="flex: 1; min-width: 0; font-size: 28px; line-height: 36px; font-weight: 600; font-stretch: 85%; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{o.label}}</span>
+                <span style="flex: none; font-family: 'Roboto Mono', monospace; font-size: 24px; line-height: 32px; color: {{o.countColor}}">{{o.count}}</span>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
     </div>
 
-    <div style="flex: 1"></div>
-    <button style="width: 100%; height: 72px; box-sizing: border-box; padding: 0 20px; border: 0; border-top: 2px solid #3A1E4F; background: transparent; color: #E6F0F2; font-family: Roboto, sans-serif; font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase; text-align: left; display: flex; align-items: center; gap: 16px">
+    <button style="margin-top: 16px; width: 100%; height: 72px; flex: none; box-sizing: border-box; padding: 0 20px; border: 0; border-top: 2px solid #3A1E4F; background: transparent; color: #E6F0F2; font-family: Roboto, sans-serif; font-size: 24px; line-height: 32px; font-weight: 700; font-stretch: 80%; letter-spacing: 2px; text-transform: uppercase; text-align: left; display: flex; align-items: center; gap: 16px">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E6F0F2" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
       Exit to menu
     </button>
   </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#F5E50A","options":["#F5E50A","#00E5FF","#FF2E88"]},"$preview":{"width":1920,"height":1080}}'>
+<script type="text/x-dc" data-dc-script data-props='{"frame":{"editor":"enum","default":"a","options":["a","b","c","d"]},"accent":{"editor":"color","default":"#F5E50A","options":["#F5E50A","#00E5FF","#FF2E88"]},"$preview":{"width":1920,"height":1080}}'>
 class Component extends DCLogic {
   renderVals() {
     const accent = this.props.accent ?? '#F5E50A';
-    const labels = ['All', 'MLB', 'NHL', 'NFL', 'Ungrouped'];
-    const items = [
+    const frame = this.props.frame ?? 'a';
+    const PINK = '#B0186E', SURFACE = '#0E0E11', OUTLINE = '#3A1E4F', TP = '#E6F0F2', TS = '#A99BBE';
+
+    // a: just opened (Games / All, focus on playing game)
+    // b: focus on the list picker (Channels focused, Games still active)
+    // c: group list open, focus on a long channel group
+    // d: right after Select on Channels (focus stays on the picker)
+    const section = (frame === 'c' || frame === 'd') ? 'channels' : 'games';
+    const focus = { a: 'item', b: 'list:channels', c: 'group:News and Entertainment', d: 'list:channels' }[frame];
+    const groupOpen = frame === 'c';
+
+    const ring = (on) => ({ bw: on ? '6px' : '0px', transform: on ? 'scale(1.05)' : 'none' });
+
+    const lists = [
+      { id: 'games', label: 'Live Games' },
+      { id: 'channels', label: 'Live Channels' }
+    ].map((s) => {
+      const active = s.id === section;
+      const focused = focus === 'list:' + s.id;
+      return {
+        label: s.label,
+        checked: active ? 'true' : 'false',
+        bg: active ? PINK : SURFACE,
+        color: active ? TP : TS,
+        border: focused ? accent : (active ? PINK : OUTLINE),
+        bw: focused ? '6px' : '2px',
+        transform: focused ? 'scale(1.05)' : 'none'
+      };
+    });
+
+    const gameItems = [
       { title: 'Pittsburgh Penguins @ Utah Mammoth', detail: 'FINAL', final: true },
       { title: 'Cleveland Guardians @ Tampa Bay Rays', detail: 'TOP 5TH', live: true },
       { title: 'Anaheim Ducks @ New York Rangers', detail: '2ND 8:14', live: true },
-      { title: 'Washington Commanders @ San Francisco 49ers', detail: '7:15 PM', playing: true, focused: true },
+      { title: 'Washington Commanders @ San Francisco 49ers', detail: '7:15 PM', playing: true, focused: frame === 'a' },
       { toggle: true },
       { title: 'Special Event Feed', detail: '' }
     ];
+    const channelItems = [
+      { title: 'FanDuel Sports Network Wisconsin Extra', detail: '01 · REGIONAL SPORTS' },
+      { title: 'NFL Network', detail: '02 · LEAGUE NETWORKS' },
+      { title: 'Red Zone', detail: '03 · LEAGUE NETWORKS' },
+      { title: 'ESPN', detail: '04 · NATIONAL SPORTS' },
+      { title: 'Fox Sports 1', detail: '05 · NATIONAL SPORTS' },
+      { title: 'SEC Network', detail: '06 · COLLEGE SPORTS' }
+    ];
+    const items = section === 'games' ? gameItems : channelItems;
+
+    const groupDefs = [
+      ['All', 48], ['League Networks', 6], ['National Sports', 9], ['College Sports', 5],
+      ['Regional Sports', 14], ['International', 4], ['News and Entertainment', 7], ['Other', 3]
+    ];
+    const current = 'All';
+    const groups = groupDefs.map(([label, count]) => {
+      const sel = label === current;
+      const focused = focus === 'group:' + label;
+      return {
+        label: label,
+        count: String(count),
+        selected: sel ? 'true' : 'false',
+        bg: sel ? PINK : (focused ? SURFACE : 'transparent'),
+        countColor: sel ? TP : TS,
+        border: focused ? accent : 'transparent',
+        ...ring(focused)
+      };
+    });
+
+    const groupFocused = focus === 'group-row';
     return {
       accent: accent,
-      tabs: labels.map((label, i) => ({
-        label: label,
-        selected: i === 0 ? 'true' : 'false',
-        bg: i === 0 ? '#B0186E' : 'transparent',
-        color: i === 0 ? '#E6F0F2' : '#A99BBE'
-      })),
+      lists: lists,
+      groupOpen: groupOpen ? 'true' : 'false',
+      groupName: current,
+      groupCount: section === 'games' ? '12' : '48',
+      chevron: groupOpen ? 'rotate(180deg)' : 'none',
+      g: { border: groupFocused ? accent : OUTLINE, bw: groupFocused ? '6px' : '2px', transform: groupFocused ? 'scale(1.05)' : 'none' },
+      showItems: !groupOpen,
+      showGroups: groupOpen,
+      groupTag: '// PICK GROUP · LIVE CHANNELS',
+      groups: groups,
       rows: items.map((it) => ({
         isItem: !it.toggle,
         isToggle: !!it.toggle,
@@ -94,11 +183,11 @@ class Component extends DCLogic {
         detail: it.detail || '',
         live: !!it.live,
         playing: !!it.playing,
-        detailColor: it.final ? '#E6F0F2' : '#A99BBE',
+        detailColor: it.final ? TP : TS,
         opacity: it.final ? 0.4 : 1,
         border: it.focused ? accent : 'transparent',
         bw: it.focused ? '6px' : '0px',
-        bg: it.focused ? '#0E0E11' : 'transparent',
+        bg: it.focused ? SURFACE : 'transparent',
         transform: it.focused ? 'scale(1.05)' : 'none'
       }))
     };

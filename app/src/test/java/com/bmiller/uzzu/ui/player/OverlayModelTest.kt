@@ -26,37 +26,35 @@ class OverlayModelTest {
         assertEquals("NBA" in tabs, false)
     }
 
-    @Test fun `left and right clamp at the ends`() {
-        val tabs = listOf("All", "MLB", "NHL")
-        assertEquals("MLB", neighbourTab(tabs, "All", 1))
-        assertEquals("All", neighbourTab(tabs, "All", -1))
-        assertEquals("NHL", neighbourTab(tabs, "NHL", 1))
-        assertEquals("MLB", neighbourTab(tabs, "NHL", -1))
+    @Test fun `group list has every non-empty tab with its item count`() {
+        val groups = overlayGroups(playlist, Section.CHANNELS)
+        assertEquals(overlayTabs(playlist, Section.CHANNELS), groups.map { it.name })
+        groups.forEach { assertEquals(groupKeys(playlist, Section.CHANNELS, it.name).size, it.count) }
+        assertTrue(groups.all { it.count > 0 })
     }
 
-    @Test fun `Left on the first tab switches section, onto the playing group when it is there`() {
+    @Test fun `switching list lands on the playing group when it is there, else the first tab`() {
         val nhl = groupKeys(playlist, Section.GAMES, "NHL")
         val game = PlayContext(Section.GAMES, "NHL", nhl, nhl[1], FeedSide.HOME)
-        assertEquals(OverlayView(Section.GAMES, "NHL"), overlayView(playlist, Section.GAMES, game))
-        val all = OverlayView(Section.GAMES, "All")
-        assertEquals(OverlayView(Section.GAMES, "MLB"), neighbourView(playlist, all, game, 1))
+        val opened = overlayView(playlist, Section.GAMES, game)
+        assertEquals(OverlayView(Section.GAMES, "NHL"), opened)
+        // The listed section again: nothing changes (not even the group).
+        val mlb = OverlayView(Section.GAMES, "MLB")
+        assertEquals(mlb, switchSection(playlist, mlb, game, Section.GAMES))
         // Games → Channels: the playing item is not a channel, so the first tab.
-        val ch = neighbourView(playlist, all, game, -1)
+        val ch = switchSection(playlist, mlb, game, Section.CHANNELS)
         assertEquals(OverlayView(Section.CHANNELS, "All"), ch)
         // ... and back to Games on the playing group.
-        assertEquals(OverlayView(Section.GAMES, "NHL"), neighbourView(playlist, ch, game, -1))
-        // Right clamps at the last tab.
-        val last = overlayTabs(playlist, Section.CHANNELS).last()
-        assertEquals(OverlayView(Section.CHANNELS, last), neighbourView(playlist, OverlayView(Section.CHANNELS, last), game, 1))
+        assertEquals(OverlayView(Section.GAMES, "NHL"), switchSection(playlist, ch, game, Section.GAMES))
 
         // The other section's rows list it, without PLAYING (the item is in the other section).
         val channelRows = overlayRows(playlist, Section.CHANNELS, "All", game).filterIsInstance<OverlayRow.Item>()
         assertEquals(groupKeys(playlist, Section.CHANNELS, "All"), channelRows.map { it.id })
         assertTrue(channelRows.none { it.playing })
 
-        // An empty other section: Left stays put.
+        // An empty other section: stays put.
         val noChannels = playlist.copy(channels = emptyList())
-        assertEquals(all, neighbourView(noChannels, all, game, -1))
+        assertEquals(mlb, switchSection(noChannels, mlb, game, Section.CHANNELS))
     }
 
     @Test fun `H-A row sits directly under the playing game and focus starts on the playing item`() {

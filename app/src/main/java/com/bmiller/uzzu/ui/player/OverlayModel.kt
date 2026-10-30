@@ -50,25 +50,21 @@ fun initialOverlayTab(tabs: List<String>, ctx: PlayContext?): String? =
 fun overlayView(playlist: Playlist, section: Section, playing: PlayContext?) =
     OverlayView(section, initialOverlayTab(overlayTabs(playlist, section), playing?.takeIf { it.section == section }).orEmpty())
 
-/** Left/Right: neighbour tab, clamped at the ends. */
-fun neighbourTab(tabs: List<String>, current: String, delta: Int): String {
-    if (tabs.isEmpty()) return current
-    val i = tabs.indexOf(current).coerceAtLeast(0)
-    return tabs[(i + delta).coerceIn(0, tabs.lastIndex)]
+/**
+ * Select on a list segment: [section] on its initial tab (see [overlayView]). Stays on [view] when
+ * [section] is already listed or has nothing to list.
+ */
+fun switchSection(playlist: Playlist, view: OverlayView, playing: PlayContext?, section: Section): OverlayView {
+    if (section == view.section) return view
+    val other = overlayView(playlist, section, playing)
+    return if (other.tab.isEmpty()) view else other
 }
 
-/**
- * Left/Right in O1: neighbour tab, clamped at the right end. Left on the first tab crosses the
- * section switch to the other section's initial tab (no-op when that section is empty).
- */
-fun neighbourView(playlist: Playlist, view: OverlayView, playing: PlayContext?, delta: Int): OverlayView {
-    val tabs = overlayTabs(playlist, view.section)
-    if (delta < 0 && tabs.indexOf(view.tab) <= 0) {
-        val other = overlayView(playlist, view.section.other(), playing)
-        return if (other.tab.isEmpty()) view else other
-    }
-    return view.copy(tab = neighbourTab(tabs, view.tab, delta))
-}
+/** One entry of the group list: a non-empty tab and how many items it lists. */
+data class OverlayGroup(val name: String, val count: Int)
+
+fun overlayGroups(playlist: Playlist, section: Section): List<OverlayGroup> =
+    overlayTabs(playlist, section).map { OverlayGroup(it, groupKeys(playlist, section, it).size) }
 
 fun overlayTabs(playlist: Playlist, section: Section) = sectionTabs(playlist, section)
 

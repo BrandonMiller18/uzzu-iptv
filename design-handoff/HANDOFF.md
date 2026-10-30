@@ -47,6 +47,9 @@ One family, Roboto, plus Roboto Mono for times, tags and diagnostics.
 | Tab | `Tab` in `TabRow` | Selected = `Active` fill + `TextPrimary`. Unselected = transparent + `TextSecondary`. Focused = selected look + accent border + scale. Replace the default pill indicator with the `Active` fill. |
 | Button | `Button` / `OutlinedButton` | `Shapes.Button`, `Surface` fill, 1 dp `Outline` unfocused, 3 dp accent focused |
 | Feed picker | `Dialog` + tv `Surface` | `Shapes.Dialog`, `Scrim` backdrop |
+| Overlay list picker | 2 × `Surface` (clickable) in a `Row` | Each `weight(1f)`, 32 dp tall, 4 dp gap, `Shapes.Tab`, `title` style text. Active = `Active` fill + `Active` 1 dp border + `TextPrimary`. Inactive = `Surface` fill + 1 dp `Outline` border + `TextSecondary`. Focused = 3 dp accent border + scale 1.05, keeping its active/inactive fill. Not a `TabRow`: it must not switch on focus. |
+| Overlay group row | `Surface` (clickable) | Full width, 36 dp tall, `Shapes.Row`, `Surface` fill, 1 dp `Outline` border (3 dp accent + 1.05 focused). Contents: mono `GROUP` in `TextSecondary`, the current group name in `title` style (1 line, ellipsis), the item count in mono `TextSecondary`, a 14 dp chevron (down; up while the list is open). |
+| Overlay group list | `Column` of `Surface` (clickable) | Replaces the item list while open. Mono tag `// PICK GROUP · LIVE GAMES` or `· LIVE CHANNELS` above it. Rows 32 dp tall, 4 dp gap, `Shapes.Row`, `bodyLarge` name (1 line, ellipsis) + mono count on the right. Current group = `Active` fill, count in `TextPrimary`. Unfocused = transparent. Focused = `Surface` fill + 3 dp accent border + 1.05. Hide empty groups, same as S2/S3. |
 | Overlay list item | `ListItem` | 2 lines, `Shapes.Row` |
 | Home/Away toggle (overlay) | one `ListItem` | Its own row under the playing game. Select flips Home ↔ Away. Draw two segments inside; the active one gets the `Active` fill. |
 | Playlist URL edit (S7) | `Dialog` + `androidx.compose.material3.OutlinedTextField` | tv-material3 has no text field |
@@ -84,7 +87,16 @@ Notes per screen:
 - **S2**: tabs All, MLB, NHL, NBA, NFL, NCAAF, Ungrouped. **Hide tabs with zero games.** A 2-column grid of game cards, 24 dp column gap, 16 dp row gap.
 - **S3**: tabs All, League Networks, National Sports, College Sports, Regional Sports, International, News and Entertainment, Other. A 2-column grid of channel rows with a 2-digit index.
 - **S5**: tune banner, bottom-left inside the safe area: `Scrim` fill, 3 dp `Active` bar on the left, two logo slots, a mono line (`// TUNED · HOME FEED · NFL`) and the title.
-- **O1**: covers the left 40% (384 dp), `OverlayScrim` fill (75% black), 1 dp `Outline` line on its right edge. Content: mono tag, tab row, item list, the Home/Away row under the playing game, and "Exit to menu" pinned to the bottom. The tab row starts with a display-only `GAMES | CHANNELS` switch, drawn like the Home/Away toggle (`Outline` frame, `Active` fill on the listed section). The group tabs after it belong to that section; the row scrolls the selected tab fully into view.
+- **O1**: covers the left 40% (384 dp), `OverlayScrim` fill (75% black), 1 dp `Outline` line on its right edge. Frames: `Overlay.dc.html` with its `frame` prop set to a (O1a, just opened), b (O1b, list picker focus), c (O1c, group list) or d (O1d, right after switching to Channels).
+  - **Layout, top to bottom** (dp): mono tag `// SWITCH SIGNAL` · 8 · **list picker** (32 tall) · 6 · **group row** (36 tall) · 12 · **item list** (fills the rest, 4 dp gap) · 8 · "Exit to menu" (36 tall, 1 dp `Outline` top rule) pinned to the bottom. The header (tag, list picker, group row) never scrolls. Only the item list scrolls. At 1080p the list shows 6 item rows, or 5 plus the Home/Away row.
+  - **List picker**: two focusable segments, `LIVE GAMES` and `LIVE CHANNELS`, each half the width. The list on screen has the `Active` fill. Focus is drawn on top of that (accent border + 1.05), so "focused" and "showing" are told apart: in O1b, Channels is focused while Games is still pink.
+  - **Group row**: one focusable row that names the current group in `title` type and shows its item count. This row and the pink list segment together are the "where am I" label. Both stay on screen while focus is in the items.
+  - **Group list** (O1c): Select on the group row swaps the item list for a vertical list of every non-empty group in the current section. Nothing is clipped or side-scrolled. Channels has 8 groups (8 × 32 dp + gaps = 284 dp), which fits under the header. Long names ("NEWS AND ENTERTAINMENT") fit on one line at `bodyLarge`, and ellipsis is only a fallback. The list is modal: Up/Down move, Select picks, Back closes it without changing anything.
+  - **Item list**: unchanged. 2-line rows, LIVE chip, PLAYING chip, the Home/Away row under the playing game. Final rows at 40% content alpha.
+  - **Opening**: section = the playing item's section, group = the group it was played from (`initialOverlayTab`), focus = the playing item, scrolled into view.
+  - **Changing list**: Select on the other segment swaps the section. The group resets to the playing item's group if the item is in that section, else `All`. The item list replaces in place and scrolls to the top. **Focus stays on the segment just selected** (O1d). Down goes to the group row, then into the items.
+  - **Changing group**: Select on a group closes the group list, replaces the items (scroll to top), and **puts focus back on the group row**. Down enters the items at the first row.
+  - **Data refresh** while the overlay is open: if the focused row disappears, move focus to the group row (not the first item), so the D-pad is never dead.
 - **S6**: `ERR // SIGNAL LOST` tag + title + plain summary line. Diagnostic block in mono with label/value lines: item + feed, host + masked path, HTTP status, player error code, attempts with timestamps, playlist age + last refresh, network. The failing values (HTTP status, player error) use `Error` color.
 - **S7**: focusable rows for Playlist URL (masked), Refresh now, Check for updates. Read-only lines for app version and log file path. First-run setup reuses this styling: a single URL field and a Save button.
 
@@ -98,10 +110,13 @@ Notes per screen:
 | Player | Select | Open overlay |
 | Player | Up / Down | Previous / next item in the current group |
 | Player | Back | Toggle to last channel; if none, return to list |
-| Overlay | Left / Right | Switch group tab; Left on the first tab switches Games ↔ Channels |
-| Overlay | Up / Down | Move through items (includes the Home/Away row and Exit) |
-| Overlay | Select | Tune the focused item, or flip Home/Away on the toggle row |
-| Overlay | Back | Close overlay |
+| Overlay | Up / Down | Move focus through one column: list picker ↔ group row ↔ items (incl. the Home/Away row) ↔ Exit. Up from the first item → group row. Up from the group row → the **active** list segment. Up on the list picker does nothing. Down from the group row → first item. |
+| Overlay | Left / Right | List picker only: move focus between Live Games and Live Channels (no wrap). Nowhere else in the panel do Left/Right do anything. They never change the list or group. |
+| Overlay | Select | List segment: show that list (focus stays on it). Group row: open the group list. Item: tune it (feed picker for games). Home/Away row: flip feed. Exit: leave to S1. |
+| Overlay (group list open) | Up / Down | Move through groups (no wrap; focus stays inside the list) |
+| Overlay (group list open) | Select | Pick the group, close the list, focus → group row |
+| Overlay (group list open) | Back | Close the list without changing the group, focus → group row |
+| Overlay | Back | Close overlay (from the pickers, the items or Exit) |
 
 ## Not designed (decide in code, keep the same tokens)
 
