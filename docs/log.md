@@ -1,5 +1,8 @@
 # Log
 
+## 2026-10-29
+- O1 redesign: stacked list picker (Live Games | Live Channels) and group row with a modal group list replace the display-only switch and side-scrolling tabs; Left/Right no longer change list or group. Updated HANDOFF (O1 note, key map, components), `Overlay.dc.html`, PLAN key map and UI navigation.
+
 ## 2026-10-24
 - New logo: adaptive launcher icon (`mipmap-anydpi`, black background + foreground per density) and `@mipmap/tv_banner` at every density replace the old PNG icon and xhdpi-only banner. Source art in `design-handoff/brand/`.
 

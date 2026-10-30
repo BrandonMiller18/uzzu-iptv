@@ -17,21 +17,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
@@ -54,25 +55,36 @@ import com.bmiller.uzzu.ui.theme.Dimens
 import com.bmiller.uzzu.ui.theme.UzzuColors
 import com.bmiller.uzzu.ui.theme.UzzuShapes
 import com.bmiller.uzzu.ui.theme.UzzuType
+import kotlinx.coroutines.launch
 
 /** Overlay panel width: 40% of the 960 dp screen. */
 val OverlayWidth = 384.dp
 
+private const val KEY_GROUP_ROW = "grouprow"
+private fun listKey(section: Section) = "list:${section.name.lowercase()}"
+private fun groupKey(name: String) = "group:$name"
+private fun Section.label() = if (this == Section.GAMES) "Live Games" else "Live Channels"
+
 /**
- * O1 (Overlay.dc.html): left 384 dp, OverlayScrim fill, 1 dp Outline right edge. Mono tag, the
- * Games/Channels switch and the group tabs (display only: Left/Right switch tabs from anywhere in
- * the panel; Left on the first tab switches section, see [neighbourView]), the item list with the
- * PLAYING chip and the H/A row under the playing game, and "Exit to menu" pinned at the bottom.
- * Up/Down move focus (items, H/A row, Exit), Select acts, Back closes. Opens on the playing item.
+ * O1 (Overlay.dc.html, frames a–d): left 384 dp, OverlayScrim fill, 1 dp Outline right edge. One
+ * column, top to bottom: mono tag, the list picker (Live Games | Live Channels), the group row, the
+ * item list (PLAYING chip, H/A row under the playing game) and "Exit to menu" pinned at the bottom.
+ * Select on the group row swaps the items for the group list (modal; Back closes it).
+ *
+ * Every focus move that matters is explicit (handled in the panel's key preview), because Compose's
+ * 2D search on the Fire TV does not follow Robolectric: Up from the first item → group row → the
+ * listed segment; Down from the group row → first item; Left/Right only move inside the list picker
+ * and never change the list or group. Opens on the playing item. After a list change focus stays on
+ * the segment, after a group change it goes back to the group row; the items scroll to the top.
  */
 @Composable
 fun PlayerOverlay(
     section: Section,
-    tabs: List<String>,
+    groups: List<OverlayGroup>,
     tab: String,
     rows: List<OverlayRow>,
-    /** Left (-1) / Right (+1). */
-    onStep: (Int) -> Unit,
+    onSection: (Section) -> Unit,
+    onGroup: (String) -> Unit,
     onSelectItem: (OverlayRow.Item) -> Unit,
     onFlipSide: () -> Unit,
     onExit: () -> Unit,
@@ -80,24 +92,98 @@ fun PlayerOverlay(
     modifier: Modifier = Modifier,
 ) {
     BackHandler(onBack = onClose)
+    val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     val requesters = remember { HashMap<String, FocusRequester>() }
     fun requester(key: String) = requesters.getOrPut(key) { FocusRequester() }
+    fun focus(key: String) = runCatching { requester(key).requestFocus() }
 
     var focusedKey by remember { mutableStateOf<String?>(null) }
-    suspend fun focusDefault() {
+    var groupOpen by remember { mutableStateOf(false) }
+
+    // Registered after the panel's BackHandler, so it wins while the group list is open.
+    fun closeGroups() {
+        // Focus moves before the focused option leaves composition, or the D-pad goes dead.
+        focus(KEY_GROUP_ROW)
+        groupOpen = false
+    }
+    BackHandler(enabled = groupOpen, onBack = ::closeGroups)
+
+    // Open: scroll to and focus the playing item (or the first row). Later list/group changes only
+    // scroll the items back to the top; focus stays where the change was made.
+    var opened by remember { mutableStateOf(false) }
+    LaunchedEffect(section, tab) {
+        if (opened) {
+            listState.scrollToItem(0)
+            return@LaunchedEffect
+        }
+        opened = true
         val key = overlayFocusKey(rows)
         val index = rows.indexOfFirst { it.key == key }
         if (index >= 0) listState.scrollToItem((index - 1).coerceAtLeast(0))
         withFrameNanos { }
-        runCatching { requester(key).requestFocus() }
+        focus(key)
     }
-    // On open and on every tab or section switch: scroll to and focus the playing item (or the first row).
-    LaunchedEffect(section, tab) { focusDefault() }
-    // A model update (refresh, ESPN poll) removed the focused row: don't leave the D-pad dead.
-    LaunchedEffect(rows) {
+    // A model update (refresh, ESPN poll) removed the focused row or group: don't leave the D-pad dead.
+    LaunchedEffect(rows, groups) {
         val k = focusedKey ?: return@LaunchedEffect
-        if (k != OverlayRow.KEY_EXIT && rows.none { it.key == k }) focusDefault()
+        val gone = when {
+            k.startsWith("item:") || k == OverlayRow.KEY_TOGGLE -> rows.none { it.key == k }
+            k.startsWith("group:") -> groups.none { groupKey(it.name) == k }
+            else -> false
+        }
+        if (gone) closeGroups()
+    }
+
+    fun enterItems() {
+        val first = rows.firstOrNull()?.key
+        if (first == null) {
+            focus(OverlayRow.KEY_EXIT)
+            return
+        }
+        scope.launch {
+            listState.scrollToItem(0)
+            withFrameNanos { }
+            focus(first)
+        }
+    }
+
+    // Key up follows its key down: a consumed down must not leak its up to the newly focused row.
+    val handledDown = remember { BooleanArray(1) }
+
+    /** Explicit D-pad moves; true = consumed. Keys not listed fall through to the default search. */
+    fun onDpad(code: Int): Boolean {
+        val k = focusedKey ?: return false
+        val up = code == KeyEvent.KEYCODE_DPAD_UP
+        val down = code == KeyEvent.KEYCODE_DPAD_DOWN
+        val left = code == KeyEvent.KEYCODE_DPAD_LEFT
+        val right = code == KeyEvent.KEYCODE_DPAD_RIGHT
+        when {
+            k.startsWith("list:") -> when {
+                left -> focus(listKey(Section.GAMES))
+                right -> focus(listKey(Section.CHANNELS))
+                down -> focus(KEY_GROUP_ROW)
+            }
+            k == KEY_GROUP_ROW -> when {
+                up -> focus(listKey(section))
+                down -> enterItems()
+            }
+            k.startsWith("group:") -> {
+                // Modal list: Up/Down stay inside it, no wrap.
+                val i = groups.indexOfFirst { groupKey(it.name) == k }
+                val next = when {
+                    up -> i - 1
+                    down -> i + 1
+                    else -> i
+                }
+                groups.getOrNull(next)?.let { focus(groupKey(it.name)) }
+            }
+            else -> {
+                if (left || right) return true
+                if (up && k == rows.firstOrNull()?.key) focus(KEY_GROUP_ROW) else return false
+            }
+        }
+        return true
     }
 
     Row(
@@ -107,9 +193,9 @@ fun PlayerOverlay(
             .testTag("overlay")
             .onPreviewKeyEvent { e ->
                 val code = e.nativeKeyEvent.keyCode
-                if (code != KeyEvent.KEYCODE_DPAD_LEFT && code != KeyEvent.KEYCODE_DPAD_RIGHT) return@onPreviewKeyEvent false
-                if (e.nativeKeyEvent.action == KeyEvent.ACTION_DOWN) onStep(if (code == KeyEvent.KEYCODE_DPAD_LEFT) -1 else 1)
-                true
+                if (code !in DPAD_KEYS) return@onPreviewKeyEvent false
+                // Decide on key down; swallow the matching key up only when the down was handled.
+                if (e.nativeKeyEvent.action == KeyEvent.ACTION_DOWN) onDpad(code).also { handledDown[0] = it } else handledDown[0]
             },
     ) {
         Column(
@@ -118,31 +204,81 @@ fun PlayerOverlay(
                 .fillMaxHeight()
                 .background(UzzuColors.OverlayScrim)
                 .padding(start = Dimens.SafeH, end = 20.dp, top = Dimens.SafeV, bottom = Dimens.SafeV),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            MonoTag(if (section == Section.GAMES) "// SWITCH SIGNAL · GAMES" else "// SWITCH SIGNAL · CHANNELS")
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Dimens.S3)) {
-                SectionSwitch(section)
-                // Fresh scroll state per section: both start with "All".
-                key(section) { OverlayTabs(tabs, tab) }
+            MonoTag("// SWITCH SIGNAL")
+            Spacer(Modifier.height(Dimens.S4))
+            Row(horizontalArrangement = Arrangement.spacedBy(Dimens.S2)) {
+                for (s in Section.entries) {
+                    val key = listKey(s)
+                    ListSegment(
+                        s.label(),
+                        active = s == section,
+                        onClick = { onSection(s) },
+                        modifier = Modifier
+                            .weight(1f)
+                            .focusRequester(requester(key))
+                            .onFocusChanged { if (it.isFocused) focusedKey = key }
+                            .testTag(key),
+                    )
+                }
             }
-            LazyColumn(
-                state = listState,
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
-                verticalArrangement = Arrangement.spacedBy(Dimens.S2),
-            ) {
-                items(rows, key = { it.key }) { row ->
-                    val m = Modifier
-                        .focusRequester(requester(row.key))
-                        .onFocusChanged { if (it.isFocused) focusedKey = row.key }
-                        .testTag(row.key)
-                    when (row) {
-                        is OverlayRow.Item -> OverlayItem(row, { onSelectItem(row) }, m)
-                        is OverlayRow.Toggle -> FeedToggleRow(row.side, onFlipSide, m)
+            Spacer(Modifier.height(Dimens.S3))
+            GroupRow(
+                name = tab,
+                count = groups.firstOrNull { it.name == tab }?.count,
+                open = groupOpen,
+                onClick = {
+                    if (groupOpen) return@GroupRow closeGroups()
+                    groupOpen = true
+                    scope.launch {
+                        withFrameNanos { }
+                        focus(groupKey(tab))
+                    }
+                },
+                modifier = Modifier
+                    .focusRequester(requester(KEY_GROUP_ROW))
+                    .onFocusChanged { if (it.isFocused) focusedKey = KEY_GROUP_ROW }
+                    .testTag(KEY_GROUP_ROW),
+            )
+            Spacer(Modifier.height(Dimens.S5))
+            Box(Modifier.weight(1f).fillMaxWidth()) {
+                if (groupOpen) {
+                    GroupList(section, groups, tab) { g ->
+                        val key = groupKey(g.name)
+                        GroupOption(
+                            g,
+                            current = g.name == tab,
+                            onClick = {
+                                closeGroups()
+                                onGroup(g.name)
+                            },
+                            modifier = Modifier
+                                .focusRequester(requester(key))
+                                .onFocusChanged { if (it.isFocused) focusedKey = key }
+                                .testTag(key),
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                        verticalArrangement = Arrangement.spacedBy(Dimens.S2),
+                    ) {
+                        items(rows, key = { it.key }) { row ->
+                            val m = Modifier
+                                .focusRequester(requester(row.key))
+                                .onFocusChanged { if (it.isFocused) focusedKey = row.key }
+                                .testTag(row.key)
+                            when (row) {
+                                is OverlayRow.Item -> OverlayItem(row, { onSelectItem(row) }, m)
+                                is OverlayRow.Toggle -> FeedToggleRow(row.side, onFlipSide, m)
+                            }
+                        }
                     }
                 }
             }
+            Spacer(Modifier.height(Dimens.S4))
             ExitRow(
                 onExit,
                 Modifier
@@ -155,49 +291,90 @@ fun PlayerOverlay(
     }
 }
 
-/** `[GAMES|CHANNELS]`, display only, styled like the H/A toggle. Left past the first tab flips it. */
+private val DPAD_KEYS = setOf(KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT)
+
+/** One half of the list picker. Pink = the list on screen; focus draws on top (it never switches on focus). */
 @Composable
-private fun SectionSwitch(section: Section) {
-    Row(
-        Modifier.background(UzzuColors.Outline, UzzuShapes.Toggle).padding(Dimens.RestBorder),
-        horizontalArrangement = Arrangement.spacedBy(Dimens.S1),
+private fun ListSegment(label: String, active: Boolean, onClick: () -> Unit, modifier: Modifier) {
+    val fill = if (active) UzzuColors.Active else UzzuColors.Surface
+    UzzuCard(
+        onClick, UzzuShapes.Tab, modifier.height(32.dp),
+        container = fill, restBorder = if (active) UzzuColors.Active else UzzuColors.Outline,
     ) {
-        Segment("Games", section == Section.GAMES)
-        Segment("Channels", section == Section.CHANNELS)
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(
+                label.uppercase(),
+                style = UzzuType.Title,
+                color = if (active) UzzuColors.TextPrimary else UzzuColors.TextSecondary,
+                maxLines = 1,
+                softWrap = false,
+                modifier = Modifier.testTag("${if (active) "on" else "off"}:${label.lowercase()}"),
+            )
+        }
     }
 }
 
-/** Display-only tab row; the selected tab is kept in view. */
+/** `GROUP  NFL  12  ⌄`: names the listed group; Select opens the group list. */
 @Composable
-private fun OverlayTabs(tabs: List<String>, tab: String) {
-    val state = rememberLazyListState()
-    val selected = tabs.indexOf(tab)
-    // Scroll only when the selected tab is not fully in view. Its left neighbour stays visible when
-    // both fit; the row is narrower than the panel (section switch), so a long tab may need the whole row.
-    LaunchedEffect(selected) {
-        if (selected < 0) return@LaunchedEffect
-        fun inView(): Boolean {
-            val info = state.layoutInfo
-            val item = info.visibleItemsInfo.firstOrNull { it.index == selected }
-            return item != null && item.offset >= info.viewportStartOffset && item.offset + item.size <= info.viewportEndOffset
-        }
-        if (!inView()) state.animateScrollToItem((selected - 1).coerceAtLeast(0))
-        if (!inView()) state.animateScrollToItem(selected)
-    }
-    LazyRow(state = state, horizontalArrangement = Arrangement.spacedBy(Dimens.S1), userScrollEnabled = false) {
-        itemsIndexed(tabs, key = { _, t -> t }) { i, t ->
-            val on = i == selected
+private fun GroupRow(name: String, count: Int?, open: Boolean, onClick: () -> Unit, modifier: Modifier) {
+    UzzuCard(onClick, UzzuShapes.Row, modifier.fillMaxWidth().height(36.dp)) {
+        Row(
+            Modifier.fillMaxSize().padding(horizontal = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Text("GROUP", style = UzzuType.Mono, color = UzzuColors.TextSecondary, maxLines = 1)
             Text(
-                t.uppercase(),
-                style = UzzuType.Label,
-                color = if (on) UzzuColors.TextPrimary else UzzuColors.TextSecondary,
+                name.uppercase(),
+                style = UzzuType.Title,
+                color = UzzuColors.TextPrimary,
                 maxLines = 1,
-                softWrap = false,
-                modifier = Modifier
-                    .testTag("otab:$t")
-                    .background(if (on) UzzuColors.Active else Color.Transparent, UzzuShapes.Tab)
-                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f).testTag("groupname"),
             )
+            if (count != null) Text("$count", style = UzzuType.MonoPlain, color = UzzuColors.TextSecondary, maxLines = 1)
+            Icon(
+                UzzuIcons.ChevronDown,
+                contentDescription = null,
+                tint = UzzuColors.TextPrimary,
+                modifier = Modifier.size(14.dp).then(if (open) Modifier.rotate(180f) else Modifier),
+            )
+        }
+    }
+}
+
+/** O1c: every non-empty group of the listed section, in place of the items. */
+@Composable
+private fun GroupList(section: Section, groups: List<OverlayGroup>, tab: String, option: @Composable (OverlayGroup) -> Unit) {
+    Column(Modifier.fillMaxSize()) {
+        MonoTag("// PICK GROUP · ${section.label()}", Modifier.padding(horizontal = 10.dp))
+        Spacer(Modifier.height(Dimens.S2))
+        Column(
+            // Padding keeps the 1.05 focus scale inside the scroll clip.
+            Modifier.fillMaxSize().testTag("grouplist:$tab").verticalScroll(rememberScrollState()).padding(horizontal = 10.dp, vertical = 4.dp),
+            verticalArrangement = Arrangement.spacedBy(Dimens.S2),
+        ) {
+            for (g in groups) option(g)
+        }
+    }
+}
+
+/** One group: name + item count. Current = Active fill. Transparent at rest, Surface when focused. */
+@Composable
+private fun GroupOption(group: OverlayGroup, current: Boolean, onClick: () -> Unit, modifier: Modifier) {
+    UzzuCard(
+        onClick, UzzuShapes.Row, modifier.fillMaxWidth().height(32.dp),
+        container = if (current) UzzuColors.Active else Color.Transparent,
+        focusedContainer = if (current) UzzuColors.Active else UzzuColors.Surface,
+        restBorder = Color.Transparent,
+    ) {
+        Row(
+            Modifier.fillMaxSize().padding(horizontal = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Dimens.S4),
+        ) {
+            Text(group.name.uppercase(), style = UzzuType.BodyLarge, color = UzzuColors.TextPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+            Text("${group.count}", style = UzzuType.MonoPlain, color = if (current) UzzuColors.TextPrimary else UzzuColors.TextSecondary, maxLines = 1)
         }
     }
 }

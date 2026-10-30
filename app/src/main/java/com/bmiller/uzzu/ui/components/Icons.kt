@@ -36,6 +36,9 @@ object UzzuIcons {
     /** O1 "Exit to menu". */
     val ChevronLeft = icon(2f, StrokeCap.Square, "M15 6l-6 6 6 6")
 
+    /** O1 group row (rotated 180° while the group list is open). */
+    val ChevronDown = icon(2f, StrokeCap.Square, "M6 9l6 6 6-6")
+
     private fun icon(stroke: Float, cap: StrokeCap, vararg paths: String): ImageVector =
         ImageVector.Builder(defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f)
             .apply {

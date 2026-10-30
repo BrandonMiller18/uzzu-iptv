@@ -100,6 +100,11 @@ class PlayerScreenTest {
         return PlayContext(Section.CHANNELS, tab, keys, keys[i])
     }
 
+    private fun groupName() = compose.onNodeWithTag("groupname", useUnmergedTree = true).fetchSemanticsNode()
+        .config.getOrNull(SemanticsProperties.Text).orEmpty().joinToString { it.text }
+
+    private fun listed(section: String) = compose.onAllNodesWithTag("on:live $section", useUnmergedTree = true).fetchSemanticsNodes().size == 1
+
     private fun overlayShown() = compose.onAllNodesWithTag("overlay").fetchSemanticsNodes().isNotEmpty()
 
     private fun rawKey(action: Int, code: Int, repeat: Int = 0, flags: Int = 0) {
@@ -125,7 +130,8 @@ class PlayerScreenTest {
         assertTrue(overlayShown())
         assertEquals("item:${nhl(1).currentKey}", compose.focusedTag())
         assertEquals(1, polls)
-        compose.onNodeWithTag("otab:NHL").assertExists()
+        assertEquals("NHL", groupName())
+        compose.onNodeWithTag("on:live games", useUnmergedTree = true).assertExists()
         back()
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
@@ -136,7 +142,7 @@ class PlayerScreenTest {
         assertEquals(0, toList)
     }
 
-    @Test fun `overlay - Left-Right switch tabs, Up-Down reach the H-A row and Exit, Select tunes in the new group`() {
+    @Test fun `overlay - Left-Right do nothing outside the list picker, Up climbs to the pickers, a new group tunes from it`() {
         launch(nhl(1))
         compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
         compose.key(KeyEvent.KEYCODE_DPAD_DOWN)
@@ -149,10 +155,38 @@ class PlayerScreenTest {
 
         compose.key(KeyEvent.KEYCODE_DPAD_DOWN, 10)
         assertEquals("exit", compose.focusedTag())
+        compose.key(KeyEvent.KEYCODE_DPAD_LEFT)
+        compose.key(KeyEvent.KEYCODE_DPAD_RIGHT)
+        assertEquals("exit", compose.focusedTag())
+        assertEquals("NHL", groupName())
+        assertTrue(listed("games"))
 
-        compose.key(KeyEvent.KEYCODE_DPAD_LEFT) // NHL -> MLB
-        compose.onNodeWithTag("otab:MLB").assertExists()
+        // Up from the first item → group row → the listed segment; Up on the picker stays put.
+        compose.key(KeyEvent.KEYCODE_DPAD_UP, 20)
+        assertEquals("list:games", compose.focusedTag())
+        compose.key(KeyEvent.KEYCODE_DPAD_DOWN)
+        assertEquals("grouprow", compose.focusedTag())
+
+        // Group list: opens on the current group, no wrap, Back closes it without a change.
+        compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
+        assertEquals("group:NHL", compose.focusedTag())
+        compose.key(KeyEvent.KEYCODE_DPAD_UP)
+        assertEquals("group:MLB", compose.focusedTag())
+        back()
+        assertTrue(overlayShown())
+        assertEquals("grouprow", compose.focusedTag())
+        assertEquals("NHL", groupName())
+
+        compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
+        compose.key(KeyEvent.KEYCODE_DPAD_UP, 5)
+        assertEquals("group:All", compose.focusedTag())
+        compose.key(KeyEvent.KEYCODE_DPAD_DOWN)
+        assertEquals("group:MLB", compose.focusedTag())
+        compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
+        assertEquals("grouprow", compose.focusedTag())
+        assertEquals("MLB", groupName())
         val mlb = groupKeys(playlist, Section.GAMES, "MLB")
+        compose.key(KeyEvent.KEYCODE_DPAD_DOWN)
         assertEquals("item:${mlb.first()}", compose.focusedTag())
         compose.key(KeyEvent.KEYCODE_DPAD_CENTER) // two feeds: picker over the overlay
         assertEquals("feed:home", compose.focusedTag())
@@ -171,17 +205,29 @@ class PlayerScreenTest {
         compose.waitForIdle()
     }
 
-    @Test fun `overlay - from a channel, Left past the first tab lists games, a game plays after the picker, Back toggles`() {
+    @Test fun `overlay - from a channel, Select on Live Games lists games, focus stays on it, a game plays after the picker, Back toggles`() {
         val start = channels("League Networks", 1)
         launch(start)
         compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
-        compose.onAllNodesWithTag("segment:channels:on", useUnmergedTree = true).fetchSemanticsNodes().let { assertEquals(1, it.size) }
-        compose.key(KeyEvent.KEYCODE_DPAD_LEFT) // League Networks -> All
-        compose.key(KeyEvent.KEYCODE_DPAD_LEFT) // All -> Games
-        compose.onAllNodesWithTag("segment:games:on", useUnmergedTree = true).fetchSemanticsNodes().let { assertEquals(1, it.size) }
-        compose.onNodeWithTag("otab:MLB").assertExists()
+        assertTrue(listed("channels"))
+        assertEquals("LEAGUE NETWORKS", groupName())
+        compose.key(KeyEvent.KEYCODE_DPAD_UP, 10)
+        assertEquals("list:channels", compose.focusedTag())
+        compose.key(KeyEvent.KEYCODE_DPAD_LEFT)
+        assertEquals("list:games", compose.focusedTag())
+        assertTrue(listed("channels")) // focus alone never switches
+        compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
+        assertTrue(listed("games"))
+        assertEquals("list:games", compose.focusedTag())
+        assertEquals("ALL", groupName())
+
+        compose.key(KeyEvent.KEYCODE_DPAD_DOWN)
+        compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
+        compose.key(KeyEvent.KEYCODE_DPAD_DOWN)
+        assertEquals("group:MLB", compose.focusedTag())
+        compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
         val mlb = groupKeys(playlist, Section.GAMES, "MLB")
-        compose.key(KeyEvent.KEYCODE_DPAD_RIGHT) // All -> MLB
+        compose.key(KeyEvent.KEYCODE_DPAD_DOWN)
         assertEquals("item:${mlb.first()}", compose.focusedTag())
         compose.key(KeyEvent.KEYCODE_DPAD_CENTER) // two feeds: picker
         compose.key(KeyEvent.KEYCODE_DPAD_DOWN)
@@ -202,12 +248,18 @@ class PlayerScreenTest {
         assertEquals(0, toList)
     }
 
-    @Test fun `overlay - from a game, the channels list is one Left from All, a channel plays, Back returns to the same side`() {
+    @Test fun `overlay - from a game, Live Channels is Up then Right, a channel plays, Back returns to the same side`() {
         launch(nhl(1, FeedSide.AWAY))
         compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
-        compose.key(KeyEvent.KEYCODE_DPAD_LEFT, 3) // NHL -> MLB -> All -> Channels
-        compose.onAllNodesWithTag("segment:channels:on", useUnmergedTree = true).fetchSemanticsNodes().let { assertEquals(1, it.size) }
+        compose.key(KeyEvent.KEYCODE_DPAD_UP, 10)
+        compose.key(KeyEvent.KEYCODE_DPAD_RIGHT)
+        compose.key(KeyEvent.KEYCODE_DPAD_RIGHT) // no wrap
+        assertEquals("list:channels", compose.focusedTag())
+        compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
+        assertTrue(listed("channels"))
+        assertEquals("ALL", groupName())
         val all = groupKeys(playlist, Section.CHANNELS, "All")
+        compose.key(KeyEvent.KEYCODE_DPAD_DOWN, 2)
         assertEquals("item:${all.first()}", compose.focusedTag())
         compose.key(KeyEvent.KEYCODE_DPAD_DOWN)
         compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
@@ -327,14 +379,22 @@ class PlayerScreenTest {
         launch(nhl(1))
         compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
         compose.mainClock.advanceTimeBy(500)
-        shot("o1_overlay_games")
+        shot("o1_overlay_games") // O1a
         compose.key(KeyEvent.KEYCODE_DPAD_DOWN)
         compose.mainClock.advanceTimeBy(500)
         shot("o1_overlay_games_toggle_focused")
-        compose.key(KeyEvent.KEYCODE_DPAD_LEFT)
-        compose.key(KeyEvent.KEYCODE_DPAD_LEFT)
+        compose.key(KeyEvent.KEYCODE_DPAD_UP, 10)
+        compose.key(KeyEvent.KEYCODE_DPAD_RIGHT)
         compose.mainClock.advanceTimeBy(500)
-        shot("o1_overlay_games_all_tab")
+        shot("o1_overlay_list_focus") // O1b: Channels focused, Games still listed
+        compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
+        compose.mainClock.advanceTimeBy(500)
+        shot("o1_overlay_switched_channels") // O1d
+        compose.key(KeyEvent.KEYCODE_DPAD_DOWN)
+        compose.key(KeyEvent.KEYCODE_DPAD_CENTER)
+        compose.key(KeyEvent.KEYCODE_DPAD_DOWN, 6)
+        compose.mainClock.advanceTimeBy(500)
+        shot("o1_overlay_group_list") // O1c
     }
 
     @Test fun shotOverlayChannels() {

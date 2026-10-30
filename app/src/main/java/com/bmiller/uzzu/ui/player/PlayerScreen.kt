@@ -178,7 +178,7 @@ fun PlayerScreen(
     }
 }
 
-/** O1 state holder: section + tab, rows, polling while visible, FeedPicker over the overlay. */
+/** O1 state holder: section + tab (group), rows, polling while visible, FeedPicker over the overlay. */
 @Composable
 private fun OverlayHost(
     controls: PlayerControls,
@@ -192,9 +192,10 @@ private fun OverlayHost(
         val polling = startPolling()
         onDispose { polling.close() }
     }
-    // Opens on the playing item's section; Left past the first tab shows the other one.
+    // Opens on the playing item's section and group; the list picker shows the other section.
     var view by remember { mutableStateOf(overlayView(playlist, playing.section, playing)) }
-    val tabs = remember(playlist, view.section) { overlayTabs(playlist, view.section) }
+    val groups = remember(playlist, view.section) { overlayGroups(playlist, view.section) }
+    val tabs = groups.map { it.name }
     if (view.tab !in tabs) {
         // A refresh removed the tab (or emptied the section): first tab, else back to the playing section.
         view = if (tabs.isNotEmpty()) view.copy(tab = tabs.first()) else overlayView(playlist, playing.section, playing)
@@ -213,10 +214,11 @@ private fun OverlayHost(
 
     PlayerOverlay(
         section = section,
-        tabs = tabs,
+        groups = groups,
         tab = tab,
         rows = rows,
-        onStep = { view = neighbourView(playlist, view, playing, it) },
+        onSection = { view = switchSection(playlist, view, playing, it) },
+        onGroup = { view = view.copy(tab = it) },
         onSelectItem = { item ->
             if (section == Section.CHANNELS) {
                 tune(overlayTuneContext(section, tab, rows, item.id, null))
